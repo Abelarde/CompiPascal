@@ -42,10 +42,11 @@ namespace CompiPascal
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.ReportErrors = new System.Windows.Forms.Button();
+            this.ErrorsTranslate = new System.Windows.Forms.Button();
             this.ReportTS = new System.Windows.Forms.Button();
             this.ClearConsole = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.ErrorsRun = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -156,25 +157,26 @@ namespace CompiPascal
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.ErrorsRun);
             this.groupBox3.Controls.Add(this.ReportAST);
-            this.groupBox3.Controls.Add(this.ReportErrors);
+            this.groupBox3.Controls.Add(this.ErrorsTranslate);
             this.groupBox3.Controls.Add(this.ReportTS);
             this.groupBox3.Location = new System.Drawing.Point(424, 323);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(256, 59);
+            this.groupBox3.Size = new System.Drawing.Size(350, 59);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Reports";
             // 
-            // ReportErrors
+            // ErrorsTranslate
             // 
-            this.ReportErrors.Location = new System.Drawing.Point(168, 22);
-            this.ReportErrors.Name = "ReportErrors";
-            this.ReportErrors.Size = new System.Drawing.Size(75, 23);
-            this.ReportErrors.TabIndex = 1;
-            this.ReportErrors.Text = "Errors";
-            this.ReportErrors.UseVisualStyleBackColor = true;
-            this.ReportErrors.Click += new System.EventHandler(this.ReportErrors_Click);
+            this.ErrorsTranslate.Location = new System.Drawing.Point(168, 22);
+            this.ErrorsTranslate.Name = "ErrorsTranslate";
+            this.ErrorsTranslate.Size = new System.Drawing.Size(98, 23);
+            this.ErrorsTranslate.TabIndex = 1;
+            this.ErrorsTranslate.Text = "Errors Translate";
+            this.ErrorsTranslate.UseVisualStyleBackColor = true;
+            this.ErrorsTranslate.Click += new System.EventHandler(this.ErrorsTranslate_Click);
             // 
             // ReportTS
             // 
@@ -199,12 +201,22 @@ namespace CompiPascal
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.ClearConsole);
-            this.groupBox4.Location = new System.Drawing.Point(695, 323);
+            this.groupBox4.Location = new System.Drawing.Point(789, 323);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(177, 59);
+            this.groupBox4.Size = new System.Drawing.Size(95, 59);
             this.groupBox4.TabIndex = 7;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Console";
+            // 
+            // ErrorsRun
+            // 
+            this.ErrorsRun.Location = new System.Drawing.Point(272, 22);
+            this.ErrorsRun.Name = "ErrorsRun";
+            this.ErrorsRun.Size = new System.Drawing.Size(75, 23);
+            this.ErrorsRun.TabIndex = 3;
+            this.ErrorsRun.Text = "Errors Run";
+            this.ErrorsRun.UseVisualStyleBackColor = true;
+            this.ErrorsRun.Click += new System.EventHandler(this.ErrorsRun_Click);
             // 
             // Form1
             // 
@@ -244,10 +256,11 @@ namespace CompiPascal
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button ReportErrors;
+        private System.Windows.Forms.Button ErrorsTranslate;
         private System.Windows.Forms.Button ReportTS;
         private System.Windows.Forms.Button ClearConsole;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button ErrorsRun;
     }
 }
 

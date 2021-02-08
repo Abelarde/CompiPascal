@@ -69,8 +69,12 @@ namespace CompiPascal
         {
 
         }
+        private void ErrorsTranslate_Click(object sender, EventArgs e)
+        {
 
-        private void ReportErrors_Click(object sender, EventArgs e)
+        }
+
+        private void ErrorsRun_Click(object sender, EventArgs e)
         {
 
         }
@@ -86,5 +90,7 @@ namespace CompiPascal
             sintacticoTrad.ClearMessage();
             ConsoleInput(string.Empty);
         }
+
+
     }
 }

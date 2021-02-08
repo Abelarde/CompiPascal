@@ -4,16 +4,14 @@ namespace CompiPascal.traductor.analizador
 {
     class GramaticaTraductor : Grammar
     {
-
         public GramaticaTraductor() : base(caseSensitive: false)
         {
             /* Expresiones regulares de los tokens que nuestra gramatica reconocera*/
             #region ER
-            //TODO: investigar sobre mas expresiones regulares 
-            var NUMERO = new NumberLiteral("Numero");
+            //var NUMERO = new NumberLiteral("Numero");
             //RegexBasedTerminal Numero = new RegexBasedTerminal("Numero", "[0-9]+");
-            IdentifierTerminal ID = new IdentifierTerminal("Id");
-            StringLiteral CADENA = TerminalFactory.CreateCSharpString("Cadena");
+            //IdentifierTerminal ID = new IdentifierTerminal("Id");
+            //StringLiteral CADENA = TerminalFactory.CreateCSharpString("Cadena");
             //StringLiteral CADENA_OTRA_FORMA = new StringLiteral("Cadena_Otra_Forma", "\"");
             #endregion
 
@@ -29,11 +27,11 @@ namespace CompiPascal.traductor.analizador
             var MAS = ToTerm("+");
             var MENOS = ToTerm("-");
             var POR = ToTerm("*");
-            var DIVIDIDO = ToTerm("/");
+            var DIVIDIDO = ToTerm("/");                       
 
-            //TODO: investigar sobre mas configuraciones como estas
-            RegisterOperators(1, MAS, MENOS);
-            RegisterOperators(2, POR, DIVIDIDO);
+            //precedencia y asociatividad
+            //RegisterOperators(1, MAS, MENOS);
+            //RegisterOperators(2, POR, DIVIDIDO);
             //MarkPunctuation("(", ")", "[", "]");
 
 
@@ -47,7 +45,6 @@ namespace CompiPascal.traductor.analizador
             NonTerminal instrucciones = new NonTerminal("instrucciones");
             NonTerminal expresion = new NonTerminal("expresion");
             #endregion
-
 
             //TODO: investigar mas sobre como definir las gramaticas y sobre el epsilo
             /* Región donde se define la gramática. */
@@ -73,10 +70,9 @@ namespace CompiPascal.traductor.analizador
                 | PARIZQ + expresion + PARDER;
             #endregion
 
-            //TODO: investigar mas sobre estas configuraciones
-            /* Configuraciones especiales necesarias para el uso de Irony. */
             #region Preferencias
-            this.Root = ini;
+            /* Configuraciones especiales necesarias para el uso de Irony. */
+            //this.Root = ini;
             //MarkTransient(instruccion);
             #endregion
 
