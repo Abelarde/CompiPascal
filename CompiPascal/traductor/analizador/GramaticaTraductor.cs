@@ -15,7 +15,7 @@ namespace CompiPascal.traductor.analizador
             //NumberLiteral numero2 = TerminalFactory.CreateCSharpNumber("Number");
             //IdentifierTerminal id2 = TerminalFactory.CreateCSharpIdentifier("Identifier");
             NumberLiteral NUMBER = new NumberLiteral("NUMBER");//entero, decimal, negativo
-            IdentifierTerminal ID = new IdentifierTerminal("ID");
+            IdentifierTerminal ID = new IdentifierTerminal("ID"); //TODO: tomar en cuenta para las variables que no es caseSensitive 
             StringLiteral CADENA = new StringLiteral("CADENA", "\'"); //cadena, char
 
             //var INTEGER = ToTerm("INTEGER");  //integer value
@@ -107,6 +107,8 @@ namespace CompiPascal.traductor.analizador
             var CHAR = ToTerm("CHAR");  //type char
             var STRING = ToTerm("STRING");  //type string
             var BOOLEAN = ToTerm("BOOLEAN");  //type boolean
+
+            //TODO: las funciones nativas
             #endregion
 
             #region No Terminales  /* Conjunto de no terminales que serán utilizados en nuestra gramática. */
@@ -118,10 +120,21 @@ namespace CompiPascal.traductor.analizador
             NonTerminal statement = new NonTerminal("statement");
 
             NonTerminal type_declarations = new NonTerminal("type_declarations");
+            NonTerminal type_variables = new NonTerminal("type_variables");
+            NonTerminal type_variable = new NonTerminal("type_variable");
+
             NonTerminal constant_declarations = new NonTerminal("constant_declarations");
+            NonTerminal constant_optional = new NonTerminal("constant_optional");
+            NonTerminal constant_variables = new NonTerminal("constant_variables");
+            NonTerminal constant_variable = new NonTerminal("constant_variable");
+
             NonTerminal variables_declarations = new NonTerminal("variables_declarations");
             NonTerminal variables = new NonTerminal("variables");
             NonTerminal variable = new NonTerminal("variable");
+            NonTerminal variables_declarations_initialization = new NonTerminal("variables_declarations_initialization");
+            NonTerminal variables_declaration_initialization = new NonTerminal("variables_declaration_initialization");
+            NonTerminal variable_declaration_initialization = new NonTerminal("variable_declaration_initialization");
+
             NonTerminal functions_declarations = new NonTerminal("functions_declarations");
             NonTerminal procedures_declarations = new NonTerminal("procedures_declarations");
             NonTerminal parameters = new NonTerminal("parameters");
@@ -129,7 +142,6 @@ namespace CompiPascal.traductor.analizador
 
             NonTerminal main_declarations = new NonTerminal("main_declarations");
 
-            NonTerminal types_variables = new NonTerminal("types_variables");
             NonTerminal list_id = new NonTerminal("list_id");
 
 
@@ -137,7 +149,11 @@ namespace CompiPascal.traductor.analizador
             NonTerminal instruction = new NonTerminal("instruction");
 
             NonTerminal expression = new NonTerminal("expression");
-            NonTerminal array_stmt = new NonTerminal("types_stmt");
+            NonTerminal values_native = new NonTerminal("values_native");
+            NonTerminal variables_native = new NonTerminal("variables_native");
+            NonTerminal variables_array = new NonTerminal("variables_array");
+            NonTerminal variables_native_array = new NonTerminal("variables_native_array");
+            NonTerminal variables_native_id = new NonTerminal("variables_native_id");
 
 
 
@@ -147,40 +163,49 @@ namespace CompiPascal.traductor.analizador
 
             ini.Rule = program_structure;
 
-            program_structure.Rule = PROGRAM + ID + SEMI_COLON + program_structure_stmt;
+            program_structure.Rule = PROGRAM + ID + SEMI_COLON + constant_optional + program_structure_stmt;
+
+            constant_optional.Rule = constant_declarations //constantes: deben de declararse antes que todas las variables
+                | Empty;
 
             program_structure_stmt.Rule = statements + main_declarations + PERIOD;
 
             statements.Rule = MakeStarRule(statements, statement);
 
             statement.Rule = type_declarations
-                | constant_declarations 
                 | variables_declarations
+                //| variables_declarations_initialization
                 | functions_declarations + SEMI_COLON
                 | procedures_declarations + SEMI_COLON;
 
 
-            type_declarations.Rule = TYPE | Empty;
-            constant_declarations.Rule = CONST | Empty;
-            variables_declarations.Rule = VAR + variables | Empty; //declaracion: solo afuera de BEGIN-END;
-            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + BEGIN + END;
+            type_declarations.Rule = TYPE + type_variables | Empty; //categoria, o clase de los tipos como integer, real, string
+            constant_declarations.Rule = CONST + constant_variables | Empty; // 
+            variables_declarations.Rule = VAR + variables | Empty; //declaracion: solo afuera de BEGIN-END; 
+            variables_declarations_initialization.Rule = VAR + variables_declaration_initialization | Empty;
+            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + BEGIN + END; //TODO: return_value
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + BEGIN + END;
             main_declarations.Rule = BEGIN + END; //aqui inicia la ejecucion del programa
 
             variables.Rule = MakePlusRule(variables, variable);
-            variable.Rule = list_id + COLON + types_variables + SEMI_COLON;
+            variable.Rule = list_id + COLON + variables_native_id + SEMI_COLON; //indica el tipo de valores que puede tomar la variable
 
             list_id.Rule = MakePlusRule(list_id, COMMA ,ID);
 
-            types_variables.Rule = INTEGER | REAL | BOOLEAN | CHAR | STRING; //ARRAY
+            //TODO: aqui tener cuidado si lo hago afuera del cuerpo o si lo hago adentro del cuerpo.
+            //con la asignacion porque ID no se permite afuera solo adentro
+            variables_declaration_initialization.Rule = MakePlusRule(variables_declaration_initialization, variable_declaration_initialization);
+            variable_declaration_initialization.Rule = ID + COLON + variables_native_id + COLON_EQUAL + expression + SEMI_COLON;
 
             parameters.Rule = MakeStarRule(parameters, SEMI_COLON ,parameter);
-            parameter.Rule = list_id + COLON + types_variables
-                | VAR + list_id + COLON + types_variables;
+            parameter.Rule = list_id + COLON + variables_native
+                | VAR + list_id + COLON + variables_native;
 
+            type_variables.Rule = MakePlusRule(type_variables, type_variable);
+            type_variable.Rule = list_id + EQUAL + variables_native + SEMI_COLON;
 
-
-
+            constant_variables.Rule = MakePlusRule(constant_variables, constant_variable);
+            constant_variable.Rule = ID + EQUAL + values_native + SEMI_COLON;
 
 
             instructions.Rule = MakePlusRule(instructions, instruction);
@@ -192,8 +217,17 @@ namespace CompiPascal.traductor.analizador
                 | expression + MINUS + expression
                 | expression + ASTERISK + expression
                 | expression + SLASH + expression
-                | ID | CADENA | NUMBER | TRUE | FALSE  //| VOID //|array //|types-objects
+                | ID | CADENA | NUMBER | TRUE | FALSE  //| VOID  //|types-objects
+                | ID + LEFT_BRACKET + expression + RIGHT_BRACKET// array_id[]
                 | LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS;
+
+            values_native.Rule = CADENA | NUMBER | TRUE | FALSE;
+            variables_native.Rule = INTEGER | REAL | BOOLEAN | CHAR | STRING; //native
+            variables_array.Rule = ARRAY + LEFT_BRACKET + RIGHT_BRACKET; //array
+            variables_native_array.Rule = variables_native | variables_array; //native, array
+            variables_native_id.Rule = variables_native | ID; //native, id
+            //TODO: verificar que en las fun/proc se puede
+            //enviar parametros con un tipo predefinido por el usuario
             #endregion
 
             #region PREFERENCIAS

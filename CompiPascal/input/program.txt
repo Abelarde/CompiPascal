@@ -1,14 +1,41 @@
 program Hola;
+
+coNst
+VELOCITY_LIGHT = 3.0;
+PIE = 3.141592;
+NAME = 'Stuart Little';
+CHOICE = true;  //CHOICE = yes;  //tendria que ser yes o true
+OPERATOR = '+';
 
 type
+days, age = integer;
+yes, true = boolean;
+name, city = string;
+fees, expenses = real;
 
 VAR
 i: integer;
 mat_a,mat_b,mat_c : real;
 contador : integer;
 cadena: string;
-
-coNst
+
+var
+age, weekdays : tipoElBicho;
+taxrate, net_income: real;
+choice, isready: boolean;
+initials, grade: char;
+name, surname : string;
+
+var
+x: integer := maxint;
+y: real:= 3.9;
+windy: boolean := true;
+grade: char := 'C';
+
+//verificar si puedo tener varios var
+var min:integer;
+
+//var a:integer = 50;
 
 function el_bicho(num:integer)
 begin
