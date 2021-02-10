@@ -42,11 +42,11 @@ namespace CompiPascal
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.ErrorsRun = new System.Windows.Forms.Button();
             this.ErrorsTranslate = new System.Windows.Forms.Button();
             this.ReportTS = new System.Windows.Forms.Button();
             this.ClearConsole = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.ErrorsRun = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -57,7 +57,7 @@ namespace CompiPascal
             // 
             this.groupBox1.Controls.Add(this.Run);
             this.groupBox1.Controls.Add(this.Translate);
-            this.groupBox1.Location = new System.Drawing.Point(22, 323);
+            this.groupBox1.Location = new System.Drawing.Point(22, 504);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(184, 59);
             this.groupBox1.TabIndex = 0;
@@ -98,7 +98,7 @@ namespace CompiPascal
             // 
             this.groupBox2.Controls.Add(this.Save);
             this.groupBox2.Controls.Add(this.Load);
-            this.groupBox2.Location = new System.Drawing.Point(222, 323);
+            this.groupBox2.Location = new System.Drawing.Point(222, 504);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(187, 59);
             this.groupBox2.TabIndex = 1;
@@ -130,7 +130,7 @@ namespace CompiPascal
             this.textBox1.Location = new System.Drawing.Point(22, 26);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(443, 277);
+            this.textBox1.Size = new System.Drawing.Size(443, 472);
             this.textBox1.TabIndex = 2;
             // 
             // textBox2
@@ -138,7 +138,7 @@ namespace CompiPascal
             this.textBox2.Location = new System.Drawing.Point(481, 57);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(391, 246);
+            this.textBox2.Size = new System.Drawing.Size(391, 441);
             this.textBox2.TabIndex = 3;
             // 
             // label1
@@ -161,12 +161,22 @@ namespace CompiPascal
             this.groupBox3.Controls.Add(this.ReportAST);
             this.groupBox3.Controls.Add(this.ErrorsTranslate);
             this.groupBox3.Controls.Add(this.ReportTS);
-            this.groupBox3.Location = new System.Drawing.Point(424, 323);
+            this.groupBox3.Location = new System.Drawing.Point(424, 504);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(350, 59);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Reports";
+            // 
+            // ErrorsRun
+            // 
+            this.ErrorsRun.Location = new System.Drawing.Point(272, 22);
+            this.ErrorsRun.Name = "ErrorsRun";
+            this.ErrorsRun.Size = new System.Drawing.Size(75, 23);
+            this.ErrorsRun.TabIndex = 3;
+            this.ErrorsRun.Text = "Errors Run";
+            this.ErrorsRun.UseVisualStyleBackColor = true;
+            this.ErrorsRun.Click += new System.EventHandler(this.ErrorsRun_Click);
             // 
             // ErrorsTranslate
             // 
@@ -201,28 +211,18 @@ namespace CompiPascal
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.ClearConsole);
-            this.groupBox4.Location = new System.Drawing.Point(789, 323);
+            this.groupBox4.Location = new System.Drawing.Point(789, 504);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(95, 59);
             this.groupBox4.TabIndex = 7;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Console";
             // 
-            // ErrorsRun
-            // 
-            this.ErrorsRun.Location = new System.Drawing.Point(272, 22);
-            this.ErrorsRun.Name = "ErrorsRun";
-            this.ErrorsRun.Size = new System.Drawing.Size(75, 23);
-            this.ErrorsRun.TabIndex = 3;
-            this.ErrorsRun.Text = "Errors Run";
-            this.ErrorsRun.UseVisualStyleBackColor = true;
-            this.ErrorsRun.Click += new System.EventHandler(this.ErrorsRun_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(896, 396);
+            this.ClientSize = new System.Drawing.Size(896, 575);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label1);

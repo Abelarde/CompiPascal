@@ -35,7 +35,8 @@ namespace CompiPascal.traductor.analizador
             //recorrido al AST ... se le manda el nodo raiz del arbol
             if (raiz != null)
             {
-                instrucciones(raiz.ChildNodes.ElementAt(0));
+                //instrucciones(raiz.ChildNodes.ElementAt(0));
+                OutputMessage("Analisis exitosamente");
             }
             else
             {
@@ -99,7 +100,7 @@ namespace CompiPascal.traductor.analizador
         /* cuantas producciones tiene este NO TERMINAL */
         private void instruccion(ParseTreeNode actual)
         {
-            FillMessage("El valor de la expresion es: " + expresion(actual.ChildNodes.ElementAt(2)));
+            OutputMessage("El valor de la expresion es: " + expresion(actual.ChildNodes.ElementAt(2)));
         }
 
         private double expresion(ParseTreeNode actual)
@@ -140,7 +141,7 @@ namespace CompiPascal.traductor.analizador
             
             if(bm != null)
             {
-                FillMessage("Imagen generada exitosamente: " + "ast");
+                OutputMessage("Imagen generada exitosamente: " + "ast");
             }
             else
             {
@@ -161,7 +162,7 @@ namespace CompiPascal.traductor.analizador
 
         }
 
-        private void FillMessage(string msn) => txtOutput += "[OUTPUT]  " + msn + "\r\n";
+        private void OutputMessage(string msn) => txtOutput += "[OUTPUT]  " + msn + "\r\n";
        
         private void WarningMessage(string msn) => txtOutput += "[WARNING]  " + msn + "\r\n";
 

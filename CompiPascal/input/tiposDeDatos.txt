@@ -1,0 +1,8 @@
+1
+1.1
+hola
+hola_
+ho_la
+hola2
+'esto es una cadena'
+'c' 

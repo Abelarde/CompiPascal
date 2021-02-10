@@ -1,0 +1,30 @@
+program Hola;
+
+type
+
+VAR
+i: integer;
+mat_a,mat_b,mat_c : real;
+contador : integer;
+cadena: string;
+
+coNst
+
+function el_bicho(num:integer)
+begin
+end;
+
+function el_bicho_dos(num:integer; letra_a:string)
+begin
+end;
+
+function el_bicho_tres(num:integer; letra_a:string; var param_1:integer)
+begin
+end;
+
+procedure soy_el_mejor(num_1, num_2, num_3:integer; var m : string)
+begin
+end;
+
+begin
+end.
