@@ -27,7 +27,7 @@ initials, grade: char;
 name, surname : string;
 
 var
-x: integer := maxint;
+x_1,x_2,x_3: integer := 111; //error recuperado
 y: real:= 3.9;
 windy: boolean := true;
 grade: char := 'C';

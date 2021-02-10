@@ -131,9 +131,7 @@ namespace CompiPascal.traductor.analizador
             NonTerminal variables_declarations = new NonTerminal("variables_declarations");
             NonTerminal variables = new NonTerminal("variables");
             NonTerminal variable = new NonTerminal("variable");
-            NonTerminal variables_declarations_initialization = new NonTerminal("variables_declarations_initialization");
-            NonTerminal variables_declaration_initialization = new NonTerminal("variables_declaration_initialization");
-            NonTerminal variable_declaration_initialization = new NonTerminal("variable_declaration_initialization");
+            NonTerminal variable_initialization = new NonTerminal("variable_initialization");
 
             NonTerminal functions_declarations = new NonTerminal("functions_declarations");
             NonTerminal procedures_declarations = new NonTerminal("procedures_declarations");
@@ -174,7 +172,6 @@ namespace CompiPascal.traductor.analizador
 
             statement.Rule = type_declarations
                 | variables_declarations
-                //| variables_declarations_initialization
                 | functions_declarations + SEMI_COLON
                 | procedures_declarations + SEMI_COLON;
 
@@ -182,20 +179,16 @@ namespace CompiPascal.traductor.analizador
             type_declarations.Rule = TYPE + type_variables | Empty; //categoria, o clase de los tipos como integer, real, string
             constant_declarations.Rule = CONST + constant_variables | Empty; // 
             variables_declarations.Rule = VAR + variables | Empty; //declaracion: solo afuera de BEGIN-END; 
-            variables_declarations_initialization.Rule = VAR + variables_declaration_initialization | Empty;
             functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + BEGIN + END; //TODO: return_value
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + BEGIN + END;
             main_declarations.Rule = BEGIN + END; //aqui inicia la ejecucion del programa
 
             variables.Rule = MakePlusRule(variables, variable);
-            variable.Rule = list_id + COLON + variables_native_id + SEMI_COLON; //indica el tipo de valores que puede tomar la variable
+            variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON; //indica el tipo de valores que puede tomar la variable
 
             list_id.Rule = MakePlusRule(list_id, COMMA ,ID);
 
-            //TODO: aqui tener cuidado si lo hago afuera del cuerpo o si lo hago adentro del cuerpo.
-            //con la asignacion porque ID no se permite afuera solo adentro
-            variables_declaration_initialization.Rule = MakePlusRule(variables_declaration_initialization, variable_declaration_initialization);
-            variable_declaration_initialization.Rule = ID + COLON + variables_native_id + COLON_EQUAL + expression + SEMI_COLON;
+            variable_initialization.Rule = COLON_EQUAL + expression | Empty;
 
             parameters.Rule = MakeStarRule(parameters, SEMI_COLON ,parameter);
             parameter.Rule = list_id + COLON + variables_native
