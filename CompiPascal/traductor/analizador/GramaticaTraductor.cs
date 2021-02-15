@@ -180,6 +180,9 @@ namespace CompiPascal.traductor.analizador
             NonTerminal variables_native_array = new NonTerminal("variables_native_array");
             NonTerminal variables_native_id = new NonTerminal("variables_native_id");
 
+            NonTerminal program = new NonTerminal("program");
+            NonTerminal header_statements = new NonTerminal("header_statements");
+            NonTerminal body_statements = new NonTerminal("header_statements");
 
 
             #endregion
@@ -207,7 +210,7 @@ namespace CompiPascal.traductor.analizador
             type_declarations.Rule = TYPE + type_variables | Empty; //categoria, o clase de los tipos como integer, real, string
             constant_declarations.Rule = CONST + constant_variables | Empty; // 
             variables_declarations.Rule = VAR + variables | Empty; //declaracion: solo afuera de BEGIN-END; 
-            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + BEGIN  + END; //TODO: return_value
+            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native + SEMI_COLON + main_declarations + SEMI_COLON; //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array?
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + BEGIN + END;
             main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
 
@@ -315,7 +318,7 @@ namespace CompiPascal.traductor.analizador
             values_native.Rule = CADENA | NUMBER | TRUE | FALSE; //valores
             values_native_id.Rule = values_native | ID;
             variables_native.Rule = INTEGER | REAL | BOOLEAN | CHAR | STRING; //native reserved words
-            variables_array.Rule = ARRAY + LEFT_BRACKET + RIGHT_BRACKET; //array
+            variables_array.Rule = ARRAY + LEFT_BRACKET + RIGHT_BRACKET; //array //tipo? string[], int[], id[]
             variables_native_array.Rule = variables_native | variables_array; //native, array
             variables_native_id.Rule = variables_native | ID; //native, id
             //TODO: verificar que en las fun/proc se puede
