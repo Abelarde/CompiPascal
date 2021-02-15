@@ -40,6 +40,8 @@ namespace CompiPascal.traductor.analizador
             }
             else
             {
+                Error treeError = new Error(arbol, raiz);
+                    treeError.hayErrores();
                 //TODO: necesitaria saber la linea, columan, token, estructura?, informacion del error en general.
                 WarningMessage("La cadena de entrada no es correcta");
             }

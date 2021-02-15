@@ -1,0 +1,23 @@
+program Hola;
+var
+   a: integer;
+
+begin
+
+repeat
+  begin
+   sum := sum + number;
+   number := number - 2;
+  end
+until number = 0;
+
+a := 10;
+//(* repeat until loop execution *)
+ repeat
+   begin
+    // writeln('value of a: ', a);
+    a := a + 1;
+   end
+  until a = 20;
+
+end.

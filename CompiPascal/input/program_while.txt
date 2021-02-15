@@ -1,0 +1,25 @@
+program Hola;
+
+var 
+ number : integer;
+ sum : integer; 
+
+ a: integer;
+
+begin
+
+number := 10;
+while number>0 do
+begin
+   sum := sum + number;
+   number := number - 2;
+end;
+
+   a := 10;
+   while  a < 20  do   
+   begin
+      //writeln('value of a: ', a);
+      a := a + 1;
+   end;
+
+end.

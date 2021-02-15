@@ -1,0 +1,29 @@
+program Hola;
+
+begin
+
+case (true) of
+   1 : 
+     begin
+     hola := 'hola';
+     hola := 'hola';
+     hola := 'hola';
+     end
+   2: 
+     begin
+     hola := 'hola';
+     end
+   3:
+     begin
+     hola := 'hola';
+     hola := 'hola';
+     hola := 'hola';
+     end
+else
+     begin
+     hola := 'hola';
+     hola := 'hola';
+     end
+end;
+
+end.

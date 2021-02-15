@@ -1,0 +1,40 @@
+program Hola;
+
+begin
+
+if true then 
+BEGIN
+hola := 'hola';
+END
+
+
+if true then 
+BEGIN
+hola := 'hola';
+END
+else
+begin
+end
+
+if true then 
+BEGIN
+hola := 'hola';
+END
+else if true then
+begin
+end
+else if true then
+begin
+end
+else if true then
+begin
+end
+else if true then
+begin
+end
+else
+begin
+end
+
+
+end.
