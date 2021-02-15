@@ -40,24 +40,27 @@ var min:integer;
 var a:integer := 50;
 var soy_un_entero:integer := 30;
 
-function el_bicho(num:integer)
+function el_bicho(num:integer):integer;
+begin
+el_bicho := 1;
+end;
+
+function el_bicho_dos(num:integer; letra_a:string):integer;
 begin
 end;
 
-function el_bicho_dos(num:integer; letra_a:string)
+function el_bicho_tres(num:integer; letra_a:string; var param_1:integer):integer;
 begin
 end;
 
-function el_bicho_tres(num:integer; letra_a:string; var param_1:integer)
-begin
-end;
-
-procedure soy_el_mejor(num_1, num_2, num_3:integer; var m : string)
+procedure soy_el_mejor(num_1, num_2, num_3:integer; var m : string);
 begin
 end;
 
 begin
 
-hola := a; //la asignacion solo se puede dentro de un begin
+hola := el_bicho(el_bicho_dos(2,'soy un string')); //la asignacion solo se puede dentro de un begin
+
+findMin(a, b, c, min, el_bicho_dos(2,'soy un string')); 
 
 end.

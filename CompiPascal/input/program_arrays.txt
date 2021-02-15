@@ -1,0 +1,29 @@
+program Hola;
+
+type
+   vector = array [ 1..25] of real;
+   temperature = array [-10 .. 50] of real;
+   //ch_array = array[char] of 1..26;
+
+var
+   velocity: vector;
+   day_temp, night_temp: temperature;
+   //alphabet: ch_array;
+   //a: integer;
+   //n: array [1..10] of integer;   {* n is an array of 10 integers *} FALTA ESTE
+   i, j: integer;
+
+begin
+   //a: = alphabet['A'];
+
+   {* initialize elements of array n to 0 *}        
+   for i := 1 to 10 do
+   begin
+       n[ i ] := i + 100;   {* set element at location i to i + 100 *}
+    {* output each array element's value *}
+   end;
+   for j:= 1 to 10 do
+   begin
+      //writeln('Element[', j, '] = ', n[j] );
+   end;
+end.

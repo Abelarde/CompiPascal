@@ -1,0 +1,24 @@
+program exRecursion;
+var
+   num, f: integer;
+function fact(x: integer): integer; 
+
+begin
+   if x=0 then
+begin
+      fact := 1;
+end
+   else
+begin
+      fact := x * fact(x-1);
+end
+end; 
+
+begin
+  
+   //writeln(' Enter a number: ');
+   //readln(num);
+   f := fact(num);
+   //writeln(' Factorial ', num, ' is: ' , f);
+
+end.
