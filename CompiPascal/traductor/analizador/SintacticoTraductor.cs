@@ -46,6 +46,30 @@ namespace CompiPascal.traductor.analizador
                 WarningMessage("La cadena de entrada no es correcta");
             }
 
+            foreach(var item in lenguaje.Errors)
+            {
+                OutputMessage("gramatica: " + item);
+            }
+
+            if (arbol.ParserMessages.Count > 0)
+            {
+                string errors = string.Empty;
+                foreach (var item in arbol.ParserMessages)
+                {
+                    //error lexico
+                    if (item.Message.Contains("Invalid character"))
+                    {
+                        OutputMessage("lexico: "+item.Location.Line + item.Location.Column + item.Message + item.Location.Position);
+                    }
+                    //error sintactico
+                    else
+                    {
+                        OutputMessage("sintactico: " + item.Location.Line + item.Location.Column + item.Message + item.Location.Position);
+                    }
+                }
+
+            }
+
         }
 
         public void graficar(String cadena)

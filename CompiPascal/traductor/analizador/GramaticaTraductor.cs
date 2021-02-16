@@ -180,6 +180,10 @@ namespace CompiPascal.traductor.analizador
             NonTerminal expression_list = new NonTerminal("expression_list");
 
             NonTerminal expression = new NonTerminal("expression");
+            NonTerminal aritmeticas = new NonTerminal("aritmeticas");
+            NonTerminal relacionales = new NonTerminal("relacionales");
+            NonTerminal logicas = new NonTerminal("logicas"); 
+            NonTerminal expression_terminales = new NonTerminal("expression_terminales");
 
             NonTerminal values_native = new NonTerminal("values_native");
             NonTerminal values_native_id = new NonTerminal("values_native_id");
@@ -198,6 +202,7 @@ namespace CompiPascal.traductor.analizador
             ini.Rule = program_structure;
 
             program_structure.Rule = PROGRAM + ID + SEMI_COLON + program;
+            program_structure.ErrorRule = SyntaxError + SEMI_COLON;
 
             program.Rule = header_statements + body_statements + PERIOD;
             header_statements.Rule = constant_optional + statements; //se aplican unicamente al cuerpo de su propia funcion
@@ -206,6 +211,7 @@ namespace CompiPascal.traductor.analizador
             constant_optional.Rule = constant_declarations //constantes: deben de declararse antes que todas las variables
                 | Empty;
             constant_declarations.Rule = CONST + constant_variables | Empty; // 
+            constant_declarations.ErrorRule = SyntaxError + SEMI_COLON;
 
 
             statements.Rule = MakeStarRule(statements, statement);//TODO: verificar que podre hacer en este lugar y que no
@@ -213,6 +219,8 @@ namespace CompiPascal.traductor.analizador
                 | variables_declarations  //TODO: Un programa puede tener el mismo nombre para variables locales y globales, pero el valor de la variable local dentro de una función tendrá preferencia. //si pues... practicamente se refiere a que si existe una variable local con el mismo nombre que una global se ignora la global y se trabaja siempre sobre la local, sin dar error de que ya existe la variables... simplemente se ignora
                 | functions_declarations
                 | procedures_declarations;
+            statement.ErrorRule = SyntaxError + SEMI_COLON
+                | SyntaxError + END;
 
 
             type_declarations.Rule = TYPE + type_variables | Empty; //categoria, o clase de los tipos como integer, real, string
@@ -220,7 +228,7 @@ namespace CompiPascal.traductor.analizador
             functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON; //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array? //adicional, verificar que tenga el retorno, puede: venir dentro de otra instruccion (if) o puede venir afuera de todo y ser valido media vez cumpla con que tenga un retorno o retornos necesarios// como validar eso? //Debe haber una declaración de asignación del tipo - nombre: = expresión  en el cuerpo de la función que asigna un valor al nombre de la función
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
             main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
-
+            main_declarations.ErrorRule = SyntaxError + SEMI_COLON;
 
             list_id.Rule = MakePlusRule(list_id, COMMA, ID);
 
@@ -245,6 +253,8 @@ namespace CompiPascal.traductor.analizador
                 | procedure_call + SEMI_COLON
                 | array_call + SEMI_COLON
                 | Empty;
+            begin_end_statement.ErrorRule = SyntaxError + SEMI_COLON
+                | SyntaxError + END;
 
             //TODO: verificacion de asignacion: la expresion variables(dentro/fuera) del cuerpo
             variable_ini.Rule = ID + COLON_EQUAL + expression + SEMI_COLON;
@@ -283,17 +293,8 @@ namespace CompiPascal.traductor.analizador
 
             case_statements.Rule = CASE + expression + OF + case_list + cases_words + END + SEMI_COLON;
 
-            /*
-             * Case C of  
-                ’a’,’e’,’i’,’o’,’u’ : WriteLn (’vowel pressed’);  
-                ’y’ : WriteLn (’This one depends on the language’);  
-                else  
-                  WriteLn (’Consonant pressed’);  
-                end;
-             */
-
             case_list.Rule = MakePlusRule(case_list, cases);
-            cases.Rule = values_native + COLON + main_declarations;
+            cases.Rule = values_native + COLON + main_declarations;//no se permite lista de valores en casos en Compipascal //TODO: no se puede id?
 
             cases_words.Rule = ELSE + main_declarations 
                 | OTHERWISE + main_declarations
@@ -319,26 +320,37 @@ namespace CompiPascal.traductor.analizador
             instructions.Rule = MakePlusRule(instructions, instruction);
             instruction.Rule = Empty;
 
-            expression.Rule = MINUS + expression
-                | PLUS + expression
-                | expression + PLUS + expression //cadena
-                | expression + MINUS + expression
-                | expression + ASTERISK + expression
-                | expression + SLASH + expression
-                | expression + MODULUS + expression
-                | expression + EQUAL + expression
-                | expression + LESS_THAN_GREATER_THAN + expression
-                | expression + GREATER_THAN + expression
-                | expression + LESS_THAN + expression
-                | expression + GREATER_THAN_EQUAL + expression
-                | expression + LESS_THAN_EQUAL + expression
-                | expression + AND + expression //bool
-                | expression + OR + expression //bool
-                | expression + NOT + expression //bool
-                | ID | CADENA | NUMBER | TRUE | FALSE | function_call | array_call //| VOID  //|types-objects 
-                | NUMBER + PERIOD_PERIOD + NUMBER // char (palabra reservada) //TODO: array_call  tamanio fijo, variables mismo tipo, declarar, inicializar, acceder, indice para los arrays?
-                | LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS;
-            
+            expression.Rule = aritmeticas | relacionales | logicas;
+
+            aritmeticas.Rule = MINUS + aritmeticas
+                | PLUS + aritmeticas
+                | aritmeticas + PLUS + aritmeticas //cadena
+                | aritmeticas + MINUS + aritmeticas
+                | aritmeticas + ASTERISK + aritmeticas
+                | aritmeticas + SLASH + aritmeticas
+                | aritmeticas + MODULUS + aritmeticas
+                | LEFT_PARENTHESIS + aritmeticas + RIGHT_PARENTHESIS
+                | expression_terminales;
+
+            relacionales.Rule = relacionales + EQUAL + relacionales
+                | relacionales + LESS_THAN_GREATER_THAN + relacionales
+                | relacionales + GREATER_THAN + relacionales
+                | relacionales + LESS_THAN + relacionales
+                | relacionales + GREATER_THAN_EQUAL + relacionales
+                | relacionales + LESS_THAN_EQUAL + relacionales
+                | LEFT_PARENTHESIS + relacionales + RIGHT_PARENTHESIS
+                | expression_terminales;
+
+            logicas.Rule = logicas + AND + logicas //bool
+                | logicas + OR + logicas //bool
+                | logicas + NOT + logicas //bool
+                | LEFT_PARENTHESIS + logicas + RIGHT_PARENTHESIS
+                | expression_terminales;//bool
+
+            expression_terminales.Rule = ID | CADENA | NUMBER 
+                | TRUE | FALSE | function_call | array_call //| VOID  //|types-objects 
+                | NUMBER + PERIOD_PERIOD + NUMBER; // char (palabra reservada) //TODO: array_call  tamanio fijo, variables mismo tipo, declarar, inicializar, acceder, indice para los arrays?
+
 
             values_native.Rule = CADENA | NUMBER | TRUE | FALSE; //valores
             values_native_id.Rule = values_native | ID;
