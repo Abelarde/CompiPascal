@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Folder Include="input\" />
+    <Folder Include="interprete\expresion\" />
+    <Folder Include="interprete\instruccion\" />
     <Folder Include="output\" />
   </ItemGroup>
 

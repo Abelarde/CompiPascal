@@ -1,5 +1,5 @@
 ﻿
-using CompiPascal.traductor.analizador;
+using CompiPascal.interprete.analizador;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,18 +15,18 @@ namespace CompiPascal
 {
     public partial class Form1 : Form
     {
-        SintacticoTraductor sintacticoTrad;
+        SintacticoInterprete sintacticoInter;
 
         public Form1()
         {
             InitializeComponent();
-            sintacticoTrad = new SintacticoTraductor();
+            sintacticoInter = new SintacticoInterprete();
         }
 
         private void Translate_Click(object sender, EventArgs e)
         {
-            sintacticoTrad.analizar(EditorOutput());
-            ConsoleInput(sintacticoTrad.Message());
+            sintacticoInter.analizar(EditorOutput());
+            ConsoleInput(sintacticoInter.Message());
             ErrorTable();       
 
         }
@@ -62,8 +62,8 @@ namespace CompiPascal
 
         private void ReportAST_Click(object sender, EventArgs e)
         {
-            sintacticoTrad.graficar(EditorOutput());
-            ConsoleInput(sintacticoTrad.Message());
+            sintacticoInter.graficar(EditorOutput());
+            ConsoleInput(sintacticoInter.Message());
             ErrorTable();
 
         }
@@ -90,7 +90,7 @@ namespace CompiPascal
 
         private void ClearConsole_Click(object sender, EventArgs e)
         {
-            sintacticoTrad.ClearMessage();
+            sintacticoInter.ClearMessage();
             ConsoleInput(string.Empty);
         }
 
@@ -108,14 +108,14 @@ namespace CompiPascal
             dataGridView1.Rows.Clear();
             dataGridView1.Refresh();
 
-            for (int i = 0; i < sintacticoTrad.Errores().GetLength(0); i++)
+            for (int i = 0; i < sintacticoInter.Errores().GetLength(0); i++)
             {
                 row = ss.NewRow();
-                row["Tipo"] = sintacticoTrad.Errores()[i, 0];
-                row["Descripcion"] = sintacticoTrad.Errores()[i, 1];
-                row["Linea"] = sintacticoTrad.Errores()[i, 2];
-                row["Columna"] = sintacticoTrad.Errores()[i, 3];
-                row["Extra"] = sintacticoTrad.Errores()[i, 4];
+                row["Tipo"] = sintacticoInter.Errores()[i, 0];
+                row["Descripcion"] = sintacticoInter.Errores()[i, 1];
+                row["Linea"] = sintacticoInter.Errores()[i, 2];
+                row["Columna"] = sintacticoInter.Errores()[i, 3];
+                row["Extra"] = sintacticoInter.Errores()[i, 4];
                 ss.Rows.Add(row);
 
             }
@@ -131,7 +131,7 @@ namespace CompiPascal
                 dataGridView1.Rows[num].Cells[4].Value = drow["Extra"].ToString();
             }
 
-            sintacticoTrad.ClearErrores();
+            sintacticoInter.ClearErrores();
 
         }
     }
