@@ -24,9 +24,11 @@ namespace CompiPascal
         }
 
         private void Translate_Click(object sender, EventArgs e)
-        {            
+        {
             sintacticoTrad.analizar(EditorOutput());
             ConsoleInput(sintacticoTrad.Message());
+            ErrorTable();       
+
         }
 
         private void Run_Click(object sender, EventArgs e)
@@ -62,6 +64,7 @@ namespace CompiPascal
         {
             sintacticoTrad.graficar(EditorOutput());
             ConsoleInput(sintacticoTrad.Message());
+            ErrorTable();
 
         }
 
@@ -91,6 +94,45 @@ namespace CompiPascal
             ConsoleInput(string.Empty);
         }
 
+        private void ErrorTable()
+        {
+            DataTable ss = new DataTable();
+            ss.Columns.Add("Tipo");
+            ss.Columns.Add("Descripcion");
+            ss.Columns.Add("Linea");
+            ss.Columns.Add("Columna");
+            ss.Columns.Add("Extra");
 
+            DataRow row;
+
+            dataGridView1.Rows.Clear();
+            dataGridView1.Refresh();
+
+            for (int i = 0; i < sintacticoTrad.Errores().GetLength(0); i++)
+            {
+                row = ss.NewRow();
+                row["Tipo"] = sintacticoTrad.Errores()[i, 0];
+                row["Descripcion"] = sintacticoTrad.Errores()[i, 1];
+                row["Linea"] = sintacticoTrad.Errores()[i, 2];
+                row["Columna"] = sintacticoTrad.Errores()[i, 3];
+                row["Extra"] = sintacticoTrad.Errores()[i, 4];
+                ss.Rows.Add(row);
+
+            }
+
+
+            foreach (DataRow drow in ss.Rows)
+            {
+                int num = dataGridView1.Rows.Add();
+                dataGridView1.Rows[num].Cells[0].Value = drow["Tipo"].ToString();
+                dataGridView1.Rows[num].Cells[1].Value = drow["Descripcion"].ToString();
+                dataGridView1.Rows[num].Cells[2].Value = drow["Linea"].ToString();
+                dataGridView1.Rows[num].Cells[3].Value = drow["Columna"].ToString();
+                dataGridView1.Rows[num].Cells[4].Value = drow["Extra"].ToString();
+            }
+
+            sintacticoTrad.ClearErrores();
+
+        }
     }
 }

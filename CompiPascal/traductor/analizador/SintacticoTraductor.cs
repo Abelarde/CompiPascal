@@ -8,6 +8,7 @@ namespace CompiPascal.traductor.analizador
     class SintacticoTraductor
     {
         private string txtOutput = string.Empty;
+        private string[,] errors;
 
         public void analizar(String cadena)
         {
@@ -28,46 +29,34 @@ namespace CompiPascal.traductor.analizador
             //cada uno de los nodos del ParseTree... nos interesara el atributo .ChildNodes
             ParseTreeNode raiz = arbol.Root;
 
-            //ChildNodes... tipo Array y contiene todas las cualidades de una lista
-            //si esta lista = vacia = nodo es una hoja
-            // != entonces tiene un subarbol
-            //se le manda el nodo RAIZ del arbol 
-            //recorrido al AST ... se le manda el nodo raiz del arbol
+
+            /*foreach (var item in lenguaje.Errors) //lenguaje.Errors.Count
+            {
+                //OutputMessage("gramatica: " + item);
+                errors[fila, 0] = "gramatica";
+                errors[fila, 1] = item.Message;
+                errors[fila, 2] = "-";
+                errors[fila, 3] = "-";
+                errors[fila, 4] = "-";
+                fila++;
+            }
+            */
             if (raiz != null)
             {
+                //ChildNodes... tipo Array y contiene todas las cualidades de una lista
+                //si esta lista = vacia = nodo es una hoja
+                // != entonces tiene un subarbol
+                //se le manda el nodo RAIZ del arbol 
+                //recorrido al AST ... se le manda el nodo raiz del arbol
+
                 //instrucciones(raiz.ChildNodes.ElementAt(0));
                 OutputMessage("Analisis exitosamente");
+                FillErrors(arbol);
             }
             else
             {
-                Error treeError = new Error(arbol, raiz);
-                    treeError.hayErrores();
-                //TODO: necesitaria saber la linea, columan, token, estructura?, informacion del error en general.
                 WarningMessage("La cadena de entrada no es correcta");
-            }
-
-            foreach(var item in lenguaje.Errors)
-            {
-                OutputMessage("gramatica: " + item);
-            }
-
-            if (arbol.ParserMessages.Count > 0)
-            {
-                string errors = string.Empty;
-                foreach (var item in arbol.ParserMessages)
-                {
-                    //error lexico
-                    if (item.Message.Contains("Invalid character"))
-                    {
-                        OutputMessage("lexico: "+item.Location.Line + item.Location.Column + item.Message + item.Location.Position);
-                    }
-                    //error sintactico
-                    else
-                    {
-                        OutputMessage("sintactico: " + item.Location.Line + item.Location.Column + item.Message + item.Location.Position);
-                    }
-                }
-
+                FillErrors(arbol);
             }
 
         }
@@ -93,11 +82,13 @@ namespace CompiPascal.traductor.analizador
             if (raiz != null)
             {
                 graficarAstIrony(raiz, "ast");
+                FillErrors(arbol);
             }
             else
             {
                 //TODO: necesitaria saber la linea, columan, token, estructura?, informacion del error en general.
                 WarningMessage("La cadena de entrada no es correcta");
+                FillErrors(arbol);
             }
 
         }
@@ -192,10 +183,48 @@ namespace CompiPascal.traductor.analizador
        
         private void WarningMessage(string msn) => txtOutput += "[WARNING]  " + msn + "\r\n";
 
+        private void FillErrors(ParseTree arbol)
+        {
+            errors = new string[arbol.ParserMessages.Count, 5];
+            int fila = 0;
+
+            if (arbol.ParserMessages.Count > 0)
+            {
+                //string errors = string.Empty; //tipo, descripcion, linea, columna, extra
+                foreach (var item in arbol.ParserMessages)
+                {
+                    //error lexico
+                    if (item.Message.Contains("Invalid character"))
+                    {
+                        errors[fila, 0] = "lexico";
+                        errors[fila, 1] = item.Message;
+                        errors[fila, 2] = item.Location.Line.ToString();
+                        errors[fila, 3] = item.Location.Column.ToString();
+                        errors[fila, 4] = item.Location.Position.ToString();
+                    }
+                    //error sintactico
+                    else
+                    {
+                        errors[fila, 0] = "sintactico";
+                        errors[fila, 1] = item.Message;
+                        errors[fila, 2] = item.Location.Line.ToString();
+                        errors[fila, 3] = item.Location.Column.ToString();
+                        errors[fila, 4] = item.Location.Position.ToString();
+                    }
+                    fila++;
+                }
+
+            }
+        }
+
         public string Message() => txtOutput;
+
+        public string[,] Errores() => errors;
 
         public string ClearMessage() => txtOutput = string.Empty;
 
+        public void ClearErrores() => errors = null;
 
+        
     }
 }

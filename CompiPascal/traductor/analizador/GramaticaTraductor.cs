@@ -210,8 +210,9 @@ namespace CompiPascal.traductor.analizador
 
             constant_optional.Rule = constant_declarations //constantes: deben de declararse antes que todas las variables
                 | Empty;
+            constant_optional.ErrorRule = SyntaxError + SEMI_COLON
+                | SyntaxError + END;
             constant_declarations.Rule = CONST + constant_variables | Empty; // 
-            constant_declarations.ErrorRule = SyntaxError + SEMI_COLON;
 
 
             statements.Rule = MakeStarRule(statements, statement);//TODO: verificar que podre hacer en este lugar y que no
@@ -228,7 +229,8 @@ namespace CompiPascal.traductor.analizador
             functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON; //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array? //adicional, verificar que tenga el retorno, puede: venir dentro de otra instruccion (if) o puede venir afuera de todo y ser valido media vez cumpla con que tenga un retorno o retornos necesarios// como validar eso? //Debe haber una declaración de asignación del tipo - nombre: = expresión  en el cuerpo de la función que asigna un valor al nombre de la función
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
             main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
-            main_declarations.ErrorRule = SyntaxError + SEMI_COLON;
+            main_declarations.ErrorRule = SyntaxError + SEMI_COLON
+                | SyntaxError + END;
 
             list_id.Rule = MakePlusRule(list_id, COMMA, ID);
 
