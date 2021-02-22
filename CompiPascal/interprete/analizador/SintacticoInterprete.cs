@@ -1,26 +1,29 @@
-﻿using Irony.Parsing;
+﻿using CompiPascal.interprete.expresion;
+using CompiPascal.interprete.instruccion;
+using CompiPascal.interprete.simbolo;
+using Irony.Parsing;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
 namespace CompiPascal.interprete.analizador
 {
-    /* 
-     * Como ya hemos mencionado, Irony no acepta acciones 
-     * entre sus producciones, se limita a devolver el 
-     * AST (Abstract Syntax Tree) que arma luego de ser 
-     * aceptada la cadena de entrada.
-     */
-
+    /// <summary>
+    /// Como ya hemos mencionado, Irony no acepta acciones
+    /// entre sus producciones, se limita a devolver el
+    /// AST(Abstract Syntax Tree) que arma luego de ser
+    /// aceptada la cadena de entrada.
+    /// </summary>
+    /// 
     class SintacticoInterprete
     {
         private string txtOutput = string.Empty;
         private string[,] errors;
 
         public void analizar(String cadena)
-        {     
-            //cargar el arbol 
-            GramaticaInterprete gramatica = new GramaticaInterprete();
+        {
+            GramaticaInterprete gramatica = new GramaticaInterprete();//cargar el arbol 
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(lenguaje);
 
@@ -52,6 +55,8 @@ namespace CompiPascal.interprete.analizador
                 //instrucciones(raiz.ChildNodes.ElementAt(0));
                 OutputMessage("Analisis exitosamente");
                 FillErrors(arbol);
+                LinkedList<Instruccion> listaInstrucciones = instrucciones(raiz.ChildNodes.ElementAt(0));
+                ejecutar(listaInstrucciones);
             }
             else
             {
@@ -60,6 +65,89 @@ namespace CompiPascal.interprete.analizador
             }
 
         }
+
+        public void ejecutar(LinkedList<Instruccion> instrucciones)
+        {
+            Entorno global = new Entorno(null);
+            foreach (var instruccion in instrucciones)
+            {
+                instruccion.ejecutar(global);
+            }
+        }
+
+
+        /*
+         * 1) cuantas producciones tiene
+         * 2) condiciones para saber que produccion esta reconociendo [puede basarse en la cantidad de hijos de la produccion] 
+         * 3) tambien la cantidad de ChildNodes o la posicion del elemento que nos interese puede variar DEPENDIENDO de las
+         * preferencias que le colocamos al AST en nuestra gramatica, por ejemplo el metodo MarkPunctuation() nos elimina nodos
+         * que no nos interesa y por lo tanto nos modifica la cantidad de los ChildNodes de nuestro arbol.
+         */
+
+        /* cuantas producciones tiene este NO TERMINAL */
+        private LinkedList<Instruccion> instrucciones(ParseTreeNode actual)
+        {
+            LinkedList<Instruccion> listaInstrucciones = new LinkedList<Instruccion>();
+            foreach (ParseTreeNode nodo in actual.ChildNodes)
+            {
+                listaInstrucciones.AddLast(instruccion(nodo.ChildNodes.ElementAt(0)));
+            }
+            return listaInstrucciones;
+            /*
+            if (actual.ChildNodes.Count == 2)
+            {
+                instruccion(actual.ChildNodes.ElementAt(0));
+                instrucciones(actual.ChildNodes.ElementAt(1));
+            }
+            else
+            {
+                instruccion(actual.ChildNodes.ElementAt(0));
+            }
+            */
+        }
+
+        /* cuantas producciones tiene este NO TERMINAL */
+        private Instruccion instruccion(ParseTreeNode actual)
+        {
+            OutputMessage("El valor de la expresion es: " + Expresion(actual.ChildNodes.ElementAt(2)));
+            return null;
+        }
+
+        private Expresion Expresion(ParseTreeNode actual)
+        {
+            /*
+            if (actual.ChildNodes.Count == 3)
+            {
+                string tokenOperador = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
+                switch (tokenOperador)
+                {
+                    case "+":
+                        return expresion(actual.ChildNodes.ElementAt(0)) + expresion(actual.ChildNodes.ElementAt(2));
+                    case "-":
+                        return expresion(actual.ChildNodes.ElementAt(0)) - expresion(actual.ChildNodes.ElementAt(2));
+                    case "*":
+                        return expresion(actual.ChildNodes.ElementAt(0)) * expresion(actual.ChildNodes.ElementAt(2));
+                    case "/":
+                        return expresion(actual.ChildNodes.ElementAt(0)) / expresion(actual.ChildNodes.ElementAt(2));
+                    default:
+                        return expresion(actual.ChildNodes.ElementAt(1));
+                }
+
+            }
+            else if (actual.ChildNodes.Count == 2)
+            {
+                return -1 * expresion(actual.ChildNodes.ElementAt(1));
+            }
+            else
+            {
+                return Double.Parse(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0]);
+            }
+            */
+        }
+
+
+
+
 
         public void graficar(String cadena)
         {
@@ -92,69 +180,6 @@ namespace CompiPascal.interprete.analizador
             }
 
         }
-
-        /*
-         * 1) cuantas producciones tiene
-         * 2) condiciones para saber que produccion esta reconociendo [puede basarse en la cantidad de hijos de la produccion] 
-         * 3) tambien la cantidad de ChildNodes o la posicion del elemento que nos interese puede variar DEPENDIENDO de las
-         * preferencias que le colocamos al AST en nuestra gramatica, por ejemplo el metodo MarkPunctuation() nos elimina nodos
-         * que no nos interesa y por lo tanto nos modifica la cantidad de los ChildNodes de nuestro arbol.
-         */
-
-        /* cuantas producciones tiene este NO TERMINAL */
-        private void instrucciones(ParseTreeNode actual)
-        {
-            if (actual.ChildNodes.Count == 2)
-            {
-                instruccion(actual.ChildNodes.ElementAt(0));
-                instrucciones(actual.ChildNodes.ElementAt(1));
-            }
-            else
-            {
-                instruccion(actual.ChildNodes.ElementAt(0));
-            }
-        }
-
-        /* cuantas producciones tiene este NO TERMINAL */
-        private void instruccion(ParseTreeNode actual)
-        {
-            OutputMessage("El valor de la expresion es: " + expresion(actual.ChildNodes.ElementAt(2)));
-        }
-
-        private double expresion(ParseTreeNode actual)
-        {
-            if (actual.ChildNodes.Count == 3)
-            {
-                string tokenOperador = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
-                switch (tokenOperador)
-                {
-                    case "+":
-                        return expresion(actual.ChildNodes.ElementAt(0)) + expresion(actual.ChildNodes.ElementAt(2));
-                    case "-":
-                        return expresion(actual.ChildNodes.ElementAt(0)) - expresion(actual.ChildNodes.ElementAt(2));
-                    case "*":
-                        return expresion(actual.ChildNodes.ElementAt(0)) * expresion(actual.ChildNodes.ElementAt(2));
-                    case "/":
-                        return expresion(actual.ChildNodes.ElementAt(0)) / expresion(actual.ChildNodes.ElementAt(2));
-                    default:
-                        return expresion(actual.ChildNodes.ElementAt(1));
-                }
-
-            }
-            else if (actual.ChildNodes.Count == 2)
-            {
-                return -1 * expresion(actual.ChildNodes.ElementAt(1));
-            }
-            else
-            {
-                return Double.Parse(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0]);
-            }
-        }
-
-
-
-
-
 
         private void graficarAstIrony(ParseTreeNode actual, string nombreGrafica)
         {

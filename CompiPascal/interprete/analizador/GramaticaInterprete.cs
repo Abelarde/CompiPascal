@@ -121,7 +121,7 @@ namespace CompiPascal.interprete.analizador
             NonTerminal program_structure = new NonTerminal("program_structure");
             NonTerminal program = new NonTerminal("program");
             NonTerminal header_statements = new NonTerminal("header_statements");
-            NonTerminal body_statements = new NonTerminal("header_statements");
+            NonTerminal body_statements = new NonTerminal("body_statements");
             NonTerminal statements = new NonTerminal("statements");
             NonTerminal statement = new NonTerminal("statement");
 
@@ -428,7 +428,14 @@ namespace CompiPascal.interprete.analizador
  * node.Term.Name
  * node.ChildNodes[1].FindTokenAndGetText().ToLower()
  * node.Token.ValueString
+ * ----
  * 
+ *          string operador = actual.Term.Name;//program_structured
+            string operador1 = actual.ChildNodes[1].FindTokenAndGetText().ToLower();//evaluar
+            string operador2 = actual.Token.ValueString;//null
+            string operador3 = actual.ChildNodes[1].Token.Text;//null
+            string operador4 = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
+ * ----
  * 
  *       // 7. Error recovery rule
       ExtStmt.ErrorRule = SyntaxError + Eos;
