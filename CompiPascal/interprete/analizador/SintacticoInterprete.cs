@@ -5,20 +5,20 @@ using System.Linq;
 
 namespace CompiPascal.interprete.analizador
 {
+    /* 
+     * Como ya hemos mencionado, Irony no acepta acciones 
+     * entre sus producciones, se limita a devolver el 
+     * AST (Abstract Syntax Tree) que arma luego de ser 
+     * aceptada la cadena de entrada.
+     */
+
     class SintacticoInterprete
     {
         private string txtOutput = string.Empty;
         private string[,] errors;
 
         public void analizar(String cadena)
-        {
-            //txtOutput = string.Empty;
-            /* Como ya hemos mencionado, Irony no acepta acciones 
-             * entre sus producciones, se limita a devolver el 
-             * AST (Abstract Syntax Tree) que arma luego de ser 
-             * aceptada la cadena de entrada.
-             */
-
+        {     
             //cargar el arbol 
             GramaticaInterprete gramatica = new GramaticaInterprete();
             LanguageData lenguaje = new LanguageData(gramatica);
@@ -93,7 +93,8 @@ namespace CompiPascal.interprete.analizador
 
         }
 
-        /* 1) cuantas producciones tiene
+        /*
+         * 1) cuantas producciones tiene
          * 2) condiciones para saber que produccion esta reconociendo [puede basarse en la cantidad de hijos de la produccion] 
          * 3) tambien la cantidad de ChildNodes o la posicion del elemento que nos interese puede variar DEPENDIENDO de las
          * preferencias que le colocamos al AST en nuestra gramatica, por ejemplo el metodo MarkPunctuation() nos elimina nodos
@@ -149,6 +150,10 @@ namespace CompiPascal.interprete.analizador
                 return Double.Parse(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0]);
             }
         }
+
+
+
+
 
 
         private void graficarAstIrony(ParseTreeNode actual, string nombreGrafica)
