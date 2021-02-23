@@ -11,9 +11,9 @@ namespace CompiPascal.interprete.expresion
     {
         private Expresion izquierda;
         private Expresion derecha;
-        private char tipoOperacion;
+        private string tipoOperacion;
 
-        public Aritmetica(Expresion izquierda, Expresion derecha, char tipoOperacion)
+        public Aritmetica(Expresion izquierda, Expresion derecha, string tipoOperacion)
         {
             this.izquierda = izquierda;
             this.derecha = derecha;
@@ -33,7 +33,7 @@ namespace CompiPascal.interprete.expresion
             }
 
             //TODO: validar estas condicionales
-            if (tipoResultante != Tipos.INTEGER && tipoOperacion != '+')
+            if (tipoResultante != Tipos.INTEGER && tipoOperacion != "+")
             {
                 throw new Exception("Algun mensaje");
             }
@@ -43,19 +43,23 @@ namespace CompiPascal.interprete.expresion
             //operaciones con cadenas no solo enteros
             switch (tipoOperacion)
             {
-                case '+':
+                case "+":
+                    //TODO: validar cuando es unario
+                    //el izquierdo es == null
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) + double.Parse(derecha.ToString()), izquierda.tipo, null);
                     return resultado;
-                case '-':
+                case "-":
+                    //TODO: validar cuando es unario
+                    //el izquierdo es == null
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) - double.Parse(derecha.ToString()), izquierda.tipo, null);
                     return resultado;
-                case '*':
+                case "*":
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) * double.Parse(derecha.ToString()), izquierda.tipo, null);
                     return resultado;
-                case '/':
+                case "/":
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) / double.Parse(derecha.ToString()), izquierda.tipo, null);
                     return resultado;
-                case '%':
+                case "%":
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) % double.Parse(derecha.ToString()), izquierda.tipo, null);
                     return resultado;
                 default:

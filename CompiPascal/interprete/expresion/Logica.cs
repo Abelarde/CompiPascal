@@ -7,12 +7,12 @@ using System.Text;
 
 namespace CompiPascal.interprete.expresion
 {
-    class Relacional : Expresion
+    class Logica : Expresion
     {
         private Expresion izquierda;
         private Expresion derecha;
         private string tipoOperacion;
-        public Relacional(Expresion izquierda, Expresion derecha, string tipoOperacion)
+        public Logica(Expresion izquierda, Expresion derecha, string tipoOperacion)
         {
             this.izquierda = izquierda;
             this.derecha = derecha;
@@ -36,20 +36,22 @@ namespace CompiPascal.interprete.expresion
             //TODO: verificar si es double.Parse o es boolean.Parse?
             switch (tipoOperacion)
             {
-                case "=":
+                //TODO: hacer las conversiones al tipo de variable correcta y corregir los operando para el resultado
+                case "AND":
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) == double.Parse(derecha.ToString()), tipo, null);
                     return resultado;
-                case "!":
+                case "OR":
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) != double.Parse(derecha.ToString()), tipo, null);
                     return resultado;
-                case ">":
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) > double.Parse(derecha.ToString()), tipo, null);
+                case "NOT":
+                    //TODO: validar cuando es unario
+                    //el izquierdo es == null
+                    resultado = new Simbolo(double.Parse(izquierda.ToString()) != double.Parse(derecha.ToString()), tipo, null);
                     return resultado;
                 default:
                     resultado = new Simbolo(double.Parse(izquierda.ToString()) < double.Parse(derecha.ToString()), tipo, null);
                     return resultado;
             }
-
 
         }
     }

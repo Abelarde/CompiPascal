@@ -1,0 +1,34 @@
+program Hola;
+
+coNst
+VELOCITY_LIGHT = 3.0;
+PIE = 3.141592;
+
+type
+   Rectangle = object
+//solo se puede declarar
+   var 
+        taxrate, net_income: real;
+        choice, isready: boolean;
+        fees,= array[1..1] of intege; //esto?
+end;
+
+type
+days, age = integer;
+yes, true = boolean;
+name, city = string;
+
+var
+age, weekdays : Rectangle;
+taxrate, net_income: real;
+
+var
+x_1,x_2,x_3: integer := 111; //error recuperado
+y: real:= 3.9;
+windy: boolean := true;
+grade: char := 'C';
+cadena: string := 'hola bicho soy una cadena';
+
+begin
+
+end.

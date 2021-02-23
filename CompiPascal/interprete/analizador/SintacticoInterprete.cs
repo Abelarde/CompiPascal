@@ -44,6 +44,7 @@ namespace CompiPascal.interprete.analizador
                 fila++;
             }
             */
+
             if (raiz != null)
             {
                 //ChildNodes... tipo Array y contiene todas las cualidades de una lista
@@ -56,7 +57,7 @@ namespace CompiPascal.interprete.analizador
                 OutputMessage("Analisis exitosamente");
                 FillErrors(arbol);
                 LinkedList<Instruccion> listaInstrucciones = instrucciones(raiz.ChildNodes.ElementAt(0));
-                ejecutar(listaInstrucciones);
+                //ejecutar(listaInstrucciones);
             }
             else
             {
@@ -71,7 +72,10 @@ namespace CompiPascal.interprete.analizador
             Entorno global = new Entorno(null);
             foreach (var instruccion in instrucciones)
             {
-                instruccion.ejecutar(global);
+                if(instruccion != null)
+                {
+                    instruccion.ejecutar(global);
+                }
             }
         }
 
@@ -87,12 +91,50 @@ namespace CompiPascal.interprete.analizador
         /* cuantas producciones tiene este NO TERMINAL */
         private LinkedList<Instruccion> instrucciones(ParseTreeNode actual)
         {
+            //lista de instrucciones general
             LinkedList<Instruccion> listaInstrucciones = new LinkedList<Instruccion>();
-            foreach (ParseTreeNode nodo in actual.ChildNodes)
+
+            //cuerpo del programa exceptuando el id de la clase
+            ParseTreeNode program = actual.ChildNodes.ElementAt(3);
+            ParseTreeNode header_statements = program.ChildNodes.ElementAt(0);
+            ParseTreeNode constant_optional = header_statements.ChildNodes.ElementAt(0);
+            if(constant_optional.ChildNodes.Count > 0) //Empty
             {
-                listaInstrucciones.AddLast(instruccion(nodo.ChildNodes.ElementAt(0)));
+                ParseTreeNode constant_declarations = constant_optional.ChildNodes.ElementAt(0);
+                listaInstrucciones.AddLast(instruccion(constant_declarations)); //constantes
             }
+
+            ParseTreeNode statements = header_statements.ChildNodes.ElementAt(1);       
+            if(statements.ChildNodes.Count > 0) //statement+  (puede venir o no puede venir) 
+            {
+                ParseTreeNode statement_starRule = statements.ChildNodes.ElementAt(0); 
+                foreach (ParseTreeNode statement in statement_starRule.ChildNodes)//statement+
+                {
+                    listaInstrucciones.AddLast(instruccion(statement.ChildNodes.ElementAt(0)));
+                }
+
+            }
+
+            ParseTreeNode body_statements = program.ChildNodes.ElementAt(1);
+            ParseTreeNode main_declarations = body_statements.ChildNodes.ElementAt(0);
+            ParseTreeNode begin_end_statements = main_declarations.ChildNodes.ElementAt(1);
+            if(begin_end_statements.ChildNodes.Count > 0)//begin_end_statement+
+            {
+                ParseTreeNode begin_end_statement_starRule = begin_end_statements.ChildNodes.ElementAt(0);
+                foreach (ParseTreeNode begin_end_statement in begin_end_statement_starRule.ChildNodes) //begin_end_statement+
+                {
+                    if (begin_end_statement.ChildNodes.Count > 0) //Empty
+                    {
+                        listaInstrucciones.AddLast(instruccion(begin_end_statement.ChildNodes.ElementAt(0)));
+                    }
+                }
+            }
+
+
+
             return listaInstrucciones;
+
+
             /*
             if (actual.ChildNodes.Count == 2)
             {
@@ -109,40 +151,139 @@ namespace CompiPascal.interprete.analizador
         /* cuantas producciones tiene este NO TERMINAL */
         private Instruccion instruccion(ParseTreeNode actual)
         {
-            OutputMessage("El valor de la expresion es: " + Expresion(actual.ChildNodes.ElementAt(2)));
-            return null;
+            string sentencia = actual.ChildNodes.ElementAt(0).Term.Name;
+            switch (sentencia)
+            {
+                case "CONST":
+                    return new Const();
+                case "TYPE":
+                    return new TypeInstruccion();
+                case "VAR":
+                    return new Var();
+                case "FUNCTION":
+                    return new FunctionInstruccion();
+                case "PROCEDURE":
+                    return new ProcedureInstruccion();
+                case "IF":
+                    return new IfInstruccion();
+                case "CASE":
+                    return new CaseInstruccion();
+                case "WHILE":
+                    return new WhileInstruccion();
+                case "FOR":
+                    return new ForInstruccion();
+                case "REPEAT":
+                    return new RepeatInstruccion();
+                case "BREAK":
+                    return new BreakInstruccion();
+                case "CONTINUE":
+                    return new ContinueInstruccion();
+                default:
+                    switch (actual.Term.Name)
+                    {
+                        case "variable_ini":
+                            return new VariableInicializarInstruccion();
+                        case "array_ini":
+                            return new ArrayInicializarInstruccion();
+                        case "function_call":
+                            return new FunctionCallInstruccion();
+                        case "procedure_call":
+                            return new ProcedureCallinstruccion();
+                        case "array_call":
+                            return new ArrayCallInstruccion();
+                        default:
+                            //if a validar que no sea null cuando lo recorro
+                            return null;
+                    }
+            }
         }
 
         private Expresion Expresion(ParseTreeNode actual)
         {
-            /*
-            if (actual.ChildNodes.Count == 3)
+            if (actual.ChildNodes.Count == 3)//expression:=
             {
-                string tokenOperador = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
+                //Token == terminal [lexema]
+                //Term == no terminal [nombre del no terminal o terminal]
+                string tokenOperador = actual.ChildNodes.ElementAt(1).Token.Text.ToUpper();
                 switch (tokenOperador)
                 {
                     case "+":
-                        return expresion(actual.ChildNodes.ElementAt(0)) + expresion(actual.ChildNodes.ElementAt(2));
+                        return new Aritmetica(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "+");
                     case "-":
-                        return expresion(actual.ChildNodes.ElementAt(0)) - expresion(actual.ChildNodes.ElementAt(2));
+                        return new Aritmetica(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "-");
                     case "*":
-                        return expresion(actual.ChildNodes.ElementAt(0)) * expresion(actual.ChildNodes.ElementAt(2));
+                        return new Aritmetica(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "*");
                     case "/":
-                        return expresion(actual.ChildNodes.ElementAt(0)) / expresion(actual.ChildNodes.ElementAt(2));
-                    default:
-                        return expresion(actual.ChildNodes.ElementAt(1));
+                        return new Aritmetica(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "/");
+                    case "%":
+                        return new Aritmetica(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "%");
+
+                    case "=":
+                        return new Relacional(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "=");
+                    case "<>":
+                        return new Relacional(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "<>");
+                    case ">":
+                        return new Relacional(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), ">");
+                    case "<":
+                        return new Relacional(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "<");
+                    case ">=":
+                        return new Relacional(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), ">=");
+                    case "<=":
+                        return new Relacional(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "<=");
+
+                    case "AND":
+                        return new Logica(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "AND");
+                    case "OR":
+                        return new Logica(Expresion(actual.ChildNodes[0]), Expresion(actual.ChildNodes[2]), "OR");
+                    default: //" ( expresion ) "
+                        return Expresion(actual.ChildNodes.ElementAt(1));
                 }
 
             }
             else if (actual.ChildNodes.Count == 2)
             {
-                return -1 * expresion(actual.ChildNodes.ElementAt(1));
+                string operador = actual.ChildNodes.ElementAt(0).Token.Text.ToUpper();
+                switch (operador)
+                {
+                    case "-":
+                        return new Aritmetica(null, Expresion(actual.ChildNodes[1]), "-");
+                    case "+":
+                        return new Aritmetica(null, Expresion(actual.ChildNodes[1]), "+");
+                    default: //"NOT"
+                        return new Logica(null, Expresion(actual.ChildNodes[1]), "NOT");
+                }
             }
             else
             {
-                return Double.Parse(actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0]);
+
+                if(actual.ChildNodes.ElementAt(0).ChildNodes.Count == 1) //expression_terminales:=
+                {
+                    string tipoDeDato = actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name;
+                    switch (tipoDeDato)
+                    {
+                        case "ID":
+                            return new Literal("ID", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text);
+                        case "CADENA":
+                            return new Literal("CADENA", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text);
+                        case "NUMBER":
+                            return new Literal("NUMBER", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text);
+                        case "TRUE":
+                            return new Literal("TRUE", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text);
+                        case "FALSE":
+                            return new Literal("FALSE", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text);
+                        case "function_call":
+                            return new Literal("function_call", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text);
+                        default: //"array_call"
+                            return new Literal("array_call", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text);
+                    }
+                }
+                else
+                {
+                    //".."
+                    return new Literal("..", actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text, actual.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text);
+                }
             }
-            */
+            
         }
 
 

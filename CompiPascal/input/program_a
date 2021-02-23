@@ -1,0 +1,34 @@
+program Hola;
+
+coNst
+VELOCITY_LIGHT = 3.0;
+PIE = 3.141592;
+
+type
+days, age = integer;
+yes, true = boolean;
+
+var
+age, weekdays : tipoElBicho;
+taxrate, net_income: real;
+choice, isready: boolean;
+cadena: string;
+
+var a:integer := 50;
+var soy_un_entero:integer := 30;
+
+function el_bicho_tres(num:integer; letra_a:string; var param_1:integer):integer;
+begin
+end;
+
+procedure soy_el_mejor(num_1, num_2, num_3:integer; var m : string);
+begin
+end;
+
+begin
+
+hola := el_bicho(el_bicho_dos(2,'soy un string')); //la asignacion solo se puede dentro de un begin
+
+findMin(a, b, c, min, el_bicho_dos(2,'soy un string')); 
+
+end.

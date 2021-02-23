@@ -111,6 +111,7 @@ namespace CompiPascal.interprete.analizador
             var CHAR = ToTerm("CHAR");  //type char
             var STRING = ToTerm("STRING");  //type string
             var BOOLEAN = ToTerm("BOOLEAN");  //type boolean
+            var OBJECT = ToTerm("OBJECT");  //type boolean
 
             //TODO: las funciones nativas
             #endregion
@@ -174,8 +175,6 @@ namespace CompiPascal.interprete.analizador
             NonTerminal array_call = new NonTerminal("array_call");
             NonTerminal array_ini = new NonTerminal("array_ini");
 
-            NonTerminal instructions = new NonTerminal("instructions");
-            NonTerminal instruction = new NonTerminal("instruction");
 
             NonTerminal expression_list = new NonTerminal("expression_list");
 
@@ -208,31 +207,36 @@ namespace CompiPascal.interprete.analizador
             header_statements.Rule = constant_optional + statements; //se aplican unicamente al cuerpo de su propia funcion
             body_statements.Rule = main_declarations;
 
+
             constant_optional.Rule = constant_declarations //constantes: deben de declararse antes que todas las variables
                 | Empty;
             constant_optional.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
-            constant_declarations.Rule = CONST + constant_variables | Empty; // 
+
+            constant_declarations.Rule = CONST + constant_variables;
+
+            constant_variables.Rule = MakePlusRule(constant_variables, constant_variable); //verificar en el semantico que 'expresion' solo seran valores de tipo base y id de otras constantes... no arrays
+            constant_variable.Rule = ID + EQUAL + expression + SEMI_COLON;
 
 
-            statements.Rule = MakeStarRule(statements, statement);//TODO: verificar que podre hacer en este lugar y que no
+            statements.Rule = MakeStarRule(statements, statement);//verificar que podre hacer en este lugar y que no
             statement.Rule = type_declarations
-                | variables_declarations  //TODO: Un programa puede tener el mismo nombre para variables locales y globales, pero el valor de la variable local dentro de una función tendrá preferencia. //si pues... practicamente se refiere a que si existe una variable local con el mismo nombre que una global se ignora la global y se trabaja siempre sobre la local, sin dar error de que ya existe la variables... simplemente se ignora
+                | variables_declarations  //Un programa puede tener el mismo nombre para variables locales y globales, pero el valor de la variable local dentro de una función tendrá preferencia. //si pues... practicamente se refiere a que si existe una variable local con el mismo nombre que una global se ignora la global y se trabaja siempre sobre la local, sin dar error de que ya existe la variables... simplemente se ignora
                 | functions_declarations
                 | procedures_declarations;
             statement.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
 
 
-            type_declarations.Rule = TYPE + type_variables | Empty; //categoria, o clase de los tipos como integer, real, string
-            variables_declarations.Rule = VAR + variables | Empty; //declaracion: solo afuera de BEGIN-END; 
+            type_declarations.Rule = TYPE + type_variables; //categoria, o clase de los tipos como integer, real, string
+            variables_declarations.Rule = VAR + variables; //declaracion: solo afuera de BEGIN-END; 
             functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON; //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array? //adicional, verificar que tenga el retorno, puede: venir dentro de otra instruccion (if) o puede venir afuera de todo y ser valido media vez cumpla con que tenga un retorno o retornos necesarios// como validar eso? //Debe haber una declaración de asignación del tipo - nombre: = expresión  en el cuerpo de la función que asigna un valor al nombre de la función
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
-            main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
-            main_declarations.ErrorRule = SyntaxError + SEMI_COLON
-                | SyntaxError + END;
 
             list_id.Rule = MakePlusRule(list_id, COMMA, ID);
+
+            type_variables.Rule = MakePlusRule(type_variables, type_variable);
+            type_variable.Rule = list_id + EQUAL + variables_native_array + SEMI_COLON; //TODO: si viene una lista y es de tipo array se puede inicializar todas o solo inicializo la primera
 
             variables.Rule = MakePlusRule(variables, variable);
             variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON; //indica el tipo de valores que puede tomar la variable //TODO: array tambien?  var n: array[1..10] of integer; (*n is an array of 10 integers *)
@@ -240,41 +244,42 @@ namespace CompiPascal.interprete.analizador
             //afuera no puedo utilizar ID y adentro si
             variable_initialization.Rule = COLON_EQUAL + expression | Empty; //TODO: cuidar si estoy inicializando una variable de tipo de otra variable y quiero asignar un valor que no es, primero se puede inicializar en ese caso? segundo si es posible entonces, tendria que ver primero que tipo es la variable para permitir la inicializacion
 
+            parameters.Rule = MakeStarRule(parameters, SEMI_COLON, parameter); // Estos parámetros pueden tener un tipo de datos estándar, un tipo de datos definido por el usuario o un tipo de datos de subrango.
+            parameter.Rule = list_id + COLON + variables_native_id //pueden ser id's de variables simples o matrices o subprogramas
+                | VAR + list_id + COLON + variables_native_id;
+
+
+
+
+
+            main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
+            main_declarations.ErrorRule = SyntaxError + SEMI_COLON
+                | SyntaxError + END;
 
             begin_end_statements.Rule = MakeStarRule(begin_end_statements, begin_end_statement);
-            begin_end_statement.Rule = variable_ini
-                | array_ini
+            begin_end_statement.Rule = variable_ini //default
+                | array_ini //default
                 | if_statements
                 | case_statements
                 | while_statements
                 | for_do_statements
                 | repeat_statements
-                | BREAK + SEMI_COLON //TODO: validar que este dentro de un bucle o un case
-                | CONTINUE + SEMI_COLON //TODO: validar que este dentro de un bucle //Para el ciclo for-do , la instrucción continue hace que se ejecuten las porciones de prueba e incremento condicional del ciclo. Para los bucles while-do y repeat ... until , la instrucción continue hace que el control del programa pase a las pruebas condicionales.
-                | function_call + SEMI_COLON
-                | procedure_call + SEMI_COLON
-                | array_call + SEMI_COLON
+                | BREAK + SEMI_COLON //validar que este dentro de un bucle o un case
+                | CONTINUE + SEMI_COLON //validar que este dentro de un bucle //Para el ciclo for-do , la instrucción continue hace que se ejecuten las porciones de prueba e incremento condicional del ciclo. Para los bucles while-do y repeat ... until , la instrucción continue hace que el control del programa pase a las pruebas condicionales.
+                | function_call + SEMI_COLON //default
+                | procedure_call + SEMI_COLON //default
+                | array_call + SEMI_COLON //default
                 | Empty;
             begin_end_statement.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
+
 
             //TODO: verificacion de asignacion: la expresion variables(dentro/fuera) del cuerpo
             variable_ini.Rule = ID + COLON_EQUAL + expression + SEMI_COLON;
             //| ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON; //TODO: (funciones) ver que me conviene mas si definirlo como una llamada a funcion o dejarlo como un id, como si fuera una asignacion normal, tomando en cuenta que es el return de una funcion [supuestamente ya definido (trabajado) asi que no tendria que hacer mas porque ya lo tendria que tener]
 
             array_ini.Rule = ID + LEFT_BRACKET + expression + RIGHT_BRACKET + COLON_EQUAL + expression + SEMI_COLON;
-
-
-            parameters.Rule = MakeStarRule(parameters, SEMI_COLON, parameter); // Estos parámetros pueden tener un tipo de datos estándar, un tipo de datos definido por el usuario o un tipo de datos de subrango.
-            parameter.Rule = list_id + COLON + variables_native_id //pueden ser id's de variables simples o matrices o subprogramas
-                | VAR + list_id + COLON + variables_native_id;
-
-            type_variables.Rule = MakePlusRule(type_variables, type_variable);
-            type_variable.Rule = list_id + EQUAL + variables_native_array + SEMI_COLON; //TODO: si viene una lista y es de tipo array se puede inicializar todas o solo inicializo la primera
-
-            //TODO: verificar en el semantico que 'expresion' solo seran valores de tipo base y id de otras constantes... no arrays
-            constant_variables.Rule = MakePlusRule(constant_variables, constant_variable);
-            constant_variable.Rule = ID + EQUAL + expression + SEMI_COLON;
+                                              
 
             if_statements.Rule = IF + expression + THEN + main_declarations
                 | IF + expression + THEN + main_declarations + ELSE + main_declarations
@@ -318,23 +323,21 @@ namespace CompiPascal.interprete.analizador
             array_call.Rule = ID + LEFT_BRACKET + expression + RIGHT_BRACKET;
 
 
-            //TODO: verificar que podre hacer en este lugar y que no
-            instructions.Rule = MakePlusRule(instructions, instruction);
-            instruction.Rule = Empty;
-
             expression.Rule = aritmeticas | relacionales | logicas;
 
-            aritmeticas.Rule = MINUS + aritmeticas
-                | PLUS + aritmeticas
-                | aritmeticas + PLUS + aritmeticas //cadena
+            aritmeticas.Rule = 
+                  aritmeticas + PLUS + aritmeticas //cadena
                 | aritmeticas + MINUS + aritmeticas
                 | aritmeticas + ASTERISK + aritmeticas
                 | aritmeticas + SLASH + aritmeticas
                 | aritmeticas + MODULUS + aritmeticas
                 | LEFT_PARENTHESIS + aritmeticas + RIGHT_PARENTHESIS
+                | MINUS + aritmeticas
+                | PLUS + aritmeticas
                 | expression_terminales;
 
-            relacionales.Rule = relacionales + EQUAL + relacionales
+            relacionales.Rule = 
+                  relacionales + EQUAL + relacionales
                 | relacionales + LESS_THAN_GREATER_THAN + relacionales
                 | relacionales + GREATER_THAN + relacionales
                 | relacionales + LESS_THAN + relacionales
@@ -345,7 +348,7 @@ namespace CompiPascal.interprete.analizador
 
             logicas.Rule = logicas + AND + logicas //bool
                 | logicas + OR + logicas //bool
-                | logicas + NOT + logicas //bool
+                | NOT + logicas //bool
                 | LEFT_PARENTHESIS + logicas + RIGHT_PARENTHESIS
                 | expression_terminales;//bool
 
@@ -354,9 +357,10 @@ namespace CompiPascal.interprete.analizador
                 | NUMBER + PERIOD_PERIOD + NUMBER; // char (palabra reservada) //TODO: array_call  tamanio fijo, variables mismo tipo, declarar, inicializar, acceder, indice para los arrays?
 
 
-            values_native.Rule = CADENA | NUMBER | TRUE | FALSE; //valores
+            values_native.Rule = CADENA | NUMBER | TRUE | FALSE; 
             values_native_id.Rule = values_native | ID;
-            variables_native.Rule = INTEGER | REAL | BOOLEAN | CHAR | STRING; //native reserved words
+
+            variables_native.Rule = CHAR | STRING | INTEGER | REAL | BOOLEAN;
             variables_array.Rule = ARRAY + LEFT_BRACKET + expression + RIGHT_BRACKET + OF + variables_native; //array //tipo string[], int[], id[] //TODO: tipos de elementos para las matrices solo nativos o tambien otros? por el momento solo lo tengo nativos //despues del OF tambien acepta esto 1 .. 26
             variables_native_array.Rule = variables_native | variables_array; //native, array
             variables_native_id.Rule = variables_native | ID; //native, id
@@ -367,7 +371,6 @@ namespace CompiPascal.interprete.analizador
             #region PREFERENCIAS
             /* Configuraciones especiales necesarias para el uso de Irony. */
             this.Root = ini;
-            //MarkTransient(instruccion);
 
             //precedencia y asociatividad
             //TRUE, FALSE? //unarios
@@ -378,6 +381,8 @@ namespace CompiPascal.interprete.analizador
 
             //MarkPunctuation("(", ")", "[", "]");
             //RegisterOperators(1, Associativity.Left,  MAS, MENOS);
+
+            MarkTransient(aritmeticas, relacionales, logicas);
             #endregion
 
         }
@@ -431,9 +436,9 @@ namespace CompiPascal.interprete.analizador
  * ----
  * 
  *          string operador = actual.Term.Name;//program_structured
-            string operador1 = actual.ChildNodes[1].FindTokenAndGetText().ToLower();//evaluar
             string operador2 = actual.Token.ValueString;//null
-            string operador3 = actual.ChildNodes[1].Token.Text;//null
+            string operador1 = actual.ChildNodes.ElementAt(1).FindTokenAndGetText().ToLower();//evaluar
+            string operador3 = actual.ChildNodes.ElementAt(1).Token.Text;//null
             string operador4 = actual.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
  * ----
  * 
