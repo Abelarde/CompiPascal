@@ -7,9 +7,10 @@ namespace CompiPascal.interprete.instruccion
 {
     class ContinueInstruccion : Instruccion
     {
-        public ContinueInstruccion()
+        bool isContinue;
+        public ContinueInstruccion(bool isContinue)
         {
-
+            this.isContinue = isContinue;
         }
         public override object ejecutar(Entorno entorno)
         {

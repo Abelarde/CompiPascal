@@ -275,10 +275,12 @@ namespace CompiPascal.interprete.analizador
 
 
             //TODO: verificacion de asignacion: la expresion variables(dentro/fuera) del cuerpo
-            variable_ini.Rule = ID + COLON_EQUAL + expression + SEMI_COLON;
+            //expression 1 = id;
+            variable_ini.Rule = expression + COLON_EQUAL + expression + SEMI_COLON;
             //| ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON; //TODO: (funciones) ver que me conviene mas si definirlo como una llamada a funcion o dejarlo como un id, como si fuera una asignacion normal, tomando en cuenta que es el return de una funcion [supuestamente ya definido (trabajado) asi que no tendria que hacer mas porque ya lo tendria que tener]
 
-            array_ini.Rule = ID + LEFT_BRACKET + expression + RIGHT_BRACKET + COLON_EQUAL + expression + SEMI_COLON;
+            //expresion 1 = id;
+            array_ini.Rule = expression + LEFT_BRACKET + expression + RIGHT_BRACKET + COLON_EQUAL + expression + SEMI_COLON;
                                               
 
             if_statements.Rule = IF + expression + THEN + main_declarations
@@ -318,12 +320,16 @@ namespace CompiPascal.interprete.analizador
             //TODO: aqui validar que en lugar de expresion, solo se acepte condicionales
             repeat_statements.Rule = REPEAT + main_declarations + UNTIL + expression + SEMI_COLON;
 
-            function_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
+            //expresion 1 = id;
+            function_call.Rule = expression + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
             expression_list.Rule = MakeStarRule(expression_list, COMMA, expression);
 
-            procedure_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
+            //expresion 1 = id;
+            procedure_call.Rule = expression + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
 
-            array_call.Rule = ID + LEFT_BRACKET + expression + RIGHT_BRACKET;
+
+            //expresion 1 = id;
+            array_call.Rule = expression + LEFT_BRACKET + expression + RIGHT_BRACKET;
 
 
             expression.Rule = aritmeticas | relacionales | logicas;

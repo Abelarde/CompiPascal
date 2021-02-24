@@ -7,9 +7,11 @@ namespace CompiPascal.interprete.instruccion
 {
     class BreakInstruccion : Instruccion
     {
-        public BreakInstruccion()
-        {
+        bool isBreak;
 
+        public BreakInstruccion(bool isBreak)
+        {
+            this.isBreak = isBreak;
         }
         public override object ejecutar(Entorno entorno)
         {

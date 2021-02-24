@@ -12,6 +12,7 @@ namespace CompiPascal.interprete.analizador
 
     //TODO: strings de tipos para no usar strings
     //Token.Text o Token.ValueString
+    //arreglar cuando en la gramatica venga ID cambiarlo a expression
 
     /// <summary>
     /// Como ya hemos mencionado, Irony no acepta acciones
@@ -100,31 +101,10 @@ namespace CompiPascal.interprete.analizador
 
             //cuerpo del programa exceptuando el id de la clase
             ParseTreeNode program = actual.ChildNodes.ElementAt(3);
-            ParseTreeNode header_statements = program.ChildNodes.ElementAt(0);
-            ParseTreeNode constant_optional = header_statements.ChildNodes.ElementAt(0);
-            if(constant_optional.ChildNodes.Count > 0) //Empty
-            {
-                ParseTreeNode constant_declarations = constant_optional.ChildNodes.ElementAt(0);
-                listaInstrucciones.AddLast(instruccion(constant_declarations)); //constantes
-            }
 
-            ParseTreeNode statements = header_statements.ChildNodes.ElementAt(1);       
-            if(statements.ChildNodes.Count > 0) //statement+  (puede venir o no puede venir) 
-            {
-                ParseTreeNode statement_starRule = statements.ChildNodes.ElementAt(0); 
-                foreach (ParseTreeNode statement in statement_starRule.ChildNodes)//statement+
-                {
-                    listaInstrucciones.AddLast(instruccion(statement.ChildNodes.ElementAt(0)));
-                }
+            header_statements(listaInstrucciones, program.ChildNodes.ElementAt(0));
 
-            }
-
-            //TODO: hacer un metodo para el header y el body statement para que me llenen la lista de instrucciones
-
-            ParseTreeNode body_statements = program.ChildNodes.ElementAt(1);
-
-            main_declarations(listaInstrucciones, body_statements.ChildNodes.ElementAt(0));
-
+            body_statements(listaInstrucciones, program.ChildNodes.ElementAt(1));
 
             //TODO: hacer una pasada para recoger las funciones o procedimientos o las pasadas que me interesen para lo que me interese
 
@@ -230,9 +210,14 @@ namespace CompiPascal.interprete.analizador
 
                     string tipo_funcion = variables_native_id(functions_declarations.ChildNodes.ElementAt(6));
 
+                    LinkedList<Instruccion> function_header_instrucciones = new LinkedList<Instruccion>();
+                    header_statements(function_header_instrucciones, functions_declarations.ChildNodes.ElementAt(8));
 
-                    return new FunctionInstruccion(nombre_funcion, parametros_referencia_funcion, parametros_valor_funcion, tipo_funcion, 
-                        instrucciones(functions_declarations.ChildNodes.ElementAt(8)), instrucciones(functions_declarations.ChildNodes.ElementAt(9)));
+                    LinkedList<Instruccion> function_body_instrucciones = new LinkedList<Instruccion>();
+                    body_statements(function_body_instrucciones, functions_declarations.ChildNodes.ElementAt(9));
+
+                    return new FunctionInstruccion(nombre_funcion, parametros_referencia_funcion, parametros_valor_funcion, tipo_funcion,
+                        function_header_instrucciones, function_body_instrucciones);
                 case "PROCEDURE":
 
                     ParseTreeNode procedures_declarations = actual;
@@ -245,9 +230,14 @@ namespace CompiPascal.interprete.analizador
                     parameters(parametros_referencia_procedimiento, parametros_valor_procedimiento, procedures_declarations.ChildNodes.ElementAt(3));
 
 
+                    LinkedList<Instruccion> procedure_header_instrucciones = new LinkedList<Instruccion>();
+                    header_statements(procedure_header_instrucciones, procedures_declarations.ChildNodes.ElementAt(6));
+
+                    LinkedList<Instruccion> procedure_body_instrucciones = new LinkedList<Instruccion>();
+                    body_statements(procedure_body_instrucciones, procedures_declarations.ChildNodes.ElementAt(7));
 
                     return new ProcedureInstruccion(nombre_procedimiento, parametros_referencia_procedimiento, parametros_valor_procedimiento,
-                        instrucciones(procedures_declarations.ChildNodes.ElementAt(6)), instrucciones(procedures_declarations.ChildNodes.ElementAt(7)));
+                        procedure_header_instrucciones, procedure_body_instrucciones);
                 case "IF":
                     //TODO: quizas en el constructor seria bueno enviar el tipo de if con un char para
                     //facilidad de validar que tipo de if es en el metodo ejecutar
@@ -359,24 +349,56 @@ namespace CompiPascal.interprete.analizador
                         for_lista_instrucciones);
                 
                 case "REPEAT":
-                    return new RepeatInstruccion();
+                    ParseTreeNode repeat_statements = actual;
+
+                    LinkedList<Instruccion> repeat_lista_instrucciones = new LinkedList<Instruccion>();
+                    main_declarations(repeat_lista_instrucciones, repeat_statements.ChildNodes.ElementAt(1));
+
+
+                    return new RepeatInstruccion(repeat_lista_instrucciones, Expresion(repeat_statements.ChildNodes.ElementAt(3)));
                 case "BREAK":
-                    return new BreakInstruccion();
+
+                    return new BreakInstruccion(true);
                 case "CONTINUE":
-                    return new ContinueInstruccion();
+
+                    return new ContinueInstruccion(true);
                 default:
                     switch (actual.Term.Name)
                     {
                         case "variable_ini":
-                            return new VariableInicializarInstruccion();
+                            ParseTreeNode variable_ini = actual;
+
+                            return new VariableInicializarInstruccion(Expresion(variable_ini.ChildNodes.ElementAt(0)), Expresion(variable_ini.ChildNodes.ElementAt(2)));
                         case "array_ini":
-                            return new ArrayInicializarInstruccion();
+                            ParseTreeNode array_ini = actual;
+
+                            return new ArrayInicializarInstruccion(Expresion(array_ini.ChildNodes.ElementAt(0)),
+                                Expresion(array_ini.ChildNodes.ElementAt(2)),
+                                Expresion(array_ini.ChildNodes.ElementAt(5)));
                         case "function_call":
-                            return new FunctionCallInstruccion();
+                            ParseTreeNode function_call = actual;
+
+                            LinkedList<Expresion> function_lista_expresiones = new LinkedList<Expresion>();
+                            expression_list(function_lista_expresiones, function_call.ChildNodes.ElementAt(2));
+
+
+                            return new FunctionCallInstruccion(Expresion(function_call.ChildNodes.ElementAt(0)),
+                                function_lista_expresiones);
                         case "procedure_call":
-                            return new ProcedureCallinstruccion();
+                            ParseTreeNode procedure_call = actual;
+
+                            LinkedList<Expresion> procedure_lista_expresiones = new LinkedList<Expresion>();
+                            expression_list(procedure_lista_expresiones, procedure_call.ChildNodes.ElementAt(2));
+
+
+                            return new ProcedureCallinstruccion(Expresion(procedure_call.ChildNodes.ElementAt(0)),
+                                procedure_lista_expresiones);
                         case "array_call":
-                            return new ArrayCallInstruccion();
+                            ParseTreeNode array_call = actual;
+
+
+                            return new ArrayCallInstruccion(Expresion(array_call.ChildNodes.ElementAt(0)),
+                                Expresion(array_call.ChildNodes.ElementAt(2)));
                         default:                            
                             return null;//if a validar que no sea null cuando lo recorro
                     }
@@ -537,9 +559,43 @@ namespace CompiPascal.interprete.analizador
                     }
                 }
             }
+        }     
+        private void expression_list(LinkedList<Expresion> lista_expresiones, ParseTreeNode expression_list)
+        {
+            if (expression_list.ChildNodes.Count > 0)
+            {
+                ParseTreeNode expression_starRule = expression_list.ChildNodes.ElementAt(0);
+                foreach (ParseTreeNode expression in expression_starRule.ChildNodes)
+                {
+                    lista_expresiones.AddLast(Expresion(expression));
+                }
+            }
+
         }
+        private void header_statements(LinkedList<Instruccion> listaInstrucciones, ParseTreeNode header_statements)
+        {
+            ParseTreeNode constant_optional = header_statements.ChildNodes.ElementAt(0);
+            if (constant_optional.ChildNodes.Count > 0) //Empty
+            {
+                ParseTreeNode constant_declarations = constant_optional.ChildNodes.ElementAt(0);
+                listaInstrucciones.AddLast(instruccion(constant_declarations)); //constantes
+            }
 
+            ParseTreeNode statements = header_statements.ChildNodes.ElementAt(1);
+            if (statements.ChildNodes.Count > 0) //statement+  (puede venir o no puede venir) 
+            {
+                ParseTreeNode statement_starRule = statements.ChildNodes.ElementAt(0);
+                foreach (ParseTreeNode statement in statement_starRule.ChildNodes)//statement+
+                {
+                    listaInstrucciones.AddLast(instruccion(statement.ChildNodes.ElementAt(0)));
+                }
 
+            }
+        }
+        private void body_statements(LinkedList<Instruccion> listaInstrucciones, ParseTreeNode body_statements)
+        {
+            main_declarations(listaInstrucciones, body_statements.ChildNodes.ElementAt(0));
+        }
 
 
         public void graficar(String cadena)
