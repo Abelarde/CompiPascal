@@ -311,7 +311,10 @@ namespace CompiPascal.interprete.analizador
             #endregion
 
             while_statements.Rule = WHILE + expression + DO + main_declarations + SEMI_COLON;
-            for_do_statements.Rule = FOR + ID + COLON_EQUAL + expression + TO + expression + DO + main_declarations + SEMI_COLON;
+
+            //expression 1 = id
+            for_do_statements.Rule = FOR + expression + COLON_EQUAL + expression + TO + expression + DO + main_declarations + SEMI_COLON;
+
             //TODO: aqui validar que en lugar de expresion, solo se acepte condicionales
             repeat_statements.Rule = REPEAT + main_declarations + UNTIL + expression + SEMI_COLON;
 
@@ -361,8 +364,8 @@ namespace CompiPascal.interprete.analizador
             values_native_id.Rule = values_native | ID;
 
             variables_native.Rule = CHAR | STRING | INTEGER | REAL | BOOLEAN;
-            variables_array.Rule = ARRAY + LEFT_BRACKET + expression + RIGHT_BRACKET + OF + variables_native; //array //tipo string[], int[], id[] //TODO: tipos de elementos para las matrices solo nativos o tambien otros? por el momento solo lo tengo nativos //despues del OF tambien acepta esto 1 .. 26
-            variables_native_array.Rule = variables_native | variables_array; //native, array
+            variables_array.Rule = ARRAY + LEFT_BRACKET + expression + RIGHT_BRACKET + OF + variables_native_id; //array //tipo string[], int[], id[] //TODO: tipos de elementos para las matrices solo nativos y tambien otros y de tipo matriz? ya veremos //despues del OF tambien acepta esto 1 .. 26
+            variables_native_array.Rule = variables_native | variables_array; //native, array //lo estoy usando solo en type
             variables_native_id.Rule = variables_native | ID; //native, id
             //TODO: verificar que en las fun/proc se puede
             //enviar parametros con un tipo predefinido por el usuario

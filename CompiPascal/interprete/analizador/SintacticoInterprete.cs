@@ -9,6 +9,10 @@ using System.Linq;
 
 namespace CompiPascal.interprete.analizador
 {
+
+    //TODO: strings de tipos para no usar strings
+    //Token.Text o Token.ValueString
+
     /// <summary>
     /// Como ya hemos mencionado, Irony no acepta acciones
     /// entre sus producciones, se limita a devolver el
@@ -115,22 +119,14 @@ namespace CompiPascal.interprete.analizador
 
             }
 
+            //TODO: hacer un metodo para el header y el body statement para que me llenen la lista de instrucciones
+
             ParseTreeNode body_statements = program.ChildNodes.ElementAt(1);
-            ParseTreeNode main_declarations = body_statements.ChildNodes.ElementAt(0);
-            ParseTreeNode begin_end_statements = main_declarations.ChildNodes.ElementAt(1);
-            if(begin_end_statements.ChildNodes.Count > 0)//begin_end_statement+
-            {
-                ParseTreeNode begin_end_statement_starRule = begin_end_statements.ChildNodes.ElementAt(0);
-                foreach (ParseTreeNode begin_end_statement in begin_end_statement_starRule.ChildNodes) //begin_end_statement+
-                {
-                    if (begin_end_statement.ChildNodes.Count > 0) //Empty
-                    {
-                        listaInstrucciones.AddLast(instruccion(begin_end_statement.ChildNodes.ElementAt(0)));
-                    }
-                }
-            }
+
+            main_declarations(listaInstrucciones, body_statements.ChildNodes.ElementAt(0));
 
 
+            //TODO: hacer una pasada para recoger las funciones o procedimientos o las pasadas que me interesen para lo que me interese
 
             return listaInstrucciones;
 
@@ -155,23 +151,213 @@ namespace CompiPascal.interprete.analizador
             switch (sentencia)
             {
                 case "CONST":
-                    return new Const();
+                    ParseTreeNode constant_variables = actual.ChildNodes.ElementAt(1);
+                    if(constant_variables.ChildNodes.Count > 0)
+                    {
+                        ParseTreeNode constant_variable_plusRule = constant_variables.ChildNodes.ElementAt(0);
+                        foreach(ParseTreeNode constant_variable in constant_variable_plusRule.ChildNodes)
+                        {
+                            return new Const(constant_variable.ChildNodes.ElementAt(0).Token.Text, Expresion(constant_variable.ChildNodes.ElementAt(2)));
+                        }
+                    }
+                    return null; //TODO: esto?
                 case "TYPE":
-                    return new TypeInstruccion();
+                    ParseTreeNode type_variables = actual.ChildNodes.ElementAt(1);
+                    if (type_variables.ChildNodes.Count > 0)
+                    {
+                        ParseTreeNode type_variable_plusRule = type_variables.ChildNodes.ElementAt(0);
+                        foreach (ParseTreeNode type_variable in type_variable_plusRule.ChildNodes)//cada linea del type
+                        {
+                            LinkedList<string> lista_ids = list_id(type_variable.ChildNodes.ElementAt(0)); //futura lista de id's
+
+                            //TODO: verificar si esta bien que le mande la lista de ids o mejor creo un nuevo objeto por cada uno.
+                            //o talvez aqui si pero en el metod ejecutar ya creo un simbolo individual por cada uno de la lista y
+                            //al mandar por referencia seria la direccion del simbolo y no de esta clase que hereda de Instruccion.
+
+                            ParseTreeNode variables_native_array = type_variable.ChildNodes.ElementAt(2);//tipo de los id's
+
+                            if(variables_native_array.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name != "ARRAY")//tipos nativos
+                            {
+                                return new TypeInstruccion(lista_ids, variables_native_array.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name);
+                            }
+                            else //tipos array
+                            {
+                                ParseTreeNode variables_array = variables_native_array.ChildNodes.ElementAt(0);
+                                return new TypeInstruccion(lista_ids, variables_native_array.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name, Expresion(variables_array.ChildNodes.ElementAt(2)), variables_array.ChildNodes.ElementAt(5).Token.Text);
+                            }
+                        }
+                    }
+                    return null; //TODO: esto?
                 case "VAR":
-                    return new Var();
+                    ParseTreeNode variables = actual.ChildNodes.ElementAt(1);
+                    if(variables.ChildNodes.Count > 0)
+                    {
+
+                        ParseTreeNode variable_plusRule = variables.ChildNodes.ElementAt(0);
+                        foreach (ParseTreeNode variable in variable_plusRule.ChildNodes)
+                        {
+                            LinkedList<string> lista_ids = list_id(variable.ChildNodes.ElementAt(0));
+
+
+                            string tipo = variables_native_id(variable.ChildNodes.ElementAt(2));
+
+
+                            ParseTreeNode variable_initialization = variable.ChildNodes.ElementAt(3);
+                            Expresion valor = null;
+                            if(variable_initialization.ChildNodes.Count > 0) //Empty
+                            {
+                                valor = Expresion(variable_initialization.ChildNodes.ElementAt(1));
+                            }
+
+
+                            return new Var(lista_ids, tipo, valor);
+
+                        }
+
+                    }
+                    return null; //TODO: esto?
                 case "FUNCTION":
-                    return new FunctionInstruccion();
+                    ParseTreeNode functions_declarations = actual;
+
+                    string nombre_funcion = functions_declarations.ChildNodes.ElementAt(1).Token.Text;
+
+
+                    LinkedList<string> parametros_referencia_funcion = new LinkedList<string>();
+                    LinkedList<string> parametros_valor_funcion = new LinkedList<string>();
+                    parameters(parametros_referencia_funcion, parametros_valor_funcion, functions_declarations.ChildNodes.ElementAt(3));
+                    
+
+
+                    string tipo_funcion = variables_native_id(functions_declarations.ChildNodes.ElementAt(6));
+
+
+                    return new FunctionInstruccion(nombre_funcion, parametros_referencia_funcion, parametros_valor_funcion, tipo_funcion, 
+                        instrucciones(functions_declarations.ChildNodes.ElementAt(8)), instrucciones(functions_declarations.ChildNodes.ElementAt(9)));
                 case "PROCEDURE":
-                    return new ProcedureInstruccion();
+
+                    ParseTreeNode procedures_declarations = actual;
+
+                    string nombre_procedimiento = procedures_declarations.ChildNodes.ElementAt(1).Token.Text;
+
+
+                    LinkedList<string> parametros_referencia_procedimiento = new LinkedList<string>();
+                    LinkedList<string> parametros_valor_procedimiento = new LinkedList<string>();
+                    parameters(parametros_referencia_procedimiento, parametros_valor_procedimiento, procedures_declarations.ChildNodes.ElementAt(3));
+
+
+
+                    return new ProcedureInstruccion(nombre_procedimiento, parametros_referencia_procedimiento, parametros_valor_procedimiento,
+                        instrucciones(procedures_declarations.ChildNodes.ElementAt(6)), instrucciones(procedures_declarations.ChildNodes.ElementAt(7)));
                 case "IF":
-                    return new IfInstruccion();
+                    //TODO: quizas en el constructor seria bueno enviar el tipo de if con un char para
+                    //facilidad de validar que tipo de if es en el metodo ejecutar
+                    ParseTreeNode if_statements = actual;
+
+                    LinkedList<Instruccion> if_lista_instrucciones = new LinkedList<Instruccion>();
+                    main_declarations(if_lista_instrucciones, if_statements.ChildNodes.ElementAt(3));
+
+
+
+                    if (if_statements.ChildNodes.Count == 4)
+                    {
+                        return new IfInstruccion(Expresion(if_statements.ChildNodes.ElementAt(1)), if_lista_instrucciones);
+
+                    }else if (if_statements.ChildNodes.Count == 6)
+                    {
+                        LinkedList<Instruccion> else_lista_instrucciones = new LinkedList<Instruccion>();
+                        main_declarations(else_lista_instrucciones, if_statements.ChildNodes.ElementAt(5));
+
+                        return new IfInstruccion(Expresion(if_statements.ChildNodes.ElementAt(1)), if_lista_instrucciones,
+                            else_lista_instrucciones);
+
+                    }
+                    else if(if_statements.ChildNodes.Count == 7)
+                    {
+
+                        LinkedList<Expresion> elseIf_lista_valor_condicional = new LinkedList<Expresion>();
+                        LinkedList<Instruccion> elseIf_lista_instrucciones = new LinkedList<Instruccion>();
+
+                        ParseTreeNode else_if_list = if_statements.ChildNodes.ElementAt(4);
+                        if (else_if_list.ChildNodes.Count > 0)
+                        {
+                            ParseTreeNode else_if_plusRule = else_if_list.ChildNodes.ElementAt(0);
+                            foreach (ParseTreeNode else_if in else_if_plusRule.ChildNodes)
+                            {
+                                elseIf_lista_valor_condicional.AddLast(Expresion(else_if.ChildNodes.ElementAt(2)));
+                                main_declarations(elseIf_lista_instrucciones, else_if.ChildNodes.ElementAt(4));
+                            }
+                        }
+
+
+                        LinkedList<Instruccion> else_lista_instrucciones = new LinkedList<Instruccion>();
+                        main_declarations(else_lista_instrucciones, if_statements.ChildNodes.ElementAt(6));
+
+                        return new IfInstruccion(Expresion(if_statements.ChildNodes.ElementAt(1)), if_lista_instrucciones,
+                            elseIf_lista_valor_condicional,
+                            elseIf_lista_instrucciones,
+                            else_lista_instrucciones);
+
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
                 case "CASE":
-                    return new CaseInstruccion();
+                    ParseTreeNode case_statements = actual;
+                    ParseTreeNode case_list = case_statements.ChildNodes.ElementAt(3);
+
+                    LinkedList<Expresion> cases_valores = new LinkedList<Expresion>();
+                    LinkedList<Instruccion> cases_Instrucciones = new LinkedList<Instruccion>();
+
+                    if (case_list.ChildNodes.Count > 0)
+                    {
+                        ParseTreeNode cases_plusRule = case_list.ChildNodes.ElementAt(0);
+                        foreach(ParseTreeNode cases in cases_plusRule.ChildNodes)
+                        {
+                            cases_valores.AddLast(Expresion(cases.ChildNodes.ElementAt(0)));
+                            main_declarations(cases_Instrucciones, cases.ChildNodes.ElementAt(2));
+                        }
+                    }
+
+
+                    ParseTreeNode cases_words = case_statements.ChildNodes.ElementAt(4);
+                    LinkedList<Instruccion> else_or_otherwise_instrucciones = new LinkedList<Instruccion>();
+
+                    if (cases_words.ChildNodes.Count > 0)//Empty
+                    { 
+                        //if por si me interesa saber de donde, sino no seria necesario esta validacion
+                        if(cases_words.ChildNodes.ElementAt(0).Term.Name == "ELSE")
+                        {
+                            main_declarations(else_or_otherwise_instrucciones, cases_words.ChildNodes.ElementAt(1));
+                        }
+                        else//"OTHERWISE"
+                        {
+                            main_declarations(else_or_otherwise_instrucciones, cases_words.ChildNodes.ElementAt(1));
+                        }
+                    }
+
+                    return new CaseInstruccion(Expresion(case_statements.ChildNodes.ElementAt(1)), cases_valores,
+                        cases_Instrucciones, else_or_otherwise_instrucciones);
+
                 case "WHILE":
-                    return new WhileInstruccion();
+                    ParseTreeNode while_statements = actual;
+
+                    LinkedList<Instruccion> while_lista_instrucciones = new LinkedList<Instruccion>();
+                    main_declarations(while_lista_instrucciones, while_statements.ChildNodes.ElementAt(3));
+
+                    return new WhileInstruccion(Expresion(while_statements.ChildNodes.ElementAt(1)), while_lista_instrucciones);
                 case "FOR":
-                    return new ForInstruccion();
+                    ParseTreeNode for_do_statements = actual;
+
+                    LinkedList<Instruccion> for_lista_instrucciones = new LinkedList<Instruccion>();
+                    main_declarations(for_lista_instrucciones, for_do_statements.ChildNodes.ElementAt(7));
+
+                    return new ForInstruccion(Expresion(for_do_statements.ChildNodes.ElementAt(1)),
+                        Expresion(for_do_statements.ChildNodes.ElementAt(3)),
+                        Expresion(for_do_statements.ChildNodes.ElementAt(5)),
+                        for_lista_instrucciones);
+                
                 case "REPEAT":
                     return new RepeatInstruccion();
                 case "BREAK":
@@ -191,9 +377,8 @@ namespace CompiPascal.interprete.analizador
                             return new ProcedureCallinstruccion();
                         case "array_call":
                             return new ArrayCallInstruccion();
-                        default:
-                            //if a validar que no sea null cuando lo recorro
-                            return null;
+                        default:                            
+                            return null;//if a validar que no sea null cuando lo recorro
                     }
             }
         }
@@ -255,6 +440,7 @@ namespace CompiPascal.interprete.analizador
             }
             else
             {
+                //Literal == lo mas pequeno de una expresion, es decir que tienen valor real de compilacion
 
                 if(actual.ChildNodes.ElementAt(0).ChildNodes.Count == 1) //expression_terminales:=
                 {
@@ -286,6 +472,72 @@ namespace CompiPascal.interprete.analizador
             
         }
 
+
+        private string variables_native_id(ParseTreeNode variables_native_id) //actual = variables_native_id
+        {
+            //un mejor control de los tipos, no importa si es nativo o predefinido
+            if (variables_native_id.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name != "ID")//tipos nativos
+            {
+                return variables_native_id.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name; //en mayuscula todos
+            }
+            else //tipos id (es decir de otro tipo predefinido)
+            {
+                return variables_native_id.ChildNodes.ElementAt(0).Token.Text;//como sea
+            }
+
+        }
+        private LinkedList<string> list_id(ParseTreeNode list_id)
+        {
+            LinkedList<string> lista_ids = new LinkedList<string>(); //futura lista de id's
+
+            if (list_id.ChildNodes.Count > 0) //id+
+            {
+                ParseTreeNode id_plusRule = list_id.ChildNodes.ElementAt(0);
+                foreach (ParseTreeNode id in id_plusRule.ChildNodes)//cada id
+                {
+                    lista_ids.AddLast(id.Token.Text);//agrego cada id
+                }
+            }
+
+            return lista_ids;
+        }
+        private void parameters(LinkedList<string> parametros_referencia, LinkedList<string> parametros_valor, ParseTreeNode parameters)
+        {
+            if (parameters.ChildNodes.Count > 0) //parameter+
+            {
+                ParseTreeNode parameter_starRule = parameters.ChildNodes.ElementAt(0);
+                foreach (ParseTreeNode parameter in parameter_starRule.ChildNodes)
+                {
+                    if (parameter.ChildNodes.ElementAt(0).Term.Name == "VAR")//referencia
+                    {
+
+                        parametros_referencia = list_id(parameter.ChildNodes.ElementAt(1));
+
+                    }
+                    else//valor
+                    {
+                        parametros_valor = list_id(parameter.ChildNodes.ElementAt(0));
+
+                    }
+                }
+            }
+
+        }
+        private void main_declarations(LinkedList<Instruccion> listaInstrucciones, ParseTreeNode main_declarations)
+        {
+            ParseTreeNode begin_end_statements = main_declarations.ChildNodes.ElementAt(1);
+            if (begin_end_statements.ChildNodes.Count > 0)//begin_end_statement+
+            {
+                ParseTreeNode begin_end_statement_starRule = begin_end_statements.ChildNodes.ElementAt(0);
+                foreach (ParseTreeNode begin_end_statement in begin_end_statement_starRule.ChildNodes) //begin_end_statement+
+                {
+                    if (begin_end_statement.ChildNodes.Count > 0) //Empty
+                    {
+                        listaInstrucciones.AddLast(instruccion(begin_end_statement.ChildNodes.ElementAt(0)));
+                    }
+                }
+            }
+        }
 
 
 
