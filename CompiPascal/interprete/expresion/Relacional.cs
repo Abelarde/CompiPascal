@@ -22,32 +22,43 @@ namespace CompiPascal.interprete.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            Simbolo izquierda = this.izquierda.evaluar(entorno);
-            Simbolo derecha = this.derecha.evaluar(entorno);
-            Simbolo resultado;
-            Tipo tipo = new Tipo(Tipos.BOOLEAN, null); //porque pueden venir variables no precisamente booleanas
-            Tipos tipoResultante = TablaTipos.GetTipo(izquierda.tipo, derecha.tipo);
-
-            if (tipoResultante == Tipos.ERROR)
+            if(this.izquierda == null || this.derecha == null)
             {
-                throw new ErrorPascal("Tipos de dato incorrectos", 0, 0, "Semantico");
+                throw new ErrorPascal("Error al obtener los valores de las expresiones", 0, 0, "Semantico");
             }
 
-            //TODO: verificar si es double.Parse o es boolean.Parse?
+            Simbolo izquierda = this.izquierda.evaluar(entorno);
+            Simbolo derecha = this.derecha.evaluar(entorno);
+            
+            Tipos tipoResultante = TablaTipos.GetTipo(izquierda.tipo, derecha.tipo);
+            if (tipoResultante == Tipos.ERROR)
+            {
+                throw new ErrorPascal("Tipos de datos incorrectos [relacional: "+izquierda.tipo.tipo+", "+derecha.tipo.tipo +"]", 0, 0, "Semantico");
+            }
+
+            Simbolo resultado;
             switch (tipoOperacion)
             {
                 case "=":
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) == double.Parse(derecha.ToString()), tipo, null);
+                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) == Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
                     return resultado;
-                case "!":
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) != double.Parse(derecha.ToString()), tipo, null);
+                case "<>":
+                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) != Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
                     return resultado;
                 case ">":
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) > double.Parse(derecha.ToString()), tipo, null);
+                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) > Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
+                    return resultado;
+                case "<":
+                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) < Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
+                    return resultado;
+                case ">=":
+                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) >=  Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
+                    return resultado;
+                case "<=":
+                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) <= Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
                     return resultado;
                 default:
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) < double.Parse(derecha.ToString()), tipo, null);
-                    return resultado;
+                    throw new ErrorPascal("Operacion relacional desconocida", 0, 0, "Semantico");
             }
 
 

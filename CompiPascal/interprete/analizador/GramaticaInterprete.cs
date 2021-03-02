@@ -35,28 +35,28 @@ namespace CompiPascal.interprete.analizador
             #region Simbolos
             /* Conjunto de terminales que serán utilizados en nuestra gramática, que no fueron aceptados por ninguna de las expresiones regulares definidas anteriormente */
 
-            var PLUS = ToTerm("+");  //Binary arithmetic addition ; unary arithmetic identity ; set union.
-            var MINUS = ToTerm("-");  //Binary arithmetic subtraction ; unary arithmetic negation ; set difference.
-            var ASTERISK = ToTerm("*");  //Arithmetic multiplication ; set intersection.
-            var SLASH = ToTerm("/");  //Floating point division.
-            var EQUAL = ToTerm("=");  //Equality test.
-            var LESS_THAN = ToTerm("<");  //Less than test.
-            var GREATER_THAN = ToTerm(">");  //Greater than test.
-            var LEFT_BRACKET = ToTerm("[");  //Delimits sets and array indices.
-            var RIGHT_BRACKET = ToTerm("]");  //Delimits sets and array indices.
-            var PERIOD = ToTerm(".");  //Used for selecting an individual field of a record variable. Follows the final END of a program.
-            var COMMA = ToTerm(",");  //Separates arguments, variable declarations, and indices of multi-dimensional arrays.
-            var COLON = ToTerm(":");  //Separates a function declaration with the function type. Separates variable declaration with the variable type.
-            var SEMI_COLON = ToTerm(";");  //Separates Pascal statements.
-            var POINTER = ToTerm("^");  //Used to declare pointer types and variables ; Used to access the contents of pointer typed variables/file buffer variables.
-            var LEFT_PARENTHESIS = ToTerm("(");  //Group mathematical or boolean expression, or function and procedure arguments.
-            var RIGHT_PARENTHESIS = ToTerm(")");  //Group mathematical or boolean expression, or function and procedure arguments.
-            var LESS_THAN_GREATER_THAN = ToTerm("<>");  //Non-equality test.
-            var LESS_THAN_EQUAL = ToTerm("<=");  //Less than or equal to test ; Subset of test.
-            var GREATER_THAN_EQUAL = ToTerm(">=");  //Greater than or equal to test ; Superset of test.
-            var COLON_EQUAL = ToTerm(":=");  //Variable assignment.
-            var PERIOD_PERIOD = ToTerm("..");  //Range delimiter.
-            var MODULUS = ToTerm("%");  //modulus operator
+            var PLUS = ToTerm("+", "PLUS");  //Binary arithmetic addition ; unary arithmetic identity ; set union.
+            var MINUS = ToTerm("-", "MINUS");  //Binary arithmetic subtraction ; unary arithmetic negation ; set difference.
+            var ASTERISK = ToTerm("*", "ASTERISK");  //Arithmetic multiplication ; set intersection.
+            var SLASH = ToTerm("/", "SLASH");  //Floating point division.
+            var EQUAL = ToTerm("=", "EQUAL");  //Equality test.
+            var LESS_THAN = ToTerm("<", "LESS_THAN");  //Less than test.
+            var GREATER_THAN = ToTerm(">", "GREATER_THAN");  //Greater than test.
+            var LEFT_BRACKET = ToTerm("[", "LEFT_BRACKET");  //Delimits sets and array indices.
+            var RIGHT_BRACKET = ToTerm("]", "RIGHT_BRACKET");  //Delimits sets and array indices.
+            var PERIOD = ToTerm(".", "PERIOD");  //Used for selecting an individual field of a record variable. Follows the final END of a program.
+            var COMMA = ToTerm(",", "COMMA");  //Separates arguments, variable declarations, and indices of multi-dimensional arrays.
+            var COLON = ToTerm(":", "COLON");  //Separates a function declaration with the function type. Separates variable declaration with the variable type.
+            var SEMI_COLON = ToTerm(";", "SEMI_COLON");  //Separates Pascal statements.
+            var POINTER = ToTerm("^", "POINTER");  //Used to declare pointer types and variables ; Used to access the contents of pointer typed variables/file buffer variables.
+            var LEFT_PARENTHESIS = ToTerm("(", "LEFT_PARENTHESIS");  //Group mathematical or boolean expression, or function and procedure arguments.
+            var RIGHT_PARENTHESIS = ToTerm(")", "RIGHT_PARENTHESIS");  //Group mathematical or boolean expression, or function and procedure arguments.
+            var LESS_THAN_GREATER_THAN = ToTerm("<>", "LESS_THAN_GREATER_THAN");  //Non-equality test.
+            var LESS_THAN_EQUAL = ToTerm("<=", "LESS_THAN_EQUAL");  //Less than or equal to test ; Subset of test.
+            var GREATER_THAN_EQUAL = ToTerm(">=", "GREATER_THAN_EQUAL");  //Greater than or equal to test ; Superset of test.
+            var COLON_EQUAL = ToTerm(":=", "COLON_EQUAL");  //Variable assignment.
+            var PERIOD_PERIOD = ToTerm("..", "PERIOD_PERIOD");  //Range delimiter.
+            var MODULUS = ToTerm("%", "MODULUS");  //modulus operator
 
             #endregion
 
@@ -101,6 +101,9 @@ namespace CompiPascal.interprete.analizador
             var OTHERWISE = ToTerm("OTHERWISE");  //a optional reserved word for case's
             var BREAK = ToTerm("BREAK");  //break statement
             var CONTINUE = ToTerm("CONTINUE");  //continue statement
+            var WRITE = ToTerm("WRITE");  //continue statement
+            var WRITELN = ToTerm("WRITELN");  //continue statement
+            var GRAFICAR_TS = ToTerm("GRAFICAR_TS");  //continue statement
 
 
             var TRUE = ToTerm("TRUE");  //Boolean conjunction operator
@@ -132,6 +135,9 @@ namespace CompiPascal.interprete.analizador
             NonTerminal type_declarations = new NonTerminal("type_declarations");
             NonTerminal type_variables = new NonTerminal("type_variables");
             NonTerminal type_variable = new NonTerminal("type_variable");
+            NonTerminal type_declarations_vars = new NonTerminal("type_declarations_vars");
+            NonTerminal type_type = new NonTerminal("type_type");
+
 
             NonTerminal constant_declarations = new NonTerminal("constant_declarations");
             NonTerminal constant_optional = new NonTerminal("constant_optional");
@@ -156,6 +162,12 @@ namespace CompiPascal.interprete.analizador
             NonTerminal begin_end_statement = new NonTerminal("begin_end_statement");
 
 
+            NonTerminal exit_statements = new NonTerminal("exit_statements");
+            NonTerminal return_statements = new NonTerminal("return_statements");
+            NonTerminal write_statements = new NonTerminal("write_statements");
+            NonTerminal graficar_statements = new NonTerminal("graficar_statements");
+
+
             NonTerminal if_statements = new NonTerminal("if_statements");
             NonTerminal else_if_list = new NonTerminal("else_if_list");
             NonTerminal else_if = new NonTerminal("else_if");
@@ -177,12 +189,9 @@ namespace CompiPascal.interprete.analizador
 
 
             NonTerminal expression_list = new NonTerminal("expression_list");
+            NonTerminal expression_list_plus = new NonTerminal("expression_list_plus");
 
             NonTerminal expression = new NonTerminal("expression");
-            NonTerminal aritmeticas = new NonTerminal("aritmeticas");
-            NonTerminal relacionales = new NonTerminal("relacionales");
-            NonTerminal logicas = new NonTerminal("logicas");
-            NonTerminal expression_terminales = new NonTerminal("expression_terminales");
 
             NonTerminal values_native = new NonTerminal("values_native");
             NonTerminal values_native_id = new NonTerminal("values_native_id");
@@ -228,7 +237,7 @@ namespace CompiPascal.interprete.analizador
                 | SyntaxError + END;
 
 
-            type_declarations.Rule = TYPE + type_variables; //categoria, o clase de los tipos como integer, real, string
+            type_declarations.Rule =  TYPE + type_variables; //categoria, o clase de los tipos como integer, real, string
             variables_declarations.Rule = VAR + variables; //declaracion: solo afuera de BEGIN-END; 
             functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON; //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array? //adicional, verificar que tenga el retorno, puede: venir dentro de otra instruccion (if) o puede venir afuera de todo y ser valido media vez cumpla con que tenga un retorno o retornos necesarios// como validar eso? //Debe haber una declaración de asignación del tipo - nombre: = expresión  en el cuerpo de la función que asigna un valor al nombre de la función
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
@@ -236,10 +245,15 @@ namespace CompiPascal.interprete.analizador
             list_id.Rule = MakePlusRule(list_id, COMMA, ID);
 
             type_variables.Rule = MakePlusRule(type_variables, type_variable);
-            type_variable.Rule = list_id + EQUAL + variables_native_array + SEMI_COLON; //TODO: si viene una lista y es de tipo array se puede inicializar todas o solo inicializo la primera
+            type_variable.Rule = list_id + EQUAL + type_type + SEMI_COLON; //TODO: si viene una lista y es de tipo array se puede inicializar todas o solo inicializo la primera
+
+            type_type.Rule = OBJECT + type_declarations_vars + END 
+                | variables_native_array;
+
+            type_declarations_vars.Rule = MakeStarRule(type_declarations_vars, variables_declarations);
 
             variables.Rule = MakePlusRule(variables, variable);
-            variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON; //indica el tipo de valores que puede tomar la variable //TODO: array tambien?  var n: array[1..10] of integer; (*n is an array of 10 integers *)
+            variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON; //si lleva asignacion y es un listado solo tome el primero, es error pero yo lo recupero //indica el tipo de valores que puede tomar la variable //TODO: array tambien?  var n: array[1..10] of integer; (*n is an array of 10 integers *)
             //TODO: verificar que no puedo inicializar una variable afuera del cuerpo igual que adentro 
             //afuera no puedo utilizar ID y adentro si
             variable_initialization.Rule = COLON_EQUAL + expression | Empty; //TODO: cuidar si estoy inicializando una variable de tipo de otra variable y quiero asignar un valor que no es, primero se puede inicializar en ese caso? segundo si es posible entonces, tendria que ver primero que tipo es la variable para permitir la inicializacion
@@ -269,6 +283,10 @@ namespace CompiPascal.interprete.analizador
                 | function_call + SEMI_COLON //default
                 | procedure_call + SEMI_COLON //default
                 | array_call + SEMI_COLON //default
+                | exit_statements // return //default
+                | return_statements // return //default
+                | write_statements
+                | graficar_statements
                 | Empty;
             begin_end_statement.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
@@ -331,38 +349,41 @@ namespace CompiPascal.interprete.analizador
             //expresion 1 = id;
             array_call.Rule = expression + LEFT_BRACKET + expression + RIGHT_BRACKET;
 
+            exit_statements.Rule = EXIT + LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS + SEMI_COLON;
 
-            expression.Rule = aritmeticas | relacionales | logicas;
+            return_statements.Rule = expression + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON;
 
-            aritmeticas.Rule = 
-                  aritmeticas + PLUS + aritmeticas //cadena
-                | aritmeticas + MINUS + aritmeticas
-                | aritmeticas + ASTERISK + aritmeticas
-                | aritmeticas + SLASH + aritmeticas
-                | aritmeticas + MODULUS + aritmeticas
-                | LEFT_PARENTHESIS + aritmeticas + RIGHT_PARENTHESIS
-                | MINUS + aritmeticas
-                | PLUS + aritmeticas
-                | expression_terminales;
+            write_statements.Rule = WRITE + LEFT_PARENTHESIS + expression_list_plus + RIGHT_PARENTHESIS + SEMI_COLON
+                | WRITELN + LEFT_PARENTHESIS + expression_list_plus + RIGHT_PARENTHESIS + SEMI_COLON;
 
-            relacionales.Rule = 
-                  relacionales + EQUAL + relacionales
-                | relacionales + LESS_THAN_GREATER_THAN + relacionales
-                | relacionales + GREATER_THAN + relacionales
-                | relacionales + LESS_THAN + relacionales
-                | relacionales + GREATER_THAN_EQUAL + relacionales
-                | relacionales + LESS_THAN_EQUAL + relacionales
-                | LEFT_PARENTHESIS + relacionales + RIGHT_PARENTHESIS
-                | expression_terminales;
+            graficar_statements.Rule = GRAFICAR_TS + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + SEMI_COLON;
 
-            logicas.Rule = logicas + AND + logicas //bool
-                | logicas + OR + logicas //bool
-                | NOT + logicas //bool
-                | LEFT_PARENTHESIS + logicas + RIGHT_PARENTHESIS
-                | expression_terminales;//bool
+            expression.Rule =  expression + PLUS + expression //a
+                | expression + MINUS + expression//a
+                | expression + ASTERISK + expression//a
+                | expression + SLASH + expression//a
+                | expression + MODULUS + expression//a
 
-            expression_terminales.Rule = ID | CADENA | NUMBER
-                | TRUE | FALSE | function_call | array_call //| VOID  //|types-objects 
+                | expression + EQUAL + expression //r
+                | expression + LESS_THAN_GREATER_THAN + expression //r
+                | expression + GREATER_THAN + expression //r
+                | expression + LESS_THAN + expression //r
+                | expression + GREATER_THAN_EQUAL + expression //r
+                | expression + LESS_THAN_EQUAL + expression //r
+
+                | LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS
+
+                | expression + AND + expression //lo
+                | expression + OR + expression //lo
+
+                | NOT + expression //lo
+
+                | MINUS + expression //a
+                | PLUS + expression //a
+
+                | ID | CADENA | NUMBER | TRUE | FALSE | function_call | array_call 
+
+                | ID + PERIOD + ID //| VOID  //|types-objects 
                 | NUMBER + PERIOD_PERIOD + NUMBER; // char (palabra reservada) //TODO: array_call  tamanio fijo, variables mismo tipo, declarar, inicializar, acceder, indice para los arrays?
 
 
@@ -370,7 +391,10 @@ namespace CompiPascal.interprete.analizador
             values_native_id.Rule = values_native | ID;
 
             variables_native.Rule = CHAR | STRING | INTEGER | REAL | BOOLEAN;
-            variables_array.Rule = ARRAY + LEFT_BRACKET + expression + RIGHT_BRACKET + OF + variables_native_id; //array //tipo string[], int[], id[] //TODO: tipos de elementos para las matrices solo nativos y tambien otros y de tipo matriz? ya veremos //despues del OF tambien acepta esto 1 .. 26
+            variables_array.Rule = ARRAY + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + OF + variables_native_id; //array //tipo string[], int[], id[] //TODO: tipos de elementos para las matrices solo nativos y tambien otros y de tipo matriz? ya veremos //despues del OF tambien acepta esto 1 .. 26
+            expression_list_plus.Rule = MakePlusRule(expression_list_plus, COMMA, expression);
+
+
             variables_native_array.Rule = variables_native | variables_array; //native, array //lo estoy usando solo en type
             variables_native_id.Rule = variables_native | ID; //native, id
             //TODO: verificar que en las fun/proc se puede
@@ -380,7 +404,7 @@ namespace CompiPascal.interprete.analizador
             #region PREFERENCIAS
             /* Configuraciones especiales necesarias para el uso de Irony. */
             this.Root = ini;
-
+            //TODO: agregar la asociatividad
             //precedencia y asociatividad
             //TRUE, FALSE? //unarios
             RegisterOperators(4, NOT); //~
@@ -391,7 +415,7 @@ namespace CompiPascal.interprete.analizador
             //MarkPunctuation("(", ")", "[", "]");
             //RegisterOperators(1, Associativity.Left,  MAS, MENOS);
 
-            MarkTransient(aritmeticas, relacionales, logicas);
+            //MarkTransient(aritmeticas, relacionales, logicas);
             #endregion
 
         }

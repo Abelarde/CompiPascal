@@ -12,8 +12,8 @@ namespace CompiPascal.interprete.analizador.simbolo
     class Simbolo
     {
         public object valor;
-        public string id;
         public Tipo tipo;
+        public string id;
         //linea
         //columna
 

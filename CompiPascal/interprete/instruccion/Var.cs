@@ -1,4 +1,5 @@
-﻿using CompiPascal.interprete.expresion;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.expresion;
 using CompiPascal.interprete.simbolo;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,9 @@ namespace CompiPascal.interprete.instruccion
         //TODO: validar que valor != null
         public override object ejecutar(Entorno entorno)
         {
-            throw new NotImplementedException();
+            Simbolo valor = this.valor.evaluar(entorno);
+            entorno.DeclararVariable("aqui van los ids o el id", valor);
+            return null;
         }
     }
 }

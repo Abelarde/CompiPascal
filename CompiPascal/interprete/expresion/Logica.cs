@@ -12,6 +12,7 @@ namespace CompiPascal.interprete.expresion
         private Expresion izquierda;
         private Expresion derecha;
         private string tipoOperacion;
+
         public Logica(Expresion izquierda, Expresion derecha, string tipoOperacion)
         {
             this.izquierda = izquierda;
@@ -22,35 +23,50 @@ namespace CompiPascal.interprete.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            Simbolo izquierda = this.izquierda.evaluar(entorno);
             Simbolo derecha = this.derecha.evaluar(entorno);
-            Simbolo resultado;
-            Tipo tipo = new Tipo(Tipos.BOOLEAN, null); //porque pueden venir variables no precisamente booleanas
-            Tipos tipoResultante = TablaTipos.GetTipo(izquierda.tipo, derecha.tipo);
+            Simbolo izquierda = null;
+
+            Tipos tipoResultante = derecha.tipo.tipo;
+
+            if (this.izquierda != null)
+            {
+                izquierda = this.izquierda.evaluar(entorno);
+                tipoResultante = TablaTipos.GetTipo(izquierda.tipo, derecha.tipo);
+            }
+
 
             if (tipoResultante == Tipos.ERROR)
             {
-                throw new ErrorPascal("Tipos de dato incorrectos", 0, 0, "Semantico");
+                if (izquierda != null)
+                {
+                    throw new ErrorPascal("Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + tipoOperacion + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
+                }
+                else
+                {
+                    throw new ErrorPascal("Tipo de dato incorrecto [" + tipoOperacion + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
+                }
             }
 
-            //TODO: verificar si es double.Parse o es boolean.Parse?
+            Simbolo resultado;
+
             switch (tipoOperacion)
             {
-                //TODO: hacer las conversiones al tipo de variable correcta y corregir los operando para el resultado
                 case "AND":
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) == double.Parse(derecha.ToString()), tipo, null);
+                    //TODO: tomar en cuenta si no tengo que validar que venga un null ya sea en la izq o derecha "Simbolo"
+                    //y cuidado con el valor que pueda tener tambien porque puede ser null
+                    resultado = new Simbolo(Convert.ToBoolean(izquierda.valor) && Convert.ToBoolean(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
                     return resultado;
+
                 case "OR":
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) != double.Parse(derecha.ToString()), tipo, null);
+                    resultado = new Simbolo(Convert.ToBoolean(izquierda.valor) || Convert.ToBoolean(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
                     return resultado;
+
                 case "NOT":
-                    //TODO: validar cuando es unario
-                    //el izquierdo es == null
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) != double.Parse(derecha.ToString()), tipo, null);
+                    resultado = new Simbolo(!Convert.ToBoolean(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
                     return resultado;
+
                 default:
-                    resultado = new Simbolo(double.Parse(izquierda.ToString()) < double.Parse(derecha.ToString()), tipo, null);
-                    return resultado;
+                    throw new ErrorPascal("Operacion logica desconocida", 0, 0, "Semantico");
             }
 
         }

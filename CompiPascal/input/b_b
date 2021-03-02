@@ -1,0 +1,14 @@
+program Hola;
+
+var a:integer := 50;
+
+var
+i: integer;
+cadena: string := 'hola bicho soy una cadena';
+
+begin
+
+write(9, 'hola', objecto.atributo);
+writeln(9, 'hola');
+
+end.

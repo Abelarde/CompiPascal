@@ -1,0 +1,58 @@
+program Hola;
+
+coNst
+VELOCITY_LIGHT = 3.0;
+month = 'November';
+lie = false;
+result = (VELOCITY_LIGHT  + VELOCITY_LIGHT ) / 2.0; //pero tomar en cuenta que deben ser otras constantes
+
+type
+     Rectangle = object
+     var
+          length, width: integer;
+          area, volumen: real;
+end;
+
+type
+days, age = integer;
+yes, true = boolean;
+
+
+var a:integer := 50;
+
+var
+figura : Rectangle;
+i: integer;
+cadena: string := 'hola bicho soy una cadena';
+
+
+function el_bicho(num:integer):integer;
+begin
+el_bicho() := 1;
+end;
+
+function el_bicho_dos(num:integer; letra_a:string):integer;
+begin
+Exit(9);
+end;
+
+function el_bicho_tres(num:integer; letra_a:string; var param_1:integer):integer;
+begin
+el_bicho_tres() := 9; 
+end;
+
+procedure soy_el_mejor(num_1, num_2, num_3:integer; var m : string);
+begin
+end;
+
+begin
+objecto.atributo := 'inicializando un string';
+
+hola := el_bicho(el_bicho_dos(2,'soy un string'));
+
+write(9, 'hola', objecto.atributo);
+writeln(9, 'hola');
+
+graficar_ts();
+
+end.

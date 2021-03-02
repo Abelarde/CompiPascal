@@ -17,13 +17,14 @@ namespace CompiPascal.interprete.analizador.simbolo
         ARRAY = 5,
         STRING = 6,
         ERROR = 7
+            //OBJECT = 7
     }
 
     //TODO: pregunta: porque tenemos una clase Tipo y con un atributo tipoAuxiliar
     class Tipo
     {
         public Tipos tipo;
-        public string tipoAuxiliar;
+        public string tipoAuxiliar; //OBJECT, STRUCT, CLASES
        
         public Tipo(Tipos tipo, string tipoAuxiliar)
         {

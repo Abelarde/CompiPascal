@@ -1,0 +1,8 @@
+program Hola;
+
+begin
+
+write(9, 'hola', objecto.atributo);
+writeln(9, 'hola');
+
+end.

@@ -1,5 +1,7 @@
-﻿using CompiPascal.interprete.expresion;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.expresion;
 using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -49,7 +51,34 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            throw new NotImplementedException();
+            Simbolo valor = this.valor_condicional.evaluar(entorno);
+
+            //TODO verificar errores
+            if (valor.tipo.tipo != Tipos.BOOLEAN)
+                throw new ErrorPascal("El tipo no es booleano para el IF", 0, 0,"d");
+
+            if (bool.Parse(valor.valor.ToString()))
+            {
+                try
+                {
+                    //Entorno aqui iria si tuvieramos que manejar los ambitos en cada instruccion pero pascal funciona diferente
+                    
+                    //foreach (var instruccion in instrucciones)
+                    //{
+                    //    instruccion.ejecutar(entorno);  return?
+                    //}
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            else
+            {
+                //if (_else != null) _else.ejecutar(entorno);
+            }
+            return null;
         }
+
     }
 }

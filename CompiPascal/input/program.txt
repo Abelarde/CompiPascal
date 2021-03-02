@@ -47,10 +47,12 @@ end;
 
 function el_bicho_dos(num:integer; letra_a:string):integer;
 begin
+Exit(9);
 end;
 
 function el_bicho_tres(num:integer; letra_a:string; var param_1:integer):integer;
 begin
+el_bicho_tres() := 9; 
 end;
 
 procedure soy_el_mejor(num_1, num_2, num_3:integer; var m : string);
