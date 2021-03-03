@@ -16,8 +16,8 @@ namespace CompiPascal.interprete.analizador.simbolo
         SUBRANGE = 4,
         ARRAY = 5,
         STRING = 6,
-        ERROR = 7
-            //OBJECT = 7
+        OBJECT = 7,
+        ERROR = 8
     }
 
     //TODO: pregunta: porque tenemos una clase Tipo y con un atributo tipoAuxiliar
@@ -30,6 +30,49 @@ namespace CompiPascal.interprete.analizador.simbolo
         {
             this.tipo = tipo;
             this.tipoAuxiliar = tipoAuxiliar;
+        }
+
+        public Tipo(string tipo)
+        {
+            Tipos tipoCasteado = Tipo.castearTipo(tipo);
+            if (tipoCasteado != Tipos.OBJECT)
+            {
+                //tipos nativo
+                this.tipo = tipoCasteado;
+                this.tipoAuxiliar = null;
+            }
+            else
+            {
+                //tipo object
+                this.tipo = Tipos.OBJECT;
+                this.tipoAuxiliar = tipo;
+            }
+        }
+
+        public static Tipos castearTipo(string tipo)
+        {
+            switch (tipo)
+            {
+                case "REAL":
+                    return Tipos.REAL;
+                case "INTEGER":
+                    return Tipos.INTEGER;
+                case "BOOLEAN":
+                    return Tipos.BOOLEAN;
+                case "CHAR":
+                    return Tipos.CHAR;
+                case "SUBRANGE":
+                    return Tipos.SUBRANGE;
+                case "ARRAY":
+                    return Tipos.ARRAY;
+                case "STRING":
+                    return Tipos.STRING;
+                case "ERROR"://cuando retorno este tipo error
+                    return Tipos.ERROR;
+                default:
+                    return Tipos.OBJECT;
+
+            }
         }
     }
 }

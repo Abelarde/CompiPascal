@@ -15,7 +15,7 @@ namespace CompiPascal.interprete.instruccion
         }
         public override object ejecutar(Entorno entorno)
         {
-            throw new NotImplementedException();
+            return new BreakInstruccion(true);
         }
     }
 }

@@ -11,29 +11,21 @@ namespace CompiPascal.interprete.analizador.simbolo
     /// </summary>
     class Simbolo
     {
-        public object valor;
-        public Tipo tipo;
-        public string id;
+        public Tipo tipo; //tipo de dato del simbolo
+        public string id; //identificador asociado al simbolo
+        public object valor; //guarda el valor del simbolo
+        //puede ser un tipo dato primitivo, un arreglo, un object
+        //una funcion, un procedimiento
+
+
         //linea
         //columna
 
-        /// <summary>
-        /// construccion de un simbolo
-        /// </summary>
-        /// <param name="valor">valor del simbolo</param>
-        /// <param name="tipo">tipo del simbolo</param>
-        /// <param name="id">id del simbolo</param>
-        public Simbolo(object valor, Tipo tipo, string id)
+        public Simbolo(Tipo tipo, string id, object valor)
         {
-            this.valor = valor;
             this.tipo = tipo;
             this.id = id;
+            this.valor = valor;
         }
-
-        public override string ToString()
-        {
-            return this.valor.ToString();
-        }
-
     }
 }

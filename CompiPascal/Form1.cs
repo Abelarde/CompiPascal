@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,7 +26,7 @@ namespace CompiPascal
 
         private void Translate_Click(object sender, EventArgs e)
         {
-            sintacticoInter.analizar(EditorOutput());
+            sintacticoInter.analizar(EditorOutput(), this);
             ConsoleInput(sintacticoInter.Message());
             ErrorTable();       
 
@@ -86,12 +87,12 @@ namespace CompiPascal
 
         private string EditorOutput() => textBox1.Text;
 
-        private void ConsoleInput(string msn) => textBox2.Text = msn;
+        private void ConsoleInput(string msn) => textBox2.Text += msn;
 
         private void ClearConsole_Click(object sender, EventArgs e)
         {
             sintacticoInter.ClearMessage();
-            ConsoleInput(string.Empty);
+            textBox2.Text = string.Empty;
         }
 
         private void ErrorTable()
@@ -134,5 +135,13 @@ namespace CompiPascal
             sintacticoInter.ClearErrores();
 
         }
+
+
+        public void Write(string contenido)
+        {
+            this.textBox2.Text += contenido;
+        }
+
+
     }
 }

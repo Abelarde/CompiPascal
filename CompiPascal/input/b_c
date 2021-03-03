@@ -1,8 +1,31 @@
 program Hola;
+
+var
+age, weekdays : tipoElBicho;
+taxrate, net_income: real;
+choice, isready: boolean;
+initials, grade: char;
+name, surname : string;
+i: integer;
+mat_a,mat_b,mat_c : real;
+contador : integer;
+cadena: string;
+
+var
+x_1,x_2,x_3: integer := 111; //error recuperado
+y: real:= 3.9;
+windy: boolean := true;
+grade: char := 'C';
+cadena: string := 'hola bicho soy una cadena';
+//verificar si puedo tener varios var
+var min:integer;
+//var a:integer = 50;
+var a:integer := 50;
+var soy_un_entero:integer := 30;
+
 
 begin
 
-write(9, 'hola', objecto.atributo);
-writeln(9, 'hola');
+hola := 'soy una cadena';
 
 end.

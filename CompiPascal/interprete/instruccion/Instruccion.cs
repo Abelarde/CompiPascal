@@ -10,11 +10,13 @@ namespace CompiPascal.interprete.instruccion
     {
         //TODO: entorno local y/o global tambien
 
+        public string print = string.Empty;
         /// <summary>
         /// Ejecuta las acciones especificas de cada instruccion
         /// </summary>
         /// <param name="entorno"></param>
         /// <returns></returns>
         public abstract object ejecutar(Entorno entorno);
+
     }
 }

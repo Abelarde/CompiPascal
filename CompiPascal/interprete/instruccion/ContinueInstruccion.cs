@@ -17,7 +17,7 @@ namespace CompiPascal.interprete.instruccion
             //retornar algo que me diga si es un Break o Continuo
             //podria saberlo casteando la clase? para saber que tipo
             //es: break, continue, exit
-            throw new NotImplementedException();
+            return new ContinueInstruccion(true);
         }
     }
 }

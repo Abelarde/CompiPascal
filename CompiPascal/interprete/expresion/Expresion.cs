@@ -9,8 +9,6 @@ namespace CompiPascal.interprete.expresion
     /// </summary>
     abstract class Expresion
     {
-        //TODO: entorno actual y/o global tambien
-
         /// <summary>
         /// Evalua la expresion tomando en cuenta el entorno
         /// </summary>

@@ -264,15 +264,13 @@ namespace CompiPascal.interprete.analizador
 
 
 
-
-
             main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
             main_declarations.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
 
             begin_end_statements.Rule = MakeStarRule(begin_end_statements, begin_end_statement);
-            begin_end_statement.Rule = variable_ini //default
-                | array_ini //default
+            begin_end_statement.Rule = variable_ini 
+                | array_ini 
                 | if_statements
                 | case_statements
                 | while_statements
@@ -383,17 +381,17 @@ namespace CompiPascal.interprete.analizador
 
                 | ID | CADENA | NUMBER | TRUE | FALSE | function_call | array_call 
 
-                | ID + PERIOD + ID //| VOID  //|types-objects 
-                | NUMBER + PERIOD_PERIOD + NUMBER; // char (palabra reservada) //TODO: array_call  tamanio fijo, variables mismo tipo, declarar, inicializar, acceder, indice para los arrays?
+                | ID + PERIOD + ID //|types-objects 
+                | NUMBER + PERIOD_PERIOD + NUMBER;  
 
 
             values_native.Rule = CADENA | NUMBER | TRUE | FALSE; 
             values_native_id.Rule = values_native | ID;
 
             variables_native.Rule = CHAR | STRING | INTEGER | REAL | BOOLEAN;
-            variables_array.Rule = ARRAY + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + OF + variables_native_id; //array //tipo string[], int[], id[] //TODO: tipos de elementos para las matrices solo nativos y tambien otros y de tipo matriz? ya veremos //despues del OF tambien acepta esto 1 .. 26
+            variables_array.Rule = ARRAY + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + OF + variables_native_id; //tipo string[], int[], id[] //otro tipo de matriz[id] //despues del OF tambien acepta esto 1 .. 26
             expression_list_plus.Rule = MakePlusRule(expression_list_plus, COMMA, expression);
-
+            //object
 
             variables_native_array.Rule = variables_native | variables_array; //native, array //lo estoy usando solo en type
             variables_native_id.Rule = variables_native | ID; //native, id
@@ -402,19 +400,14 @@ namespace CompiPascal.interprete.analizador
             #endregion
 
             #region PREFERENCIAS
-            /* Configuraciones especiales necesarias para el uso de Irony. */
             this.Root = ini;
-            //TODO: agregar la asociatividad
             //precedencia y asociatividad
-            //TRUE, FALSE? //unarios
             RegisterOperators(4, NOT); //~
             RegisterOperators(3, ASTERISK, SLASH, DIV, MOD, AND); //&
             RegisterOperators(2, PLUS, MINUS, OR); // |, !
             RegisterOperators(1, EQUAL, LESS_THAN_GREATER_THAN, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN, GREATER_THAN_EQUAL, IN); //or else, and then
-
             //MarkPunctuation("(", ")", "[", "]");
             //RegisterOperators(1, Associativity.Left,  MAS, MENOS);
-
             //MarkTransient(aritmeticas, relacionales, logicas);
             #endregion
 

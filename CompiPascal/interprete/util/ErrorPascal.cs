@@ -32,7 +32,7 @@ namespace CompiPascal.interprete.util
         /// <returns></returns>
         public override string ToString()
         {
-            return "semantico,"+this.mensaje+","+this.linea+","+this.columna+","+this.tipo;
+            return this.mensaje+","+this.linea+","+this.columna+","+this.tipo;
         }
     }
 }

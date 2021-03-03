@@ -1,5 +1,6 @@
 ﻿using CompiPascal.interprete.analizador.simbolo;
 using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ namespace CompiPascal.interprete.expresion
 {
     /// <summary>
     /// clase que represanta una literal de valor, es decir el valor mas minimo de
-    /// una expresion: tipos de datos? o variables?
+    /// una expresion: tipos de datos? o variables? 
     /// </summary>
     class Literal : Expresion
     {
@@ -33,53 +34,54 @@ namespace CompiPascal.interprete.expresion
         {
             switch (tipo)
             {
-                case "ID":
-                    //falta buscar en la tabla de simbolos, hacer las validaciones respectivas y darle su valor o darle su referencia o ver que debeo de retornar aqui
-                    return new Simbolo(null, null, this.valor.ToString());
                 case "CADENA":
-                    //TODO: CHAR?
-                    if(this.valor.ToString().Length == 1)
-                    {
-                        return new Simbolo(Convert.ToString(this.valor).Trim('\''), new Tipo(Tipos.STRING, null), null);
-                    }
-                    else
-                    {
-                        return new Simbolo(Convert.ToString(this.valor).Trim('\''), new Tipo(Tipos.STRING, null), null);
-                    }
+                    return new Simbolo(Convert.ToString(this.valor).Trim('\''), new Tipo(Tipos.STRING, null), null);
 
                 case "NUMBER":
                     if (this.valor.ToString().Contains("."))
-                    {
                         return new Simbolo(Convert.ToDouble(this.valor), new Tipo(Tipos.REAL, null), null);
-                    }
                     else
-                    {
                         return new Simbolo(Convert.ToInt32(this.valor), new Tipo(Tipos.INTEGER, null), null);
-                    }
 
                 case "TRUE":
-                    //TODO: revisar que si le este dando el valor correcto
                     return new Simbolo(Convert.ToBoolean(this.valor), new Tipo(Tipos.BOOLEAN, null), null);
 
                 case "FALSE":
                     return new Simbolo(Convert.ToBoolean(this.valor), new Tipo(Tipos.BOOLEAN, null), null);
+                
+                case "ID"://array,object,nativo,otroid
+
+
 
                 case "function_call":
-                    //falta buscar en la tabla de simbolos, hacer las validaciones respectivas y darle su valor o darle su referencia o ver que debeo de retornar aqui
+                    //falta buscar en la tabla de simbolos, 
+                    //hacer las validaciones respectivas y 
+                    //darle su valor o darle su referencia o ver que debeo de retornar aqui                    
                     return new Simbolo(null, null, null);
+
                 case "array_call":
-                    //falta buscar en la tabla de simbolos, hacer las validaciones respectivas y darle su valor o darle su referencia o ver que debeo de retornar aqui
                     return new Simbolo(null, null, null);
+
                 case "PERIOD":
-                    //falta buscar en la tabla de simbolos, hacer las validaciones respectivas y darle su valor o darle su referencia o ver que debeo de retornar aqui
                     return new Simbolo(null, null, null);
+
                 case "PERIOD_PERIOD":
-                    //TODO: ver que debo de retornar aqui
 
                 default:
                     return null;
             }
-
         }
+
+
+        private Simbolo id(string id, Entorno entorno)
+        {//array,object,nativo,otroid
+            if (entorno.getVariable(id) != null)
+                return entorno.getVariable(id); //Simbolo
+            else if (entorno.getArreglo(id) != null)
+                return entorno.getArreglo(id);
+            else
+                return null;
+        }
+
     }
 }

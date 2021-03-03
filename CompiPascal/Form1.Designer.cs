@@ -142,11 +142,11 @@ namespace CompiPascal
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(481, 57);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(391, 349);
-            this.textBox2.TabIndex = 3;
+            textBox2.Location = new System.Drawing.Point(481, 57);
+            textBox2.Multiline = true;
+            textBox2.Name = "textBox2";
+            textBox2.Size = new System.Drawing.Size(391, 349);
+            textBox2.TabIndex = 3;
             // 
             // label1
             // 
@@ -283,7 +283,7 @@ namespace CompiPascal
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(textBox2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);

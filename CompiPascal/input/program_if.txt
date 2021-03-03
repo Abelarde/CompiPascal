@@ -4,36 +4,61 @@ begin
 
 if true then 
 BEGIN
-hola := 'hola';
+writeln(9, 'hola1');
+writeln(9, 'hola2');
+writeln(9, 'hola3');
 END
 
 
 if true then 
 BEGIN
-hola := 'hola';
+writeln(9, 'hola4');
+writeln(9, 'hola5');
+writeln(9, 'hola6');
 END
 else
 begin
+writeln(9, 'hola7');
+writeln(9, 'hola8');
+writeln(9, 'hola9');
 end
 
-if true then 
+
+if false then 
 BEGIN
-hola := 'hola';
+writeln(9, 'hola10');
+writeln(9, 'hola11');
+writeln(9, 'hola12');
 END
-else if true then
+else if false then
 begin
+writeln(9, 'hola13');
+writeln(9, 'hola14');
+writeln(9, 'hola15');
+end
+else if false then
+begin
+writeln(9, 'hola16');
+writeln(9, 'hola17');
+writeln(9, 'hola18');
 end
 else if true then
 begin
+writeln(9, 'hola19');
+writeln(9, 'hola20');
+writeln(9, 'hola21');
 end
 else if true then
 begin
-end
-else if true then
-begin
+writeln(9, 'hola22');
+writeln(9, 'hola23');
+writeln(9, 'hola24');
 end
 else
 begin
+writeln(9, 'hola25');
+writeln(9, 'hola26');
+writeln(9, 'hola27');
 end
 
 
