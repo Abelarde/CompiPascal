@@ -2,11 +2,24 @@ program Hola;
 var
    a: integer;
 
+var
+   tabla, numero: integer;
+
 begin
 
    for a := 10  to 20 do   
    begin
-      //writeln('value of a: ', a);
+      writeln('value of a: ', a);
    end;
 
+for tabla := 1 to 5 do
+   begin
+     for numero := 1 to 10 do
+        begin
+        writeln( tabla, ' por ', numero ,' es ', tabla * numero );
+        end;
+    end;
+    
+    writeln(tabla);
 end.
+

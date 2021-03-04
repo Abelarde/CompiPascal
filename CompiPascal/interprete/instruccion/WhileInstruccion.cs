@@ -39,7 +39,7 @@ namespace CompiPascal.interprete.instruccion
                                     break;
                                 else if (resultado is ContinueInstruccion)//continue
                                 {
-                                    condicion = expCondicion.evaluar(entorno); //actualizo el valor del condicional
+                                    condicion = validaciones(expCondicion, entorno); //actualizo el valor del condicional
                                     continue;
                                 }
                                 else if (resultado is ExitInstruccion)//exit
