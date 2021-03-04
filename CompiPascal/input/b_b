@@ -8,6 +8,11 @@ cadena: string := 'hola bicho soy una cadena';
 
 begin
 
-writeln(9, 'hola', a);
+if true then 
+BEGIN
+writeln('hola1');
+writeln('hola2');
+writeln('hola3');
+END
 
 end.

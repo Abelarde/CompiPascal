@@ -8,9 +8,6 @@ namespace CompiPascal.interprete.instruccion
     /// </summary>
     abstract class Instruccion
     {
-        //TODO: entorno local y/o global tambien
-
-        public string print = string.Empty;
         /// <summary>
         /// Ejecuta las acciones especificas de cada instruccion
         /// </summary>

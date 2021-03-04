@@ -9,59 +9,68 @@ namespace CompiPascal.interprete.expresion
 {
     class Relacional : Expresion
     {
-        private Expresion izquierda;
-        private Expresion derecha;
+        private Expresion expIzq;
+        private Expresion expDer;
         private string tipoOperacion;
-        public Relacional(Expresion izquierda, Expresion derecha, string tipoOperacion)
+        public Relacional(Expresion expIzq, Expresion expDer, string tipoOperacion)
         {
-            this.izquierda = izquierda;
-            this.derecha = derecha;
+            this.expIzq = expIzq;
+            this.expDer = expDer;
             this.tipoOperacion = tipoOperacion;
         }
 
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            if(this.izquierda == null || this.derecha == null)
-            {
-                throw new ErrorPascal("Error al obtener los valores de las expresiones", 0, 0, "Semantico");
-            }
+            Simbolo izquierda = validaciones(expIzq, entorno); 
+            Simbolo derecha = validaciones(expDer, entorno);          
 
-            Simbolo izquierda = this.izquierda.evaluar(entorno);
-            Simbolo derecha = this.derecha.evaluar(entorno);
-            
             Tipos tipoResultante = TablaTipos.GetTipo(izquierda.tipo, derecha.tipo);
             if (tipoResultante == Tipos.ERROR)
-            {
-                throw new ErrorPascal("Tipos de datos incorrectos [relacional: "+izquierda.tipo.tipo+", "+derecha.tipo.tipo +"]", 0, 0, "Semantico");
-            }
+                throw new ErrorPascal("Tipos de datos incorrectos [relacional: " + izquierda.tipo.tipo + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
 
-            Simbolo resultado;
             switch (tipoOperacion)
             {
                 case "=":
-                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) == Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
-                    return resultado;
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) == Convert.ToDouble(derecha.valor));
+
                 case "<>":
-                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) != Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
-                    return resultado;
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) != Convert.ToDouble(derecha.valor));
+
                 case ">":
-                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) > Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
-                    return resultado;
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) > Convert.ToDouble(derecha.valor));
+           
                 case "<":
-                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) < Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
-                    return resultado;
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) < Convert.ToDouble(derecha.valor));
+                   
                 case ">=":
-                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) >=  Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
-                    return resultado;
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) >=  Convert.ToDouble(derecha.valor));
+                    
                 case "<=":
-                    resultado = new Simbolo(Convert.ToDouble(izquierda.valor) <= Convert.ToDouble(derecha.valor), new Tipo(Tipos.BOOLEAN, null), null);
-                    return resultado;
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) <= Convert.ToDouble(derecha.valor));
+                  
                 default:
                     throw new ErrorPascal("Operacion relacional desconocida", 0, 0, "Semantico");
             }
 
 
         }
+        private Simbolo validaciones(Expresion exp, Entorno entorno)
+        {
+            if (exp == null)
+                throw new ErrorPascal("[relacional] Error al calcular la expresion", 0, 0, "semantico");
+
+            Simbolo simbolo = exp.evaluar(entorno);
+
+            if (simbolo == null)
+                throw new ErrorPascal("[relacional] Error al obtener el simbolo", 0, 0, "d");
+            //if (simbolo.valor == null)
+            //    throw new ErrorPascal("[aritmetica] El valor del simbolo no tiene un valor definido", 0, 0, "d");
+            if (simbolo.tipo == null)
+                throw new ErrorPascal("[relacional] El tipo del simbolo no esta definido", 0, 0, "d");
+
+            return simbolo;
+        }
+
     }
 }

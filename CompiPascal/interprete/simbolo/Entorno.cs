@@ -23,7 +23,7 @@ namespace CompiPascal.interprete.simbolo
          */
 
         //se guarda la referencia del simbolo para poder manejarlos por valor o por referencia
-
+        //primitivo, array, object
         Dictionary<string, Simbolo> variables;
 
 
@@ -74,17 +74,6 @@ namespace CompiPascal.interprete.simbolo
             
             return null;//TODO: verificar si esta bien el null o mejor un error propio
         }
-
-        public void guardarArreglo(string id, Arreglo arreglo)
-        {
-
-        }
-
-        public Arreglo getArreglo(string id)
-        {
-            return null;
-        }
-
 
         //TODO: funciones, anidadas pueden llamar a otras globales y que esten en su ambito
         /// <summary>

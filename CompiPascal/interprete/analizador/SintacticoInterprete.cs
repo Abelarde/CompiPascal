@@ -539,7 +539,7 @@ namespace CompiPascal.interprete.analizador
                         return new Logica(Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]), "OR");
 
 
-                    case "PERIOD":
+                    case "PERIOD"://TODO: Expresion(....).....
                         return new Literal("PERIOD", expression.ChildNodes.ElementAt(0).Token.Text, expression.ChildNodes.ElementAt(2).Token.Text);
                     case "PERIOD_PERIOD":
                         return new Literal("PERIOD_PERIOD", expression.ChildNodes.ElementAt(0).Token.Text, expression.ChildNodes.ElementAt(2).Token.Text);

@@ -10,14 +10,14 @@ namespace CompiPascal.interprete.instruccion
 {
     class ElseIf : Instruccion
     {
-        private Expresion valor_condicional;
+        private Expresion expCondicion;
         private LinkedList<Instruccion> if_lista_instrucciones;
 
         public bool bandera;
 
-        public ElseIf(Expresion valor_condicional, LinkedList<Instruccion> if_lista_instrucciones)
+        public ElseIf(Expresion expCondicion, LinkedList<Instruccion> if_lista_instrucciones)
         {
-            this.valor_condicional = valor_condicional;
+            this.expCondicion = expCondicion;
             this.if_lista_instrucciones = if_lista_instrucciones;
 
             bandera = false;
@@ -26,33 +26,47 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            //calcular
-            Simbolo condicion = this.valor_condicional.evaluar(entorno);
-
-            //TODO verificar errores
-            if (condicion == null || condicion.valor == null)
-                throw new ErrorPascal("[else if] Error al obtener el valor de la condicion", 0, 0, "d");
-            if (condicion.tipo.tipo != Tipos.BOOLEAN)
-                throw new ErrorPascal("[else if] El tipo de la condicion no es boolean", 0, 0, "d");
-
-            if (Convert.ToBoolean(condicion.valor))
+            try
             {
-                try
-                {//Entorno aqui iria si tuvieramos que manejar los ambitos en cada instruccion pero pascal funciona diferente
+                Simbolo condicion = validaciones(expCondicion, entorno);
+
+                if (Convert.ToBoolean(condicion.valor))
+                {
+                    //Entorno aqui iria si tuvieramos que manejar los ambitos en cada instruccion pero pascal funciona diferente
                     foreach (var instruccion in if_lista_instrucciones)
                     {
                         if (instruccion != null)
-                            print += instruccion.ejecutar(entorno);
+                            instruccion.ejecutar(entorno);
                     }
                     this.bandera = true;
-                    return print;
+                    return null;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
+
             }
-            return print;
+            catch (Exception ex)
+            {
+                ex.ToString();
+            }
+                        
+            return null;
         }
+
+        private Simbolo validaciones(Expresion expCondicion, Entorno entorno)
+        {
+            if (expCondicion == null)
+                throw new ErrorPascal("[IF] Error al calcular la expresion de la condicion", 0, 0, "semantico");
+
+            Simbolo condicion = expCondicion.evaluar(entorno);
+
+            if (condicion == null)
+                throw new ErrorPascal("[if] Error al obtener el valor de la condicion", 0, 0, "d");
+            if (condicion.valor == null)
+                throw new ErrorPascal("[if] El valor de la condicion no tiene un valor definido", 0, 0, "d");
+            if (condicion.tipo.tipo != Tipos.BOOLEAN)
+                throw new ErrorPascal("[if] El tipo de la condicion no es boolean", 0, 0, "d");
+
+            return condicion;
+        }
+
     }
 }

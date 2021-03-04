@@ -11,13 +11,9 @@ namespace CompiPascal.interprete.analizador.simbolo
     /// </summary>
     class Simbolo
     {
-        public Tipo tipo; //tipo de dato del simbolo
+        public Tipo tipo; //tipo de dato del simbolo //primitivo,array,object,subrange
         public string id; //identificador asociado al simbolo
-        public object valor; //guarda el valor del simbolo
-        //puede ser un tipo dato primitivo, un arreglo, un object
-        //una funcion, un procedimiento
-
-
+        public object valor; //guarda el valor del simbolo     
         //linea
         //columna
 
@@ -25,7 +21,39 @@ namespace CompiPascal.interprete.analizador.simbolo
         {
             this.tipo = tipo;
             this.id = id;
-            this.valor = valor;
+            //this.valor = valor;
+            this.valor = castValor(tipo, valor);
         }
+
+        //para inicializar con un valor las variables que se declaran
+        //en las operaciones no tengo problemas porque ya iria con un valor convertido aqui
+        //o en ese clase lo convierte ahi, si fuera null.
+        public object castValor(Tipo tipo, object valor)
+        {
+            if (tipo != null)
+            {
+                switch (tipo.tipo)
+                {
+                    case Tipos.STRING:
+                        return Convert.ToString(valor);
+;                    case Tipos.INTEGER:
+                        return Convert.ToInt32(valor);
+                    case Tipos.REAL:
+                        return Convert.ToDouble(valor);
+                    case Tipos.BOOLEAN:
+                        return Convert.ToBoolean(valor);
+                    case Tipos.OBJECT:
+                        return null;//TODO: quiza un objeto de la clase?
+                    case Tipos.ARRAY:
+                        return null;//TODO: lo mismo de object
+                    case Tipos.ERROR:
+                        return null;
+                    default:
+                        return null;
+                }
+            }
+            return null;
+        }
+
     }
 }

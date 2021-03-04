@@ -16,13 +16,10 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            if(Var_lista.Count > 0)
+            foreach (Var vars in Var_lista)
             {
-                foreach(Var vars in Var_lista)
-                {
-                    if(vars != null)
-                        vars.ejecutar(entorno);
-                }
+                if (vars != null)
+                    vars.ejecutar(entorno);
             }
             return null;
         }

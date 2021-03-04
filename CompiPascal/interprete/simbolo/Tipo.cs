@@ -9,18 +9,15 @@ namespace CompiPascal.interprete.analizador.simbolo
     /// </summary>
     public enum Tipos
     {
-        REAL = 0,
+        STRING = 0,
         INTEGER = 1,
-        BOOLEAN = 2,
-        CHAR = 3,
-        SUBRANGE = 4,
+        REAL = 2,
+        BOOLEAN = 3,
+        OBJECT = 4,
         ARRAY = 5,
-        STRING = 6,
-        OBJECT = 7,
-        ERROR = 8
+        ERROR = 6
     }
 
-    //TODO: pregunta: porque tenemos una clase Tipo y con un atributo tipoAuxiliar
     class Tipo
     {
         public Tipos tipo;
@@ -49,25 +46,26 @@ namespace CompiPascal.interprete.analizador.simbolo
             }
         }
 
+        /// <summary>
+        /// Obtiene el tipo de dato desde un string
+        /// </summary>
+        /// <param name="tipo">tipo de dato</param>
+        /// <returns></returns>
         public static Tipos castearTipo(string tipo)
         {
             switch (tipo)
             {
-                case "REAL":
-                    return Tipos.REAL;
-                case "INTEGER":
-                    return Tipos.INTEGER;
-                case "BOOLEAN":
-                    return Tipos.BOOLEAN;
-                case "CHAR":
-                    return Tipos.CHAR;
-                case "SUBRANGE":
-                    return Tipos.SUBRANGE;
-                case "ARRAY":
-                    return Tipos.ARRAY;
                 case "STRING":
                     return Tipos.STRING;
-                case "ERROR"://cuando retorno este tipo error
+                case "INTEGER":
+                    return Tipos.INTEGER;
+                case "REAL":
+                    return Tipos.REAL;
+                case "BOOLEAN":
+                    return Tipos.BOOLEAN;
+                case "ARRAY":
+                    return Tipos.ARRAY;
+                case "ERROR":
                     return Tipos.ERROR;
                 default:
                     return Tipos.OBJECT;

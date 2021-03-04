@@ -18,7 +18,7 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            if(id != null && valor != null)
+            if (id != null && valor != null)
             {
                 Simbolo variable = this.id.evaluar(entorno); //id, tipo de la variable
                 Simbolo valor = this.valor.evaluar(entorno); //valor, tipo de valro
@@ -38,9 +38,7 @@ namespace CompiPascal.interprete.instruccion
 
             }
             else
-            {
-                //errr al obtener informacion de la expresion
-            }
+                throw new ErrorPascal("[Inicializacion] Error al obtener la expresion a ser asignada y/o la expresion asignatoria",0,0,"semantico");
             return null;
         }
 
@@ -49,42 +47,18 @@ namespace CompiPascal.interprete.instruccion
             //simbolo
             //tipo
             //valor
-            if (variable != null)
-            {
-                if (valor != null)
-                {
-                    if (variable.tipo != null && valor.tipo != null)
-                    {
-                        if (variable.tipo.tipo == valor.tipo.tipo)
-                        {
-                            if (valor.valor != null)
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                throw new ErrorPascal("[Asignacion] el valor a asignar no existe aun", 0, 0, "semantico");
-                            }
-                        }
-                        else
-                        {
-                            throw new ErrorPascal("[Asignacion] error los tipos no son compatibles entre la variable y lo que intentas asignar", 0, 0, "semantico");
-                        }
-                    }
-                    else
-                    {
-                        throw new ErrorPascal("[Asignacion] error al obtener informacion del tipo de la variable a asignar y del valor", 0, 0, "semantico");
-                    }
-                }
-                else
-                {
-                    throw new ErrorPascal("[Asignacion] error al obtener el valor para asignar a la varible", 0, 0, "semantico");
-                }
-            }
-            else
-            {
+            if (variable == null)
                 throw new ErrorPascal("[Asignacion] la variable no existe, aun no ha sido declarada", 0, 0, "semantico");
-            }
+            if (valor == null)
+                throw new ErrorPascal("[Asignacion] error al obtener el valor para asignar a la varible", 0, 0, "semantico");
+            if (variable.tipo == null && valor.tipo == null)
+                throw new ErrorPascal("[Asignacion] error al obtener informacion del tipo de la variable a asignar y el tipo del valor", 0, 0, "semantico");
+            if (valor.valor == null)
+                throw new ErrorPascal("[Asignacion] el valor a asignar no existe aun", 0, 0, "semantico");
+            if (variable.tipo.tipo != valor.tipo.tipo)
+                throw new ErrorPascal("[Asignacion] error los tipos no son compatibles entre la variable y lo que intentas asignar", 0, 0, "semantico");
+            return true;
+
         }
 
     }

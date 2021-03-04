@@ -35,28 +35,31 @@ namespace CompiPascal.interprete.expresion
             switch (tipo)
             {
                 case "CADENA":
-                    return new Simbolo(Convert.ToString(this.valor).Trim('\''), new Tipo(Tipos.STRING, null), null);
-
+                    return new Simbolo(new Tipo(Tipos.STRING, null), null, Convert.ToString(this.valor).Trim('\''));
                 case "NUMBER":
                     if (this.valor.ToString().Contains("."))
-                        return new Simbolo(Convert.ToDouble(this.valor), new Tipo(Tipos.REAL, null), null);
+                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(this.valor));
                     else
-                        return new Simbolo(Convert.ToInt32(this.valor), new Tipo(Tipos.INTEGER, null), null);
-
+                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(this.valor));
                 case "TRUE":
-                    return new Simbolo(Convert.ToBoolean(this.valor), new Tipo(Tipos.BOOLEAN, null), null);
-
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(this.valor));
                 case "FALSE":
-                    return new Simbolo(Convert.ToBoolean(this.valor), new Tipo(Tipos.BOOLEAN, null), null);
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(this.valor));
                 
-                case "ID"://array,object,nativo,otroid
+                case "ID"://otro id, no! porque igual yo antes en la asignacion ya le extraje su tipo y se lo asigne
+                    //por lo tanto no tenga un tipo de otra "variable" sino el valor primitivo, array u object
+                    //excepto si es un object entonces si es de tipo de otra variable pero realmente es un object
+                    //pero igual es Tipos.OBJECT -> tipoauxiliar [es decir otro Simbolo :)]
+
+                    //no me interesa yo solo retorno el simbolo y ya de ahi, puedo saber su tipo
+                    //y dependiendo su tipo entonces puedo obtener su valor respectivo.
+                    //es decir si es primitivo -> obtengo un simbolo con un valor primitivo en el atributo valor
+                    //si es array -> obtengo un simbolo con un array en el atributo valor
+                    //si es object -> obtengo un simbolo con un object en el atributo valor
+                    return retorna_simbolo(this.valor.ToString(), entorno);
 
 
-
-                case "function_call":
-                    //falta buscar en la tabla de simbolos, 
-                    //hacer las validaciones respectivas y 
-                    //darle su valor o darle su referencia o ver que debeo de retornar aqui                    
+                case "function_call":                  
                     return new Simbolo(null, null, null);
 
                 case "array_call":
@@ -66,21 +69,30 @@ namespace CompiPascal.interprete.expresion
                     return new Simbolo(null, null, null);
 
                 case "PERIOD_PERIOD":
+                    return new Simbolo(null, null, null);
 
                 default:
                     return null;
             }
         }
 
-
-        private Simbolo id(string id, Entorno entorno)
-        {//array,object,nativo,otroid
+        /// <summary>
+        /// Retorna un simbolo si existe en la tabla de simbolos
+        /// </summary>
+        /// <param name="id">id de la variable a buscar</param>
+        /// <param name="entorno">entorno en donde deberia de estar</param>
+        /// <returns>El simbolo si existe o null</returns>
+        private Simbolo retorna_simbolo(string id, Entorno entorno)//Simbolo
+        {
             if (entorno.getVariable(id) != null)
-                return entorno.getVariable(id); //Simbolo
-            else if (entorno.getArreglo(id) != null)
-                return entorno.getArreglo(id);
+                return entorno.getVariable(id); //Simbolo -> primitivo, array, object
             else
                 return null;
+        }
+
+        private Simbolo retorna_funcionValor(string id, Entorno entorno)
+        {
+            return null; //ir a ejecutar la instruccion correspondiente
         }
 
     }
