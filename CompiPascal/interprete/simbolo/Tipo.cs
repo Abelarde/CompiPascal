@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompiPascal.interprete.simbolo;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,12 +10,12 @@ namespace CompiPascal.interprete.analizador.simbolo
     /// </summary>
     public enum Tipos
     {
-        STRING = 0,
+        REAL = 0, 
         INTEGER = 1,
-        REAL = 2,
-        BOOLEAN = 3,
-        OBJECT = 4,
-        ARRAY = 5,
+        BOOLEAN = 2,
+        ARRAY = 3,
+        STRING = 4, 
+        OBJECT = 5,
         ERROR = 6
     }
 
@@ -29,9 +30,9 @@ namespace CompiPascal.interprete.analizador.simbolo
             this.tipoAuxiliar = tipoAuxiliar;
         }
 
-        public Tipo(string tipo)
+        public Tipo(string tipo, Entorno entorno)
         {
-            Tipos tipoCasteado = Tipo.castearTipo(tipo);
+            Tipos tipoCasteado = Tipo.castearTipo(tipo, entorno);
             if (tipoCasteado != Tipos.OBJECT)
             {
                 //tipos nativo
@@ -51,7 +52,7 @@ namespace CompiPascal.interprete.analizador.simbolo
         /// </summary>
         /// <param name="tipo">tipo de dato</param>
         /// <returns></returns>
-        public static Tipos castearTipo(string tipo)
+        public static Tipos castearTipo(string tipo, Entorno entorno)
         {
             switch (tipo)
             {
@@ -67,8 +68,23 @@ namespace CompiPascal.interprete.analizador.simbolo
                     return Tipos.ARRAY;
                 case "ERROR":
                     return Tipos.ERROR;
-                default:
-                    return Tipos.OBJECT;
+                default://type, days=integer; Rectangle=object;
+                    {
+                        Simbolo type_id = entorno.getVariable(tipo);
+                        if(type_id != null)
+                        {
+                            if (type_id.tipo.tipo != Tipos.OBJECT)
+                            {
+                                return type_id.tipo.tipo;
+                            }
+                            else
+                            {
+                                return Tipos.OBJECT;
+                            }
+                        }
+                        return Tipos.OBJECT; //TODO: arreglar esto porque aqui deberia de ir null pero tendria que ir a arreglar las 
+                        //validaciones donde lo utilizo
+                    }
 
             }
         }

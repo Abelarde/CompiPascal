@@ -1,0 +1,50 @@
+program Hello;
+var a:integer;
+function factorial( num : integer) : integer;
+begin
+if num = 1 then
+begin
+Exit(1);
+writeln('factorial');
+end
+else
+Exit(num * factorial( num-1 ));
+end;
+function factorial2( num : integer) : integer;
+begin
+if num = 1 then
+begin
+factorial2 := 1;
+writeln('factorial2');
+end
+else
+factorial2 := num * factorial2( num-1 )
+end;
+begin
+    a:= factorial(1);
+    writeln(a);
+    a:= factorial2(1);
+    writeln(a);
+  writeln ('Hello World')
+end.
+
+
+program Hola;
+const
+PI = 18;
+var
+   sum: integer;
+   number :integer;
+   
+function calificaion2_nota2():integer; 
+const
+PI = 18;
+var
+   PI: integer;
+begin 
+writeln('Generando nota2'); 
+end;   
+
+begin
+Write(sum);
+end.

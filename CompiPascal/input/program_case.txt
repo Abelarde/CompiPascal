@@ -1,5 +1,8 @@
 program Hola;
 
+var
+   grade: string;
+
 begin
 
 case (true) of
@@ -25,5 +28,18 @@ else
      hola := 'hola';
      end
 end;
+
+
+   grade := 'A';
+
+   case (grade) of
+      'A' : begin writeln('Excellent!'); end;
+      'B' : begin writeln('Well done'); end;
+      'D' : begin  writeln('You passed'); end;
+      'F' : begin writeln('Better try again'); end;
+   else begin writeln('Into else!'); end;
+   end;        
+   writeln('Your grade is  ', grade );
+
 
 end.

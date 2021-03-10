@@ -22,12 +22,14 @@ namespace CompiPascal.interprete.instruccion
         }
 
 
+
+        //TODO: variables del mismo ambito no mismo id. [si: locales-globales] [no: locales-locales]
         public override object ejecutar(Entorno entorno)
         {
             Tipo tipoFinal;
 
             if (tipo != string.Empty)
-                tipoFinal = new Tipo(this.tipo);
+                tipoFinal = new Tipo(this.tipo, entorno);
             else
                 throw new ErrorPascal("[Declaracion] El tipo de dato para la variable no viene especificada", 0, 0, "semantico");
 

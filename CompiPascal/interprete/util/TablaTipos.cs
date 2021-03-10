@@ -32,6 +32,8 @@ namespace CompiPascal.interprete.util
         /// <returns></returns>
         public static Tipos GetTipo(Tipo izquierda, Tipo derecha)
         {
+            int a = (int)izquierda.tipo;
+            int b = (int)derecha.tipo;
             return tipos[(int)izquierda.tipo, (int)derecha.tipo];
         }
 

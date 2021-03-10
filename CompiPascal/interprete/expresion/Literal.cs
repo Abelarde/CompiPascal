@@ -15,19 +15,20 @@ namespace CompiPascal.interprete.expresion
     {
         private string tipo;
         private object valor;
-        private object valor1;
-        private object valor2;
+
+        private Expresion min;
+        private Expresion max;
 
         public Literal(string tipo, object valor)
         {
             this.tipo = tipo;
             this.valor = valor;
         }
-        public Literal(string tipo, object valor1, object valor2) //".." //"."
+        public Literal(string tipo, Expresion min, Expresion max) //".." //"."
         {
             this.tipo = tipo;
-            this.valor1 = valor1;
-            this.valor2 = valor2;
+            this.min = min;
+            this.max = max;
         }
 
         public override Simbolo evaluar(Entorno entorno)
@@ -62,14 +63,15 @@ namespace CompiPascal.interprete.expresion
                 case "function_call":                  
                     return new Simbolo(null, null, null);
 
-                case "array_call":
-                    return new Simbolo(null, null, null);
-
                 case "PERIOD":
                     return new Simbolo(null, null, null);
 
-                case "PERIOD_PERIOD":
-                    return new Simbolo(null, null, null);
+                case "PERIOD_PERIOD"://crea un nuevo arreglo
+                    Simbolo minR = validaciones(min, entorno);
+                    Simbolo maxR = validaciones(max, entorno);
+                    //.tipo, .valor(object)[Arreglo]//.isConst//.isType//.isArray
+                    return new Simbolo(new Tipo(Tipos.ARRAY, null), getIndice(minR), getIndice(maxR));
+                    //id //.valor(object)[Arreglo] -> tipoDatos
 
                 default:
                     return null;
@@ -88,12 +90,38 @@ namespace CompiPascal.interprete.expresion
                 return entorno.getVariable(id); //Simbolo -> primitivo, array, object
             else
                 return null;
+        }       
+
+        private Simbolo validaciones(Expresion exp, Entorno entorno)
+        {
+            if (exp == null)
+                throw new ErrorPascal("[literal] Error al calcular la expresion", 0, 0, "semantico");
+
+            Simbolo simbolo = exp.evaluar(entorno);
+
+            if (simbolo == null)
+                throw new ErrorPascal("[literal] Error al obtener el simbolo", 0, 0, "d");
+            if (simbolo.valor == null)
+                throw new ErrorPascal("[literal] El valor del simbolo no tiene un valor definido", 0, 0, "d");
+            if (simbolo.tipo == null)
+                throw new ErrorPascal("[literal] El tipo del simbolo no esta definido", 0, 0, "d");
+
+            return simbolo;
         }
 
-        private Simbolo retorna_funcionValor(string id, Entorno entorno)
+        private int getIndice(Simbolo valor)
         {
-            return null; //ir a ejecutar la instruccion correspondiente
+            if (valor == null)
+                throw new ErrorPascal("error al obtener el rango uno de los rangos.", 0, 0, "semantico");
+            if (valor.valor == null)
+                throw new ErrorPascal("error al obtener el rango uno de los rangos.", 0, 0, "semantico");
+            return Convert.ToInt32(valor.valor);
         }
+
+
+
+
 
     }
+
 }

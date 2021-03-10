@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompiPascal.interprete.simbolo;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,11 +12,14 @@ namespace CompiPascal.interprete.analizador.simbolo
     /// </summary>
     class Simbolo
     {
-        public Tipo tipo; //tipo de dato del simbolo //primitivo,array,object,subrange
+        public Tipo tipo; //tipo de dato del simbolo //primitivo,array,object
         public string id; //identificador asociado al simbolo
-        public object valor; //guarda el valor del simbolo     
+        public object valor; //guarda el valor del simbolo    
         //linea
-        //columna
+        //columna 
+        public bool isConst;
+        public bool isType;
+        public bool isArray;
 
         public Simbolo(Tipo tipo, string id, object valor)
         {
@@ -23,6 +27,34 @@ namespace CompiPascal.interprete.analizador.simbolo
             this.id = id;
             //this.valor = valor;
             this.valor = castValor(tipo, valor);
+            this.isConst = false;
+            this.isType = false;
+            this.isArray = false;
+        }
+
+        //TODO: que valores me interesan en la inicializacion para los arreglos
+        public Simbolo()
+        {
+
+        }
+
+        //arreglos
+        public Simbolo(Tipo tipo, int min, int max)//Simbolos variables arrays
+        {
+            this.valor = new Arreglo(min, max); //[0]
+            this.tipo = tipo;//Tipos.ARRAY
+            this.isConst = false;
+            this.isType = true;
+            this.isArray = true;
+        }
+        public Simbolo(Tipo tipo, object valor)//Simbolos Indices
+        {
+            this.tipo = tipo;
+            //this.valor = valor;
+            this.valor = castValor(tipo, valor);
+            this.isConst = false;
+            this.isType = false;
+            this.isArray = false;
         }
 
         //para inicializar con un valor las variables que se declaran

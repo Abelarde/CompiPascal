@@ -98,9 +98,7 @@ namespace CompiPascal.interprete.instruccion
             catch (Exception ex)
             {
                 ex.ToString();
-            }
-
-            
+            }            
 
             return null;
         }

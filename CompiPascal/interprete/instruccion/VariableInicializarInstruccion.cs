@@ -16,6 +16,9 @@ namespace CompiPascal.interprete.instruccion
             this.valor = valor;
         }
 
+        //TODO: evaluar que no sea una constante [const]
+        //TODO: ver que hacer cuando sea un object
+
         public override object ejecutar(Entorno entorno)
         {
             if (id != null && valor != null)
@@ -51,12 +54,17 @@ namespace CompiPascal.interprete.instruccion
                 throw new ErrorPascal("[Asignacion] la variable no existe, aun no ha sido declarada", 0, 0, "semantico");
             if (valor == null)
                 throw new ErrorPascal("[Asignacion] error al obtener el valor para asignar a la varible", 0, 0, "semantico");
+            if (variable.isConst)
+                throw new ErrorPascal("[Asignacion] error intentas asignar un valor a una constante", 0, 0, "semantico");
+            if (variable.isType)
+                throw new ErrorPascal("[Asignacion] error intentas asignar un valor a un type", 0, 0, "semantico");
             if (variable.tipo == null && valor.tipo == null)
                 throw new ErrorPascal("[Asignacion] error al obtener informacion del tipo de la variable a asignar y el tipo del valor", 0, 0, "semantico");
             if (valor.valor == null)
                 throw new ErrorPascal("[Asignacion] el valor a asignar no existe aun", 0, 0, "semantico");
             if (variable.tipo.tipo != valor.tipo.tipo)
                 throw new ErrorPascal("[Asignacion] error los tipos no son compatibles entre la variable y lo que intentas asignar", 0, 0, "semantico");
+            
             return true;
 
         }
