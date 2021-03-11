@@ -6,7 +6,6 @@ namespace CompiPascal.traductor.analizador
     {
         public GramaticaTraductor() : base(caseSensitive: false)
         {
-
             #region EXPRESIONES_REGULARES Y LITERALES
             /* Expresiones regulares de los tokens que nuestra gramatica reconocera*/
             //RegexBasedTerminal Numero = new RegexBasedTerminal("Numero", "[0-9]+");
@@ -35,28 +34,28 @@ namespace CompiPascal.traductor.analizador
             #region Simbolos
             /* Conjunto de terminales que serán utilizados en nuestra gramática, que no fueron aceptados por ninguna de las expresiones regulares definidas anteriormente */
 
-            var PLUS = ToTerm("+");  //Binary arithmetic addition ; unary arithmetic identity ; set union.
-            var MINUS = ToTerm("-");  //Binary arithmetic subtraction ; unary arithmetic negation ; set difference.
-            var ASTERISK = ToTerm("*");  //Arithmetic multiplication ; set intersection.
-            var SLASH = ToTerm("/");  //Floating point division.
-            var EQUAL = ToTerm("=");  //Equality test.
-            var LESS_THAN = ToTerm("<");  //Less than test.
-            var GREATER_THAN = ToTerm(">");  //Greater than test.
-            var LEFT_BRACKET = ToTerm("[");  //Delimits sets and array indices.
-            var RIGHT_BRACKET = ToTerm("]");  //Delimits sets and array indices.
-            var PERIOD = ToTerm(".");  //Used for selecting an individual field of a record variable. Follows the final END of a program.
-            var COMMA = ToTerm(",");  //Separates arguments, variable declarations, and indices of multi-dimensional arrays.
-            var COLON = ToTerm(":");  //Separates a function declaration with the function type. Separates variable declaration with the variable type.
-            var SEMI_COLON = ToTerm(";");  //Separates Pascal statements.
-            var POINTER = ToTerm("^");  //Used to declare pointer types and variables ; Used to access the contents of pointer typed variables/file buffer variables.
-            var LEFT_PARENTHESIS = ToTerm("(");  //Group mathematical or boolean expression, or function and procedure arguments.
-            var RIGHT_PARENTHESIS = ToTerm(")");  //Group mathematical or boolean expression, or function and procedure arguments.
-            var LESS_THAN_GREATER_THAN = ToTerm("<>");  //Non-equality test.
-            var LESS_THAN_EQUAL = ToTerm("<=");  //Less than or equal to test ; Subset of test.
-            var GREATER_THAN_EQUAL = ToTerm(">=");  //Greater than or equal to test ; Superset of test.
-            var COLON_EQUAL = ToTerm(":=");  //Variable assignment.
-            var PERIOD_PERIOD = ToTerm("..");  //Range delimiter.
-            var MODULUS = ToTerm("%");  //modulus operator
+            var PLUS = ToTerm("+", "PLUS");  //Binary arithmetic addition ; unary arithmetic identity ; set union.
+            var MINUS = ToTerm("-", "MINUS");  //Binary arithmetic subtraction ; unary arithmetic negation ; set difference.
+            var ASTERISK = ToTerm("*", "ASTERISK");  //Arithmetic multiplication ; set intersection.
+            var SLASH = ToTerm("/", "SLASH");  //Floating point division.
+            var EQUAL = ToTerm("=", "EQUAL");  //Equality test.
+            var LESS_THAN = ToTerm("<", "LESS_THAN");  //Less than test.
+            var GREATER_THAN = ToTerm(">", "GREATER_THAN");  //Greater than test.
+            var LEFT_BRACKET = ToTerm("[", "LEFT_BRACKET");  //Delimits sets and array indices.
+            var RIGHT_BRACKET = ToTerm("]", "RIGHT_BRACKET");  //Delimits sets and array indices.
+            var PERIOD = ToTerm(".", "PERIOD");  //Used for selecting an individual field of a record variable. Follows the final END of a program.
+            var COMMA = ToTerm(",", "COMMA");  //Separates arguments, variable declarations, and indices of multi-dimensional arrays.
+            var COLON = ToTerm(":", "COLON");  //Separates a function declaration with the function type. Separates variable declaration with the variable type.
+            var SEMI_COLON = ToTerm(";", "SEMI_COLON");  //Separates Pascal statements.
+            var POINTER = ToTerm("^", "POINTER");  //Used to declare pointer types and variables ; Used to access the contents of pointer typed variables/file buffer variables.
+            var LEFT_PARENTHESIS = ToTerm("(", "LEFT_PARENTHESIS");  //Group mathematical or boolean expression, or function and procedure arguments.
+            var RIGHT_PARENTHESIS = ToTerm(")", "RIGHT_PARENTHESIS");  //Group mathematical or boolean expression, or function and procedure arguments.
+            var LESS_THAN_GREATER_THAN = ToTerm("<>", "LESS_THAN_GREATER_THAN");  //Non-equality test.
+            var LESS_THAN_EQUAL = ToTerm("<=", "LESS_THAN_EQUAL");  //Less than or equal to test ; Subset of test.
+            var GREATER_THAN_EQUAL = ToTerm(">=", "GREATER_THAN_EQUAL");  //Greater than or equal to test ; Superset of test.
+            var COLON_EQUAL = ToTerm(":=", "COLON_EQUAL");  //Variable assignment.
+            var PERIOD_PERIOD = ToTerm("..", "PERIOD_PERIOD");  //Range delimiter.
+            var MODULUS = ToTerm("%", "MODULUS");  //modulus operator
 
             #endregion
 
@@ -101,6 +100,9 @@ namespace CompiPascal.traductor.analizador
             var OTHERWISE = ToTerm("OTHERWISE");  //a optional reserved word for case's
             var BREAK = ToTerm("BREAK");  //break statement
             var CONTINUE = ToTerm("CONTINUE");  //continue statement
+            var WRITE = ToTerm("WRITE");  //continue statement
+            var WRITELN = ToTerm("WRITELN");  //continue statement
+            var GRAFICAR_TS = ToTerm("GRAFICAR_TS");  //continue statement
 
 
             var TRUE = ToTerm("TRUE");  //Boolean conjunction operator
@@ -111,6 +113,7 @@ namespace CompiPascal.traductor.analizador
             var CHAR = ToTerm("CHAR");  //type char
             var STRING = ToTerm("STRING");  //type string
             var BOOLEAN = ToTerm("BOOLEAN");  //type boolean
+            var OBJECT = ToTerm("OBJECT");  //type boolean
 
             //TODO: las funciones nativas
             #endregion
@@ -121,7 +124,7 @@ namespace CompiPascal.traductor.analizador
             NonTerminal program_structure = new NonTerminal("program_structure");
             NonTerminal program = new NonTerminal("program");
             NonTerminal header_statements = new NonTerminal("header_statements");
-            NonTerminal body_statements = new NonTerminal("header_statements");
+            NonTerminal body_statements = new NonTerminal("body_statements");
             NonTerminal statements = new NonTerminal("statements");
             NonTerminal statement = new NonTerminal("statement");
 
@@ -131,6 +134,9 @@ namespace CompiPascal.traductor.analizador
             NonTerminal type_declarations = new NonTerminal("type_declarations");
             NonTerminal type_variables = new NonTerminal("type_variables");
             NonTerminal type_variable = new NonTerminal("type_variable");
+            NonTerminal type_declarations_vars = new NonTerminal("type_declarations_vars");
+            NonTerminal type_type = new NonTerminal("type_type");
+
 
             NonTerminal constant_declarations = new NonTerminal("constant_declarations");
             NonTerminal constant_optional = new NonTerminal("constant_optional");
@@ -155,6 +161,12 @@ namespace CompiPascal.traductor.analizador
             NonTerminal begin_end_statement = new NonTerminal("begin_end_statement");
 
 
+            NonTerminal exit_statements = new NonTerminal("exit_statements");
+            NonTerminal return_statements = new NonTerminal("return_statements");
+            NonTerminal write_statements = new NonTerminal("write_statements");
+            NonTerminal graficar_statements = new NonTerminal("graficar_statements");
+
+
             NonTerminal if_statements = new NonTerminal("if_statements");
             NonTerminal else_if_list = new NonTerminal("else_if_list");
             NonTerminal else_if = new NonTerminal("else_if");
@@ -174,16 +186,11 @@ namespace CompiPascal.traductor.analizador
             NonTerminal array_call = new NonTerminal("array_call");
             NonTerminal array_ini = new NonTerminal("array_ini");
 
-            NonTerminal instructions = new NonTerminal("instructions");
-            NonTerminal instruction = new NonTerminal("instruction");
 
             NonTerminal expression_list = new NonTerminal("expression_list");
+            NonTerminal expression_list_plus = new NonTerminal("expression_list_plus");
 
             NonTerminal expression = new NonTerminal("expression");
-            NonTerminal aritmeticas = new NonTerminal("aritmeticas");
-            NonTerminal relacionales = new NonTerminal("relacionales");
-            NonTerminal logicas = new NonTerminal("logicas"); 
-            NonTerminal expression_terminales = new NonTerminal("expression_terminales");
 
             NonTerminal values_native = new NonTerminal("values_native");
             NonTerminal values_native_id = new NonTerminal("values_native_id");
@@ -191,6 +198,7 @@ namespace CompiPascal.traductor.analizador
             NonTerminal variables_native = new NonTerminal("variables_native");
             NonTerminal variables_array = new NonTerminal("variables_array");
             NonTerminal variables_native_array = new NonTerminal("variables_native_array");
+            NonTerminal variables_native_array_id = new NonTerminal("variables_native_array_id");
             NonTerminal variables_native_id = new NonTerminal("variables_native_id");
 
 
@@ -208,38 +216,57 @@ namespace CompiPascal.traductor.analizador
             header_statements.Rule = constant_optional + statements; //se aplican unicamente al cuerpo de su propia funcion
             body_statements.Rule = main_declarations;
 
-            constant_optional.Rule = constant_declarations //constantes: deben de declararse antes que todas las variables
+
+            constant_optional.Rule = constant_declarations
                 | Empty;
             constant_optional.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
-            constant_declarations.Rule = CONST + constant_variables | Empty; // 
+
+            constant_declarations.Rule = CONST + constant_variables;
+            constant_variables.Rule = MakePlusRule(constant_variables, constant_variable);
+            constant_variable.Rule = ID + EQUAL + expression + SEMI_COLON;
 
 
-            statements.Rule = MakeStarRule(statements, statement);//TODO: verificar que podre hacer en este lugar y que no
+            statements.Rule = MakeStarRule(statements, statement);
             statement.Rule = type_declarations
-                | variables_declarations  //TODO: Un programa puede tener el mismo nombre para variables locales y globales, pero el valor de la variable local dentro de una función tendrá preferencia. //si pues... practicamente se refiere a que si existe una variable local con el mismo nombre que una global se ignora la global y se trabaja siempre sobre la local, sin dar error de que ya existe la variables... simplemente se ignora
+                | variables_declarations  //Un programa puede tener el mismo nombre para variables locales y globales, pero el valor de la variable local dentro de una función tendrá preferencia. //si pues... practicamente se refiere a que si existe una variable local con el mismo nombre que una global se ignora la global y se trabaja siempre sobre la local, sin dar error de que ya existe la variables... simplemente se ignora
                 | functions_declarations
                 | procedures_declarations;
             statement.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
 
 
-            type_declarations.Rule = TYPE + type_variables | Empty; //categoria, o clase de los tipos como integer, real, string
-            variables_declarations.Rule = VAR + variables | Empty; //declaracion: solo afuera de BEGIN-END; 
-            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON; //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array? //adicional, verificar que tenga el retorno, puede: venir dentro de otra instruccion (if) o puede venir afuera de todo y ser valido media vez cumpla con que tenga un retorno o retornos necesarios// como validar eso? //Debe haber una declaración de asignación del tipo - nombre: = expresión  en el cuerpo de la función que asigna un valor al nombre de la función
+            type_declarations.Rule = TYPE + type_variables;
+            variables_declarations.Rule = VAR + variables;
+            //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array? 
+            //adicional, verificar que tenga el retorno, puede: venir dentro de otra instruccion (if) o puede venir afuera de todo y ser valido media vez cumpla con que tenga un retorno o retornos necesarios
+            // como validar eso? //Debe haber una declaración de asignación del tipo - nombre: = expresión  en el cuerpo de la función que asigna un valor al nombre de la función
+            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
-            main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
-            main_declarations.ErrorRule = SyntaxError + SEMI_COLON
-                | SyntaxError + END;
 
             list_id.Rule = MakePlusRule(list_id, COMMA, ID);
 
+            type_variables.Rule = MakePlusRule(type_variables, type_variable);
+            type_variable.Rule = list_id + EQUAL + type_type + SEMI_COLON;
+
+            type_type.Rule = OBJECT + type_declarations_vars + END
+                | variables_native_array_id;
+
+            type_declarations_vars.Rule = MakeStarRule(type_declarations_vars, variables_declarations);
+
             variables.Rule = MakePlusRule(variables, variable);
-            variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON; //indica el tipo de valores que puede tomar la variable //TODO: array tambien?  var n: array[1..10] of integer; (*n is an array of 10 integers *)
-            //TODO: verificar que no puedo inicializar una variable afuera del cuerpo igual que adentro 
-            //afuera no puedo utilizar ID y adentro si
+            variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON;
+
             variable_initialization.Rule = COLON_EQUAL + expression | Empty; //TODO: cuidar si estoy inicializando una variable de tipo de otra variable y quiero asignar un valor que no es, primero se puede inicializar en ese caso? segundo si es posible entonces, tendria que ver primero que tipo es la variable para permitir la inicializacion
-            
+
+            parameters.Rule = MakeStarRule(parameters, SEMI_COLON, parameter); // Estos parámetros pueden tener un tipo de datos estándar, un tipo de datos definido por el usuario o un tipo de datos de subrango.
+            parameter.Rule = list_id + COLON + variables_native_id //pueden ser id's de variables simples o matrices o subprogramas
+                | VAR + list_id + COLON + variables_native_id;
+
+
+            main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
+            main_declarations.ErrorRule = SyntaxError + SEMI_COLON
+                | SyntaxError + END;
 
             begin_end_statements.Rule = MakeStarRule(begin_end_statements, begin_end_statement);
             begin_end_statement.Rule = variable_ini
@@ -249,33 +276,26 @@ namespace CompiPascal.traductor.analizador
                 | while_statements
                 | for_do_statements
                 | repeat_statements
-                | BREAK + SEMI_COLON //TODO: validar que este dentro de un bucle o un case
-                | CONTINUE + SEMI_COLON //TODO: validar que este dentro de un bucle //Para el ciclo for-do , la instrucción continue hace que se ejecuten las porciones de prueba e incremento condicional del ciclo. Para los bucles while-do y repeat ... until , la instrucción continue hace que el control del programa pase a las pruebas condicionales.
-                | function_call + SEMI_COLON
-                | procedure_call + SEMI_COLON
-                | array_call + SEMI_COLON
+                | BREAK + SEMI_COLON //validar que este dentro de un bucle o un case
+                | CONTINUE + SEMI_COLON //validar que este dentro de un bucle //Para el ciclo for-do , la instrucción continue hace que se ejecuten las porciones de prueba e incremento condicional del ciclo. Para los bucles while-do y repeat ... until , la instrucción continue hace que el control del programa pase a las pruebas condicionales.
+                                        //| function_call + SEMI_COLON //default
+                | procedure_call + SEMI_COLON //default               
+                | exit_statements // return //default
+                | return_statements // return //default
+                | write_statements
+                | graficar_statements
                 | Empty;
             begin_end_statement.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
 
-            //TODO: verificacion de asignacion: la expresion variables(dentro/fuera) del cuerpo
-            variable_ini.Rule = ID + COLON_EQUAL + expression + SEMI_COLON;
+
+            //expression 1 = id;
+            variable_ini.Rule = expression + COLON_EQUAL + expression + SEMI_COLON;
             //| ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON; //TODO: (funciones) ver que me conviene mas si definirlo como una llamada a funcion o dejarlo como un id, como si fuera una asignacion normal, tomando en cuenta que es el return de una funcion [supuestamente ya definido (trabajado) asi que no tendria que hacer mas porque ya lo tendria que tener]
 
-            array_ini.Rule = ID + LEFT_BRACKET + expression + RIGHT_BRACKET + COLON_EQUAL + expression + SEMI_COLON;
+            array_ini.Rule = expression + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + COLON_EQUAL + expression + SEMI_COLON;
 
-
-            parameters.Rule = MakeStarRule(parameters, SEMI_COLON ,parameter); // Estos parámetros pueden tener un tipo de datos estándar, un tipo de datos definido por el usuario o un tipo de datos de subrango.
-            parameter.Rule = list_id + COLON + variables_native_id //pueden ser id's de variables simples o matrices o subprogramas
-                | VAR + list_id + COLON + variables_native_id;
-
-            type_variables.Rule = MakePlusRule(type_variables, type_variable);
-            type_variable.Rule = list_id + EQUAL + variables_native_array + SEMI_COLON; //TODO: si viene una lista y es de tipo array se puede inicializar todas o solo inicializo la primera
-
-            //TODO: verificar en el semantico que 'expresion' solo seran valores de tipo base y id de otras constantes... no arrays
-            constant_variables.Rule = MakePlusRule(constant_variables, constant_variable);
-            constant_variable.Rule = ID + EQUAL + expression + SEMI_COLON;
-
+            #region bien
             if_statements.Rule = IF + expression + THEN + main_declarations
                 | IF + expression + THEN + main_declarations + ELSE + main_declarations
                 | IF + expression + THEN + main_declarations + else_if_list + ELSE + main_declarations;
@@ -283,103 +303,100 @@ namespace CompiPascal.traductor.analizador
             else_if_list.Rule = MakePlusRule(else_if_list, else_if);
             else_if.Rule = ELSE + IF + expression + THEN + main_declarations;
 
-            #region case
-            /*
-             * Todas las constantes de casos deben tener el mismo tipo.
-             * If no else part is present, and no case constant matches the expression value, program flow continues after the final end
-             * los case's/else pueden tener el bloque BEGIN - END
-             * integers, characters, boolean or enumerated data items
-             * The case label for a case must be the same data type as the expression in the case statement, and it must be a constant or a literal.
-             * TODO: verificar si los cases pueden tener una variable o solo valores ya conocidos
-             */
-
             case_statements.Rule = CASE + expression + OF + case_list + cases_words + END + SEMI_COLON;
 
             case_list.Rule = MakePlusRule(case_list, cases);
-            cases.Rule = values_native + COLON + main_declarations;//no se permite lista de valores en casos en Compipascal //TODO: no se puede id?
+            cases.Rule = expression + COLON + main_declarations + SEMI_COLON;
 
-            cases_words.Rule = ELSE + main_declarations 
-                | OTHERWISE + main_declarations
+            cases_words.Rule = ELSE + main_declarations + SEMI_COLON
+                | OTHERWISE + main_declarations + SEMI_COLON
                 | Empty;
 
-
-            #endregion
-
             while_statements.Rule = WHILE + expression + DO + main_declarations + SEMI_COLON;
-            for_do_statements.Rule = FOR + ID + COLON_EQUAL + expression + TO + expression + DO + main_declarations + SEMI_COLON;
+
+            //expression 1 = id
+            for_do_statements.Rule = FOR + expression + COLON_EQUAL + expression + TO + expression + DO + main_declarations + SEMI_COLON;
+
             //TODO: aqui validar que en lugar de expresion, solo se acepte condicionales
             repeat_statements.Rule = REPEAT + main_declarations + UNTIL + expression + SEMI_COLON;
 
-            function_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
-            expression_list.Rule = MakeStarRule(expression_list, COMMA ,expression);
+            #endregion finBien
 
+            //function_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
             procedure_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
+            expression_list.Rule = MakeStarRule(expression_list, COMMA, expression);
 
-            array_call.Rule = ID + LEFT_BRACKET + expression + RIGHT_BRACKET;
+            exit_statements.Rule = EXIT + LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS + SEMI_COLON;
+            return_statements.Rule = ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON;
+
+            #region 2bien
+            write_statements.Rule = WRITE + LEFT_PARENTHESIS + expression_list_plus + RIGHT_PARENTHESIS + SEMI_COLON
+                | WRITELN + LEFT_PARENTHESIS + expression_list_plus + RIGHT_PARENTHESIS + SEMI_COLON;
+
+            graficar_statements.Rule = GRAFICAR_TS + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + SEMI_COLON;
+            #endregion fin2Bien
+
+            expression.Rule = expression + PLUS + expression //a
+                | expression + MINUS + expression//a
+                | expression + ASTERISK + expression//a
+                | expression + SLASH + expression//a
+                | expression + MODULUS + expression//a
+
+                | expression + EQUAL + expression //r
+                | expression + LESS_THAN_GREATER_THAN + expression //r
+                | expression + GREATER_THAN + expression //r
+                | expression + LESS_THAN + expression //r
+                | expression + GREATER_THAN_EQUAL + expression //r
+                | expression + LESS_THAN_EQUAL + expression //r
+
+                | LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS
+
+                | expression + AND + expression //lo
+                | expression + OR + expression //lo
+
+                | NOT + expression //lo
+
+                | MINUS + expression //a
+                | PLUS + expression //a
+
+                | ID | CADENA | NUMBER | TRUE | FALSE
+
+                | ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS
+
+                | expression + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET
+
+                | expression + PERIOD + expression //|types-objects 
+                | expression + PERIOD_PERIOD + expression;
 
 
-            //TODO: verificar que podre hacer en este lugar y que no
-            instructions.Rule = MakePlusRule(instructions, instruction);
-            instruction.Rule = Empty;
-
-            expression.Rule = aritmeticas | relacionales | logicas;
-
-            aritmeticas.Rule = MINUS + aritmeticas
-                | PLUS + aritmeticas
-                | aritmeticas + PLUS + aritmeticas //cadena
-                | aritmeticas + MINUS + aritmeticas
-                | aritmeticas + ASTERISK + aritmeticas
-                | aritmeticas + SLASH + aritmeticas
-                | aritmeticas + MODULUS + aritmeticas
-                | LEFT_PARENTHESIS + aritmeticas + RIGHT_PARENTHESIS
-                | expression_terminales;
-
-            relacionales.Rule = relacionales + EQUAL + relacionales
-                | relacionales + LESS_THAN_GREATER_THAN + relacionales
-                | relacionales + GREATER_THAN + relacionales
-                | relacionales + LESS_THAN + relacionales
-                | relacionales + GREATER_THAN_EQUAL + relacionales
-                | relacionales + LESS_THAN_EQUAL + relacionales
-                | LEFT_PARENTHESIS + relacionales + RIGHT_PARENTHESIS
-                | expression_terminales;
-
-            logicas.Rule = logicas + AND + logicas //bool
-                | logicas + OR + logicas //bool
-                | logicas + NOT + logicas //bool
-                | LEFT_PARENTHESIS + logicas + RIGHT_PARENTHESIS
-                | expression_terminales;//bool
-
-            expression_terminales.Rule = ID | CADENA | NUMBER 
-                | TRUE | FALSE | function_call | array_call //| VOID  //|types-objects 
-                | NUMBER + PERIOD_PERIOD + NUMBER; // char (palabra reservada) //TODO: array_call  tamanio fijo, variables mismo tipo, declarar, inicializar, acceder, indice para los arrays?
-
-
-            values_native.Rule = CADENA | NUMBER | TRUE | FALSE; //valores
+            values_native.Rule = CADENA | NUMBER | TRUE | FALSE;
             values_native_id.Rule = values_native | ID;
-            variables_native.Rule = INTEGER | REAL | BOOLEAN | CHAR | STRING; //native reserved words
-            variables_array.Rule = ARRAY + LEFT_BRACKET + expression + RIGHT_BRACKET + OF + variables_native; //array //tipo string[], int[], id[] //TODO: tipos de elementos para las matrices solo nativos o tambien otros? por el momento solo lo tengo nativos //despues del OF tambien acepta esto 1 .. 26
-            variables_native_array.Rule = variables_native | variables_array; //native, array
-            variables_native_id.Rule = variables_native | ID; //native, id
+
+
+            variables_native.Rule = STRING | INTEGER | REAL | BOOLEAN;
+
+            variables_array.Rule = ARRAY + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + OF + variables_native_id;
+            expression_list_plus.Rule = MakePlusRule(expression_list_plus, COMMA, expression);
+            //object
+
+            variables_native_array.Rule = variables_native | variables_array;
+            variables_native_array_id.Rule = variables_native | variables_array | ID;
+            variables_native_id.Rule = variables_native | ID; //primitivo, array, object
             //TODO: verificar que en las fun/proc se puede
             //enviar parametros con un tipo predefinido por el usuario
             #endregion
 
             #region PREFERENCIAS
-            /* Configuraciones especiales necesarias para el uso de Irony. */
             this.Root = ini;
-            //MarkTransient(instruccion);
-
             //precedencia y asociatividad
-            //TRUE, FALSE?
             RegisterOperators(4, NOT); //~
             RegisterOperators(3, ASTERISK, SLASH, DIV, MOD, AND); //&
             RegisterOperators(2, PLUS, MINUS, OR); // |, !
             RegisterOperators(1, EQUAL, LESS_THAN_GREATER_THAN, LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN, GREATER_THAN_EQUAL, IN); //or else, and then
-
             //MarkPunctuation("(", ")", "[", "]");
             //RegisterOperators(1, Associativity.Left,  MAS, MENOS);
+            //MarkTransient(aritmeticas, relacionales, logicas);
             #endregion
-
         }
     }
 }

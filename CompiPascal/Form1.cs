@@ -1,5 +1,6 @@
 ﻿
 using CompiPascal.interprete.analizador;
+using CompiPascal.traductor.analizador;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,24 +18,27 @@ namespace CompiPascal
     public partial class Form1 : Form
     {
         SintacticoInterprete sintacticoInter;
+        SintacticoTraductor sintacticoTraductor;
 
         public Form1()
         {
             InitializeComponent();
             sintacticoInter = new SintacticoInterprete();
+            sintacticoTraductor = new SintacticoTraductor();
         }
 
         private void Translate_Click(object sender, EventArgs e)
         {
-            sintacticoInter.analizar(EditorOutput(), this);
-            ConsoleInput(sintacticoInter.Message());
-            ErrorTable();       
-
+            sintacticoTraductor.analizar(EditorOutput(), this);
+            ConsoleInput(sintacticoTraductor.Message());
+            ErrorTableTraductor();
         }
 
         private void Run_Click(object sender, EventArgs e)
         {
-
+            sintacticoInter.analizar(EditorOutput(), this);
+            ConsoleInput(sintacticoInter.Message());
+            ErrorTable();
         }
 
         private void Load_Click(object sender, EventArgs e)
@@ -61,27 +65,6 @@ namespace CompiPascal
 
         }
 
-        private void ReportAST_Click(object sender, EventArgs e)
-        {
-            sintacticoInter.graficar(EditorOutput());
-            ConsoleInput(sintacticoInter.Message());
-            ErrorTable();
-
-        }
-
-        private void ReportTS_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void ErrorsTranslate_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ErrorsRun_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void EditorInput(string msn) => textBox1.Text = msn;
 
@@ -92,6 +75,7 @@ namespace CompiPascal
         private void ClearConsole_Click(object sender, EventArgs e)
         {
             sintacticoInter.ClearMessage();
+            sintacticoTraductor.ClearMessage();
             textBox2.Text = string.Empty;
         }
 
@@ -133,6 +117,45 @@ namespace CompiPascal
             }
 
             sintacticoInter.ClearErrores();
+        }
+        private void ErrorTableTraductor()
+        {
+            DataTable ss = new DataTable();
+            ss.Columns.Add("Tipo");
+            ss.Columns.Add("Descripcion");
+            ss.Columns.Add("Linea");
+            ss.Columns.Add("Columna");
+            ss.Columns.Add("Extra");
+
+            DataRow row;
+
+            dataGridView1.Rows.Clear();
+            dataGridView1.Refresh();
+
+            for (int i = 0; i < sintacticoTraductor.Errores().GetLength(0); i++)
+            {
+                row = ss.NewRow();
+                row["Tipo"] = sintacticoTraductor.Errores()[i, 0];
+                row["Descripcion"] = sintacticoTraductor.Errores()[i, 1];
+                row["Linea"] = sintacticoTraductor.Errores()[i, 2];
+                row["Columna"] = sintacticoTraductor.Errores()[i, 3];
+                row["Extra"] = sintacticoTraductor.Errores()[i, 4];
+                ss.Rows.Add(row);
+
+            }
+
+
+            foreach (DataRow drow in ss.Rows)
+            {
+                int num = dataGridView1.Rows.Add();
+                dataGridView1.Rows[num].Cells[0].Value = drow["Tipo"].ToString();
+                dataGridView1.Rows[num].Cells[1].Value = drow["Descripcion"].ToString();
+                dataGridView1.Rows[num].Cells[2].Value = drow["Linea"].ToString();
+                dataGridView1.Rows[num].Cells[3].Value = drow["Columna"].ToString();
+                dataGridView1.Rows[num].Cells[4].Value = drow["Extra"].ToString();
+            }
+
+            sintacticoTraductor.ClearErrores();
 
         }
 
@@ -143,5 +166,29 @@ namespace CompiPascal
         }
 
 
+        private void ReportAST_Click(object sender, EventArgs e)
+        {
+            sintacticoInter.graficar(EditorOutput());
+            ConsoleInput(sintacticoInter.Message());
+            ErrorTable();
+
+        }
+
+        private void ReportTS_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ASTTraduccion_Click(object sender, EventArgs e)
+        {
+            sintacticoTraductor.graficar(EditorOutput());
+            ConsoleInput(sintacticoTraductor.Message());
+            ErrorTableTraductor();
+        }
+
+        private void TSTraduccion_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

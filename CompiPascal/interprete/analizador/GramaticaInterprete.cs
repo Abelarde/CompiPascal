@@ -375,9 +375,9 @@ namespace CompiPascal.interprete.analizador
 
 
             variables_native.Rule = STRING | INTEGER | REAL | BOOLEAN;
-
             variables_array.Rule = ARRAY + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + OF + variables_native_id; 
             expression_list_plus.Rule = MakePlusRule(expression_list_plus, COMMA, expression);
+
             //object
 
             variables_native_array.Rule = variables_native | variables_array;

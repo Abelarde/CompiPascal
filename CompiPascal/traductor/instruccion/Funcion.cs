@@ -1,12 +1,12 @@
-﻿using CompiPascal.interprete.analizador.simbolo;
-using CompiPascal.interprete.expresion;
-using CompiPascal.interprete.simbolo;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.analizador.simbolo;
+using CompiPascal.traductor.expresion;
+using CompiPascal.traductor.simbolo;
+using CompiPascal.traductor.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.instruccion
+namespace CompiPascal.traductor.instruccion
 {
     class Funcion : Instruccion
     {
@@ -32,28 +32,17 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            int totalParametros = 0;
-            foreach (ParametroInst parametros in lista_parametros)
-            {
-                foreach(string id in parametros.lista_ids)
-                {
-                    totalParametros++;
-                }
-            }
 
-            if (totalParametros == valores_parametros_simbolos.Count)
+            if (lista_parametros.Count == valores_parametros_simbolos.Count)
             {
-                Parametro[] lista_param = new Parametro[totalParametros];
+                ParametroInst[] lista_parametroInst = new ParametroInst[lista_parametros.Count];
                 Simbolo[] lista_valores = new Simbolo[valores_parametros_simbolos.Count];
 
                 int i = 0;
                 foreach (ParametroInst parametroInsta in lista_parametros)
                 {
-                    foreach (string id in parametroInsta.lista_ids)
-                    {
-                        lista_param[i] = new Parametro(id, parametroInsta.tipo_nativo_id, parametroInsta.isReferencia);
-                        i++;
-                    }
+                    lista_parametroInst[i] = parametroInsta;
+                    i++;
                 }
 
                 i = 0;
@@ -63,26 +52,31 @@ namespace CompiPascal.interprete.instruccion
                     i++;
                 }
 
-                for (int j = 0; j < lista_param.Length; j++)
+                for (int j = 0; j < lista_parametroInst.Length; j++)
                 {
-                    if (entorno.getVariable(lista_param[j].id) == null)
+                    //lista_parametroInst[j]; //LinkedList<string> lista_ids, string tipo_nativo_id, bool isReferencia
+                    foreach (string id in lista_parametroInst[j].lista_ids)
                     {
-                        if (lista_param[j].isReferencia)
+                        if (entorno.getVariable(id) == null)
                         {
-                            Simbolo nueva_variable = lista_valores[j];
-                            entorno.guardarVariable(lista_param[j].id, nueva_variable);
-                            //if (entorno.getGlobal().getVariable(lista_valores[j].id) != null)
-                            //   entorno.guardarVariable(lista_valores[j].id, entorno.getGlobal().getVariable(lista_valores[j].id));
+                            if (lista_parametroInst[j].isReferencia)
+                            {
+                                Simbolo nueva_variable = lista_valores[j];
+                                entorno.guardarVariable(id, nueva_variable);
+                                //if (entorno.getGlobal().getVariable(lista_valores[j].id) != null)
+                                //   entorno.guardarVariable(lista_valores[j].id, entorno.getGlobal().getVariable(lista_valores[j].id));
+                            }
+                            else
+                            {
+                                Simbolo nueva_variable = new Simbolo(new Tipo(lista_parametroInst[j].tipo_nativo_id, entorno), id, lista_valores[j].valor);
+                                entorno.guardarVariable(nueva_variable.id, nueva_variable);
+
+                            }
                         }
                         else
-                        {
-                            Simbolo nueva_variable = new Simbolo(new Tipo(lista_param[j].tipo_nativo_id, entorno), lista_param[j].id, lista_valores[j].valor);
-                            entorno.guardarVariable(nueva_variable.id, nueva_variable);
-
-                        }
+                            throw new ErrorPascal("[Declaracion-Asignacion] Ya existe la variable " + id, 0, 0, "semantico");
                     }
-                    else
-                        throw new ErrorPascal("[Declaracion-Asignacion] Ya existe la variable " + lista_param[j].id, 0, 0, "semantico");
+
                 }
 
             }
@@ -115,20 +109,6 @@ namespace CompiPascal.interprete.instruccion
                 } 
             }
             return guardado;
-        }
-    }
-
-    class Parametro
-    {
-        public string id;
-        public string tipo_nativo_id;
-        public bool isReferencia;
-
-        public Parametro(string id, string tipo_nativo_id, bool isReferencia)
-        {
-            this.id = id;
-            this.tipo_nativo_id = tipo_nativo_id;
-            this.isReferencia = isReferencia;
         }
     }
 }

@@ -382,7 +382,7 @@ namespace CompiPascal.interprete.analizador
         {
             string nombre_procedimiento = procedures_declarations.ChildNodes.ElementAt(1).Token.Text;
             
-            ParametroInst[] parametros = parameters(procedures_declarations.ChildNodes.ElementAt(3));
+            LinkedList<ParametroInst> lista_parametros = parameters(procedures_declarations.ChildNodes.ElementAt(3));
 
             LinkedList<Instruccion> procedure_header_instrucciones = new LinkedList<Instruccion>();
             header_statements(procedure_header_instrucciones, procedures_declarations.ChildNodes.ElementAt(6));
@@ -390,15 +390,14 @@ namespace CompiPascal.interprete.analizador
             LinkedList<Instruccion> procedure_body_instrucciones = new LinkedList<Instruccion>();
             body_statements(procedure_body_instrucciones, procedures_declarations.ChildNodes.ElementAt(7));
 
-            return new ProcedureInstruccion(nombre_procedimiento, parametros,
+            return new ProcedureInstruccion(nombre_procedimiento, lista_parametros,
                 procedure_header_instrucciones, procedure_body_instrucciones);
         }
         private Instruccion functions_declarations(ParseTreeNode functions_declarations)
         {
             string nombre_funcion = functions_declarations.ChildNodes.ElementAt(1).Token.Text;
 
-            //null o no
-            ParametroInst[] parametros = parameters(functions_declarations.ChildNodes.ElementAt(3));
+            LinkedList<ParametroInst> lista_parametros = parameters(functions_declarations.ChildNodes.ElementAt(3));
 
             string tipo_funcion = variables_native_id(functions_declarations.ChildNodes.ElementAt(6));
 
@@ -408,7 +407,7 @@ namespace CompiPascal.interprete.analizador
             LinkedList<Instruccion> function_body_instrucciones = new LinkedList<Instruccion>();
             body_statements(function_body_instrucciones, functions_declarations.ChildNodes.ElementAt(9));
 
-            return new FunctionInstruccion(nombre_funcion, parametros, tipo_funcion,
+            return new FunctionInstruccion(nombre_funcion, lista_parametros, tipo_funcion,
                 function_header_instrucciones, function_body_instrucciones);
 
         }
@@ -662,40 +661,30 @@ namespace CompiPascal.interprete.analizador
 
             return lista_ids;
         }
-        private ParametroInst[] parameters(ParseTreeNode parameters)
+        private LinkedList<ParametroInst> parameters(ParseTreeNode parameters)
         {
-            ParametroInst.totalVariables = 0;
+            LinkedList<ParametroInst> lista_parametros = new LinkedList<ParametroInst>();
 
-            if (parameters.ChildNodes.Count >0)
+            foreach (ParseTreeNode parameter in parameters.ChildNodes)
             {
-                ParametroInst[] parametros = new ParametroInst[parameters.ChildNodes.Count];
+                LinkedList<string> ids = null;
+                string tipo_nativo_id = string.Empty;
 
-                int i = 0;
-                foreach (ParseTreeNode parameter in parameters.ChildNodes)
+                if (parameter.ChildNodes.ElementAt(0).Term.Name == "VAR")//referencia
                 {
-                    LinkedList<string> ids = null;
-                    string tipo_nativo_id = string.Empty;
-
-                    if (parameter.ChildNodes.ElementAt(0).Term.Name == "VAR")//referencia
-                    {
-                        ids = list_id(parameter.ChildNodes.ElementAt(1));
-                        tipo_nativo_id = variables_native_id(parameter.ChildNodes.ElementAt(3));
-                        parametros[i] = new ParametroInst(ids, tipo_nativo_id, true);
-                    }
-                    else//valor
-                    {
-                        ids = list_id(parameter.ChildNodes.ElementAt(0));
-                        tipo_nativo_id = variables_native_id(parameter.ChildNodes.ElementAt(2));
-                        parametros[i] = new ParametroInst(ids, tipo_nativo_id, false);
-                    }
-
-                    ParametroInst.totalVariables = ParametroInst.totalVariables + ids.Count;
-
-                    i++;
+                    ids = list_id(parameter.ChildNodes.ElementAt(1));
+                    tipo_nativo_id = variables_native_id(parameter.ChildNodes.ElementAt(3));
+                    lista_parametros.AddLast(new ParametroInst(ids, tipo_nativo_id, true));
                 }
-                return parametros;
+                else//valor
+                {
+                    ids = list_id(parameter.ChildNodes.ElementAt(0));
+                    tipo_nativo_id = variables_native_id(parameter.ChildNodes.ElementAt(2));
+                    lista_parametros.AddLast(new ParametroInst(ids, tipo_nativo_id, false));
+                }
             }
-            return null;
+
+            return lista_parametros;
         }
 
         private void expression_list(LinkedList<Expresion> lista_expresiones, ParseTreeNode expression_list)

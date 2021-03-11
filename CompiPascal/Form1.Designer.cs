@@ -42,8 +42,6 @@ namespace CompiPascal
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.ErrorsRun = new System.Windows.Forms.Button();
-            this.ErrorsTranslate = new System.Windows.Forms.Button();
             this.ReportTS = new System.Windows.Forms.Button();
             this.ClearConsole = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -53,18 +51,22 @@ namespace CompiPascal
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ASTTraduccion = new System.Windows.Forms.Button();
+            this.TSTraduccion = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.Run);
             this.groupBox1.Controls.Add(this.Translate);
-            this.groupBox1.Location = new System.Drawing.Point(22, 426);
+            this.groupBox1.Location = new System.Drawing.Point(22, 428);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(184, 59);
             this.groupBox1.TabIndex = 0;
@@ -105,7 +107,7 @@ namespace CompiPascal
             // 
             this.groupBox2.Controls.Add(this.Save);
             this.groupBox2.Controls.Add(this.Load);
-            this.groupBox2.Location = new System.Drawing.Point(222, 426);
+            this.groupBox2.Location = new System.Drawing.Point(222, 428);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(187, 59);
             this.groupBox2.TabIndex = 1;
@@ -142,17 +144,17 @@ namespace CompiPascal
             // 
             // textBox2
             // 
-            textBox2.Location = new System.Drawing.Point(481, 57);
-            textBox2.Multiline = true;
-            textBox2.Name = "textBox2";
-            textBox2.Size = new System.Drawing.Size(391, 349);
-            textBox2.TabIndex = 3;
+            this.textBox2.Location = new System.Drawing.Point(481, 26);
+            this.textBox2.Multiline = true;
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(391, 380);
+            this.textBox2.TabIndex = 3;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Yu Gothic UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(617, 26);
+            this.label1.Location = new System.Drawing.Point(424, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(95, 20);
             this.label1.TabIndex = 4;
@@ -164,36 +166,14 @@ namespace CompiPascal
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.ErrorsRun);
             this.groupBox3.Controls.Add(this.ReportAST);
-            this.groupBox3.Controls.Add(this.ErrorsTranslate);
             this.groupBox3.Controls.Add(this.ReportTS);
-            this.groupBox3.Location = new System.Drawing.Point(424, 426);
+            this.groupBox3.Location = new System.Drawing.Point(424, 428);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(350, 59);
+            this.groupBox3.Size = new System.Drawing.Size(174, 59);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Reports";
-            // 
-            // ErrorsRun
-            // 
-            this.ErrorsRun.Location = new System.Drawing.Point(272, 22);
-            this.ErrorsRun.Name = "ErrorsRun";
-            this.ErrorsRun.Size = new System.Drawing.Size(75, 23);
-            this.ErrorsRun.TabIndex = 3;
-            this.ErrorsRun.Text = "Errors Run";
-            this.ErrorsRun.UseVisualStyleBackColor = true;
-            this.ErrorsRun.Click += new System.EventHandler(this.ErrorsRun_Click);
-            // 
-            // ErrorsTranslate
-            // 
-            this.ErrorsTranslate.Location = new System.Drawing.Point(168, 22);
-            this.ErrorsTranslate.Name = "ErrorsTranslate";
-            this.ErrorsTranslate.Size = new System.Drawing.Size(98, 23);
-            this.ErrorsTranslate.TabIndex = 1;
-            this.ErrorsTranslate.Text = "Errors Translate";
-            this.ErrorsTranslate.UseVisualStyleBackColor = true;
-            this.ErrorsTranslate.Click += new System.EventHandler(this.ErrorsTranslate_Click);
+            this.groupBox3.Text = "Reports Run";
             // 
             // ReportTS
             // 
@@ -218,7 +198,7 @@ namespace CompiPascal
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.ClearConsole);
-            this.groupBox4.Location = new System.Drawing.Point(789, 426);
+            this.groupBox4.Location = new System.Drawing.Point(789, 428);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(83, 59);
             this.groupBox4.TabIndex = 7;
@@ -236,7 +216,7 @@ namespace CompiPascal
             this.Column3,
             this.Column4,
             this.Column5});
-            this.dataGridView1.Location = new System.Drawing.Point(22, 501);
+            this.dataGridView1.Location = new System.Drawing.Point(20, 503);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowTemplate.Height = 25;
@@ -274,16 +254,48 @@ namespace CompiPascal
             this.Column5.Name = "Column5";
             this.Column5.ReadOnly = true;
             // 
+            // ASTTraduccion
+            // 
+            this.ASTTraduccion.Location = new System.Drawing.Point(6, 22);
+            this.ASTTraduccion.Name = "ASTTraduccion";
+            this.ASTTraduccion.Size = new System.Drawing.Size(75, 23);
+            this.ASTTraduccion.TabIndex = 3;
+            this.ASTTraduccion.Text = "AST";
+            this.ASTTraduccion.UseVisualStyleBackColor = true;
+            this.ASTTraduccion.Click += new System.EventHandler(this.ASTTraduccion_Click);
+            // 
+            // TSTraduccion
+            // 
+            this.TSTraduccion.Location = new System.Drawing.Point(87, 22);
+            this.TSTraduccion.Name = "TSTraduccion";
+            this.TSTraduccion.Size = new System.Drawing.Size(75, 23);
+            this.TSTraduccion.TabIndex = 4;
+            this.TSTraduccion.Text = "TS";
+            this.TSTraduccion.UseVisualStyleBackColor = true;
+            this.TSTraduccion.Click += new System.EventHandler(this.TSTraduccion_Click);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.TSTraduccion);
+            this.groupBox5.Controls.Add(this.ASTTraduccion);
+            this.groupBox5.Location = new System.Drawing.Point(610, 428);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(172, 59);
+            this.groupBox5.TabIndex = 9;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Reportes Traduccion";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(896, 650);
+            this.ClientSize = new System.Drawing.Size(896, 655);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label1);
-            this.Controls.Add(textBox2);
+            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -294,6 +306,7 @@ namespace CompiPascal
             this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -314,17 +327,18 @@ namespace CompiPascal
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button ErrorsTranslate;
         private System.Windows.Forms.Button ReportTS;
         private System.Windows.Forms.Button ClearConsole;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Button ErrorsRun;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.Button ASTTraduccion;
+        private System.Windows.Forms.Button TSTraduccion;
+        private System.Windows.Forms.GroupBox groupBox5;
     }
 }
 

@@ -99,11 +99,13 @@ program PruebaDeFactorial;
 	begin
                    writeln('en el if: ',num);
      	factorial() := 1;
+                   writeln('if: todavia lo imprimo');  
 	end
    else
 	begin
                    writeln('en el else: ',num);
      	factorial() := num * factorial( num-1 );  
+                   writeln('else: todavia lo imprimo');  
 	end
  end;
 
