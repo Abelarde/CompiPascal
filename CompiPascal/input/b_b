@@ -34,10 +34,6 @@ begin
   writeln (mat[0,0]); //mat[0][0]
 end.
 
-
-
-
-
 program Hello;
 
 type
@@ -69,3 +65,51 @@ arreglo2[5]:= 999;
 writeln(arreglo2[6]);
 end.
 
+
+program PruebaDeFactorial;
+ 
+ var numero: integer;
+
+ function factorial( num : integer) : integer;
+ begin
+   if num = 1 then
+	begin
+     	factorial() := 1;
+	end
+   else
+	begin
+     	factorial() := num * factorial( num-1 );  
+	end
+ end;
+
+ begin
+   numero := 3;
+   writeln( 'Su factorial es ', factorial(numero));
+ end.
+
+
+program PruebaDeFactorial;
+ 
+ var numero: integer;
+
+ function factorial( num : integer) : integer;
+ begin
+   writeln('adentro de la funcion: ',num);   
+   if num = 1 then
+	begin
+                   writeln('en el if: ',num);
+     	factorial() := 1;
+	end
+   else
+	begin
+                   writeln('en el else: ',num);
+     	factorial() := num * factorial( num-1 );  
+	end
+ end;
+
+ begin
+   numero := 3;
+   writeln(numero);
+   writeln( 'Su factorial es ', factorial(numero));
+   writeln(numero);
+ end.

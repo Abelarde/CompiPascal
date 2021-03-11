@@ -279,7 +279,7 @@ namespace CompiPascal.interprete.analizador
                 | repeat_statements
                 | BREAK + SEMI_COLON //validar que este dentro de un bucle o un case
                 | CONTINUE + SEMI_COLON //validar que este dentro de un bucle //Para el ciclo for-do , la instrucción continue hace que se ejecuten las porciones de prueba e incremento condicional del ciclo. Para los bucles while-do y repeat ... until , la instrucción continue hace que el control del programa pase a las pruebas condicionales.
-                | function_call + SEMI_COLON //default
+                //| function_call + SEMI_COLON //default
                 | procedure_call + SEMI_COLON //default               
                 | exit_statements // return //default
                 | return_statements // return //default
@@ -323,13 +323,12 @@ namespace CompiPascal.interprete.analizador
             
             #endregion finBien
 
-            function_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
+            //function_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
             procedure_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
             expression_list.Rule = MakeStarRule(expression_list, COMMA, expression);
 
             exit_statements.Rule = EXIT + LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS + SEMI_COLON;
-
-            return_statements.Rule = expression + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON;
+            return_statements.Rule = ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON;
             
             #region 2bien
             write_statements.Rule = WRITE + LEFT_PARENTHESIS + expression_list_plus + RIGHT_PARENTHESIS + SEMI_COLON
@@ -363,7 +362,7 @@ namespace CompiPascal.interprete.analizador
 
                 | ID | CADENA | NUMBER | TRUE | FALSE 
                 
-                | function_call 
+                | ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS
 
                 | expression + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET 
 

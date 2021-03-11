@@ -8,19 +8,18 @@ namespace CompiPascal.interprete.instruccion
     class ProcedureInstruccion : Instruccion
     {
         private string id;
-        private LinkedList<string> parametros_valor;
-        private LinkedList<string> parametros_referencia;
+
+        private ParametroInst[] parametros;
 
         private LinkedList<Instruccion> header_instrucciones;
         private LinkedList<Instruccion> body_instrucciones;
 
 
-        public ProcedureInstruccion(string id, LinkedList<string> parametros_referencia, LinkedList<string> parametros_valor,
+        public ProcedureInstruccion(string id, ParametroInst[] parametros,
             LinkedList<Instruccion> header_instrucciones, LinkedList<Instruccion> body_instrucciones)
         {
             this.id = id;
-            this.parametros_referencia = parametros_referencia;
-            this.parametros_valor = parametros_valor;
+            this.parametros = parametros; 
             this.header_instrucciones = header_instrucciones;
             this.body_instrucciones = body_instrucciones;
         }

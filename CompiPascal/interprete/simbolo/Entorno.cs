@@ -27,7 +27,8 @@ namespace CompiPascal.interprete.simbolo
         Dictionary<string, Simbolo> variables;
 
 
-        Dictionary<string, FunctionInstruccion> funciones;
+        Dictionary<string, Funcion> funciones;
+
         Dictionary<string, ProcedureInstruccion> metodos;
         Entorno padre;
 
@@ -36,7 +37,7 @@ namespace CompiPascal.interprete.simbolo
         {
             this.padre = padre;
             this.variables = new Dictionary<string, Simbolo>();
-            this.funciones = new Dictionary<string, FunctionInstruccion>();
+            this.funciones = new Dictionary<string, Funcion>();
             this.metodos = new Dictionary<string, ProcedureInstruccion>();
         }
 
@@ -81,7 +82,7 @@ namespace CompiPascal.interprete.simbolo
         /// </summary>
         /// <param name="id">id de la funcion</param>
         /// <param name="funcion">simbolo que representa a la funcion</param>
-        public void guardarFuncion(string id, FunctionInstruccion funcion)
+        public void guardarFuncion(string id, Funcion funcion)
         {
             if (!getGlobal().funciones.ContainsKey(id))
                 getGlobal().funciones.Add(id, funcion);
@@ -96,7 +97,7 @@ namespace CompiPascal.interprete.simbolo
         /// </summary>
         /// <param name="id">id de la funcion a buscar</param>
         /// <returns>la FunctionInstruccion o null</returns>
-        public FunctionInstruccion getFuncion(string id)
+        public Funcion getFuncion(string id)
         {
             if (getGlobal().funciones.ContainsKey(id))
                 return getGlobal().funciones[id];

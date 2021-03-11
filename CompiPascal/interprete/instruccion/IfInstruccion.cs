@@ -56,51 +56,63 @@ namespace CompiPascal.interprete.instruccion
 
                 if (Convert.ToBoolean(condicion.valor))
                 {
-                    //Entorno aqui iria si tuvieramos que manejar los ambitos en cada instruccion pero pascal funciona diferente
                     foreach (Instruccion instruccion in if_lista_instrucciones)
                     {
                         if (instruccion != null)
-                            instruccion.ejecutar(entorno);
+                        {
+                            object resultado = instruccion.ejecutar(entorno);
+                            //if (resultado != null)
+                            //{
+                            //    if (resultado is ExitInstruccion || resultado is ReturnInstruccion)
+                            //        return resultado;
+                            //}
+                        }   
                     }
-                    return null;//me salgo ya
+                    return null;
                 }
                 else
                 {
-
                     if (else_if_lista != null)
                     {
                         foreach (ElseIf else_if in else_if_lista)
                         {
                             if (else_if != null)
-                            {//aqui tendria que crear un entorno nuevo si fuera otro tipo de lenguaje
-                                else_if.ejecutar(entorno);
+                            {
+                                object resultado = else_if.ejecutar(entorno);
+                                //if (resultado != null)
+                                //{
+                                //    if (resultado is ExitInstruccion || resultado is ReturnInstruccion)
+                                //        return resultado;
+                                //}
+
                                 if (else_if.bandera)
-                                    return null; //me salgo ya
+                                    return null;                                
                             }
                         }
                     }
 
                     if (else_lista_instrucciones != null)
                     {
-                        //Entorno aqui iria si tuvieramos que manejar los ambitos en cada instruccion pero pascal funciona diferente
                         foreach (var instruccion in else_lista_instrucciones)
                         {
                             if (instruccion != null)
-                                instruccion.ejecutar(entorno);
+                            {
+                                object resultado = instruccion.ejecutar(entorno);
+                                //if (resultado != null)
+                                //{
+                                //    if (resultado is ExitInstruccion || resultado is ReturnInstruccion)
+                                //        return resultado;
+                                //}
+                            }
                         }
-                        return null;
                     }
+                    return null;
                 }
-
-
-
             }
             catch (Exception ex)
             {
-                ex.ToString();
-            }            
-
-            return null;
+                throw new ErrorPascal("",0,0,"");
+            }                                    
         }
 
         private Simbolo validaciones(Expresion expCondicion, Entorno entorno)
@@ -119,6 +131,7 @@ namespace CompiPascal.interprete.instruccion
 
             return condicion;
         }
+
 
     }
 }

@@ -56,9 +56,22 @@ namespace CompiPascal.interprete.analizador
         public void ejecutar(LinkedList<Instruccion> instrucciones)
         {
             Entorno global = new Entorno(null);
+
+            //TODO: hacer una pasada para recoger las funciones o procedimientos o 
+            //las pasadas que me interesen para lo que me interese
+            //types? para cuando diga esta variable es de este type //respuesta: si!
+
             foreach (var instruccion in instrucciones)
             {
-                if (instruccion != null)
+                if(instruccion is FunctionInstruccion)
+                {
+                    instruccion.ejecutar(global);
+                }
+            }
+
+            foreach (var instruccion in instrucciones)
+            {
+                if (instruccion != null && !(instruccion is FunctionInstruccion))
                 {
                     instruccion.ejecutar(global);
                 }
@@ -79,10 +92,7 @@ namespace CompiPascal.interprete.analizador
             header_statements(listaInstrucciones, program.ChildNodes.ElementAt(0));
 
             body_statements(listaInstrucciones, program.ChildNodes.ElementAt(1));
-
-            //TODO: hacer una pasada para recoger las funciones o procedimientos o las pasadas que me interesen para lo que me interese
-            //types? para cuando diga esta variable es de este type //respuesta: si!
-
+                  
             return listaInstrucciones;
         }
 
@@ -146,9 +156,9 @@ namespace CompiPascal.interprete.analizador
                 case "repeat_statements":
                     return repeat_statements(opciones_main);
                 case "exit_statements":
-                    return null;
+                    return new ExitInstruccion(Expresion(opciones_main.ChildNodes.ElementAt(2)));
                 case "return_statements":
-                    return null;
+                    return new ReturnInstruccion(opciones_main.ChildNodes.ElementAt(0).Token.Text, Expresion(opciones_main.ChildNodes.ElementAt(4)));
                 case "write_statements":
                     return write_statements(opciones_main);
                 case "graficar_statements":
@@ -157,8 +167,8 @@ namespace CompiPascal.interprete.analizador
                     return new BreakInstruccion(true);
                 case "CONTINUE":
                     return new ContinueInstruccion(true);
-                case "function_call":
-                    return function_call(opciones_main);
+               // case "function_call":
+                    //return function_call(opciones_main);
                 case "procedure_call":
                     return procedure_call(opciones_main);
                 default:
@@ -204,6 +214,7 @@ namespace CompiPascal.interprete.analizador
                 lista_expresiones,
                 Expresion(array_ini.ChildNodes.ElementAt(5)));
         }
+        /*
         private Instruccion function_call(ParseTreeNode function_call)
         {
             LinkedList<Expresion> function_lista_expresiones = new LinkedList<Expresion>();
@@ -213,6 +224,7 @@ namespace CompiPascal.interprete.analizador
             return new FunctionCallInstruccion(Expresion(function_call.ChildNodes.ElementAt(0)),
                 function_lista_expresiones);
         }
+       */
         private Instruccion procedure_call(ParseTreeNode procedure_call)
         {
             LinkedList<Expresion> procedure_lista_expresiones = new LinkedList<Expresion>();
@@ -369,12 +381,8 @@ namespace CompiPascal.interprete.analizador
         private Instruccion procedures_declarations(ParseTreeNode procedures_declarations)
         {
             string nombre_procedimiento = procedures_declarations.ChildNodes.ElementAt(1).Token.Text;
-
-
-            LinkedList<string> parametros_referencia_procedimiento = new LinkedList<string>();
-            LinkedList<string> parametros_valor_procedimiento = new LinkedList<string>();
-            parameters(parametros_referencia_procedimiento, parametros_valor_procedimiento, procedures_declarations.ChildNodes.ElementAt(3));
-
+            
+            ParametroInst[] parametros = parameters(procedures_declarations.ChildNodes.ElementAt(3));
 
             LinkedList<Instruccion> procedure_header_instrucciones = new LinkedList<Instruccion>();
             header_statements(procedure_header_instrucciones, procedures_declarations.ChildNodes.ElementAt(6));
@@ -382,19 +390,15 @@ namespace CompiPascal.interprete.analizador
             LinkedList<Instruccion> procedure_body_instrucciones = new LinkedList<Instruccion>();
             body_statements(procedure_body_instrucciones, procedures_declarations.ChildNodes.ElementAt(7));
 
-            return new ProcedureInstruccion(nombre_procedimiento, parametros_referencia_procedimiento, parametros_valor_procedimiento,
+            return new ProcedureInstruccion(nombre_procedimiento, parametros,
                 procedure_header_instrucciones, procedure_body_instrucciones);
         }
         private Instruccion functions_declarations(ParseTreeNode functions_declarations)
         {
             string nombre_funcion = functions_declarations.ChildNodes.ElementAt(1).Token.Text;
 
-
-            LinkedList<string> parametros_referencia_funcion = new LinkedList<string>();
-            LinkedList<string> parametros_valor_funcion = new LinkedList<string>();
-            parameters(parametros_referencia_funcion, parametros_valor_funcion, functions_declarations.ChildNodes.ElementAt(3));
-
-
+            //null o no
+            ParametroInst[] parametros = parameters(functions_declarations.ChildNodes.ElementAt(3));
 
             string tipo_funcion = variables_native_id(functions_declarations.ChildNodes.ElementAt(6));
 
@@ -404,7 +408,7 @@ namespace CompiPascal.interprete.analizador
             LinkedList<Instruccion> function_body_instrucciones = new LinkedList<Instruccion>();
             body_statements(function_body_instrucciones, functions_declarations.ChildNodes.ElementAt(9));
 
-            return new FunctionInstruccion(nombre_funcion, parametros_referencia_funcion, parametros_valor_funcion, tipo_funcion,
+            return new FunctionInstruccion(nombre_funcion, parametros, tipo_funcion,
                 function_header_instrucciones, function_body_instrucciones);
 
         }
@@ -420,9 +424,7 @@ namespace CompiPascal.interprete.analizador
                 {
                     LinkedList<string> lista_ids = list_id(variable.ChildNodes.ElementAt(0));
 
-
                     string tipo = variables_native_id(variable.ChildNodes.ElementAt(2));
-
 
                     ParseTreeNode variable_initialization = variable.ChildNodes.ElementAt(3);
                     Expresion valor = null;
@@ -605,8 +607,6 @@ namespace CompiPascal.interprete.analizador
                         return new Literal("TRUE", expression.ChildNodes.ElementAt(0).Token.Text);
                     case "FALSE":
                         return new Literal("FALSE", expression.ChildNodes.ElementAt(0).Token.Text);
-                    case "function_call":
-                        return new Literal("function_call", expression.ChildNodes.ElementAt(0).Token.Text);
                     default:
                         return null;
                 }
@@ -621,7 +621,12 @@ namespace CompiPascal.interprete.analizador
                     lista_expresiones.AddLast(Expresion(Nodoexpression));
                 }
 
-                return new ArrayAcceso(Expresion(expression.ChildNodes[0]), lista_expresiones);
+                if (expression.ChildNodes.ElementAt(1).Term.Name == "LEFT_BRACKET")
+                    return new ArrayAcceso(Expresion(expression.ChildNodes[0]), lista_expresiones);
+                else if (expression.ChildNodes.ElementAt(1).Term.Name == "LEFT_PARENTHESIS")
+                    return new FuncionLlamada(expression.ChildNodes.ElementAt(0).Token.Text, lista_expresiones);
+                else
+                    return null;
             }
             else
             {
@@ -629,8 +634,6 @@ namespace CompiPascal.interprete.analizador
             }
 
         }
-
-
 
         private string variables_native_id(ParseTreeNode variables_native_id) //actual = variables_native_id
         {
@@ -643,9 +646,8 @@ namespace CompiPascal.interprete.analizador
             {
                 return variables_native_id.ChildNodes.ElementAt(0).Token.Text;//como sea
             }
-
-
         }
+
         private LinkedList<string> list_id(ParseTreeNode list_id)
         {
             LinkedList<string> lista_ids = new LinkedList<string>(); //futura lista de id's
@@ -660,28 +662,42 @@ namespace CompiPascal.interprete.analizador
 
             return lista_ids;
         }
-        private void parameters(LinkedList<string> parametros_referencia, LinkedList<string> parametros_valor, ParseTreeNode parameters)
+        private ParametroInst[] parameters(ParseTreeNode parameters)
         {
-            if (parameters.ChildNodes.Count > 0) //parameter+
+            ParametroInst.totalVariables = 0;
+
+            if (parameters.ChildNodes.Count >0)
             {
-                //ParseTreeNode parameter_starRule = parameters.ChildNodes.ElementAt(0);
+                ParametroInst[] parametros = new ParametroInst[parameters.ChildNodes.Count];
+
+                int i = 0;
                 foreach (ParseTreeNode parameter in parameters.ChildNodes)
                 {
+                    LinkedList<string> ids = null;
+                    string tipo_nativo_id = string.Empty;
+
                     if (parameter.ChildNodes.ElementAt(0).Term.Name == "VAR")//referencia
                     {
-
-                        parametros_referencia = list_id(parameter.ChildNodes.ElementAt(1));
-
+                        ids = list_id(parameter.ChildNodes.ElementAt(1));
+                        tipo_nativo_id = variables_native_id(parameter.ChildNodes.ElementAt(3));
+                        parametros[i] = new ParametroInst(ids, tipo_nativo_id, true);
                     }
                     else//valor
                     {
-                        parametros_valor = list_id(parameter.ChildNodes.ElementAt(0));
-
+                        ids = list_id(parameter.ChildNodes.ElementAt(0));
+                        tipo_nativo_id = variables_native_id(parameter.ChildNodes.ElementAt(2));
+                        parametros[i] = new ParametroInst(ids, tipo_nativo_id, false);
                     }
-                }
-            }
 
+                    ParametroInst.totalVariables = ParametroInst.totalVariables + ids.Count;
+
+                    i++;
+                }
+                return parametros;
+            }
+            return null;
         }
+
         private void expression_list(LinkedList<Expresion> lista_expresiones, ParseTreeNode expression_list)
         {
             if (expression_list.ChildNodes.Count > 0)

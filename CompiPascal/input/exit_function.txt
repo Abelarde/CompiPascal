@@ -1,5 +1,6 @@
 program Hello;
 var a:integer;
+
 function factorial( num : integer) : integer;
 begin
 if num = 1 then
@@ -10,6 +11,7 @@ end
 else
 Exit(num * factorial( num-1 ));
 end;
+
 function factorial2( num : integer) : integer;
 begin
 if num = 1 then

@@ -31,24 +31,27 @@ namespace CompiPascal.interprete.instruccion
                 Simbolo condicion = validaciones(expCondicion, entorno);
 
                 if (Convert.ToBoolean(condicion.valor))
-                {
-                    //Entorno aqui iria si tuvieramos que manejar los ambitos en cada instruccion pero pascal funciona diferente
+                {                    
                     foreach (var instruccion in if_lista_instrucciones)
                     {
                         if (instruccion != null)
-                            instruccion.ejecutar(entorno);
+                        {
+                            object resultado = instruccion.ejecutar(entorno);
+                            if (resultado != null)
+                            {
+                                if (resultado is ExitInstruccion || resultado is ReturnInstruccion)
+                                    return resultado;
+                            }
+                        }
                     }
                     this.bandera = true;
-                    return null;
                 }
-
+                return null;
             }
             catch (Exception ex)
             {
-                ex.ToString();
-            }
-                        
-            return null;
+                throw new ErrorPascal("",0,0,"");
+            }                        
         }
 
         private Simbolo validaciones(Expresion expCondicion, Entorno entorno)
