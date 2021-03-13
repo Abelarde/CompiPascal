@@ -204,6 +204,7 @@ namespace CompiPascal.interprete.analizador
             NonTerminal union_1 = new NonTerminal("union_1");
             NonTerminal union_1_a = new NonTerminal("union_1_a");
 
+
             #endregion
 
             #region GRAMATICA /* Región donde se define la gramática. */
@@ -218,7 +219,7 @@ namespace CompiPascal.interprete.analizador
             body_statements.Rule = main_declarations;
 
 
-            constant_optional.Rule = constant_declarations 
+            constant_optional.Rule = constant_declarations
                 | Empty;
             constant_optional.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
@@ -237,12 +238,12 @@ namespace CompiPascal.interprete.analizador
                 | SyntaxError + END;
 
 
-            type_declarations.Rule =  TYPE + type_variables; 
+            type_declarations.Rule = TYPE + type_variables;
             variables_declarations.Rule = VAR + variables;
             //TODO: return_value, por el momento solo tengo los tipos nativos, verificar si tambien se admiten un id (tipo propio), array? 
             //adicional, verificar que tenga el retorno, puede: venir dentro de otra instruccion (if) o puede venir afuera de todo y ser valido media vez cumpla con que tenga un retorno o retornos necesarios
             // como validar eso? //Debe haber una declaración de asignación del tipo - nombre: = expresión  en el cuerpo de la función que asigna un valor al nombre de la función
-            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON; 
+            functions_declarations.Rule = FUNCTION + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + COLON + variables_native_id + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
             procedures_declarations.Rule = PROCEDURE + ID + LEFT_PARENTHESIS + parameters + RIGHT_PARENTHESIS + SEMI_COLON + header_statements + body_statements + SEMI_COLON;
 
             list_id.Rule = MakePlusRule(list_id, COMMA, ID);
@@ -250,14 +251,14 @@ namespace CompiPascal.interprete.analizador
             type_variables.Rule = MakePlusRule(type_variables, type_variable);
             type_variable.Rule = list_id + EQUAL + type_type + SEMI_COLON;
 
-            type_type.Rule = OBJECT + type_declarations_vars + END 
+            type_type.Rule = OBJECT + type_declarations_vars + END
                 | variables_native_array_id;
 
             type_declarations_vars.Rule = MakeStarRule(type_declarations_vars, variables_declarations);
 
             variables.Rule = MakePlusRule(variables, variable);
-            variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON;  
-            
+            variable.Rule = list_id + COLON + variables_native_id + variable_initialization + SEMI_COLON;
+
             variable_initialization.Rule = COLON_EQUAL + expression | Empty; //TODO: cuidar si estoy inicializando una variable de tipo de otra variable y quiero asignar un valor que no es, primero se puede inicializar en ese caso? segundo si es posible entonces, tendria que ver primero que tipo es la variable para permitir la inicializacion
 
             parameters.Rule = MakeStarRule(parameters, SEMI_COLON, parameter); // Estos parámetros pueden tener un tipo de datos estándar, un tipo de datos definido por el usuario o un tipo de datos de subrango.
@@ -289,7 +290,7 @@ namespace CompiPascal.interprete.analizador
             begin_end_statement.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
 
-            variable_ini.Rule = expression + COLON_EQUAL + expression + SEMI_COLON;
+            variable_ini.Rule = expression + COLON_EQUAL + expression + SEMI_COLON; //expression + PERIOD + expression
 
             array_ini.Rule = expression + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + COLON_EQUAL + expression + SEMI_COLON;
 

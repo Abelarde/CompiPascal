@@ -32,3 +32,30 @@ cadena: string := 'hola bicho soy una cadena';
 begin
 
 end.
+
+
+
+//===================================
+program accesos;
+
+type
+curso = object
+var codigo:integer;
+var nombre:string;
+var nota:integer;
+var creditos:integer;
+end;
+
+var variableObjecto : curso;
+var otra:curso;
+
+begin
+variableObjecto.codigo := 10;
+writeln(variableObjecto.codigo);
+writeln(otra.codigo);
+end.
+
+
+
+
+

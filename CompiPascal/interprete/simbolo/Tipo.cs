@@ -30,17 +30,23 @@ namespace CompiPascal.interprete.analizador.simbolo
         public Tipo(string tipo, Entorno entorno)//no se el tipo
         {
             Tipos tipoCasteado = Tipo.castearTipo(tipo, entorno);
-            if (tipoCasteado != Tipos.OBJECT)
+            if (tipoCasteado == Tipos.ARRAY)
             {
-                //tipos nativo
-                this.tipo = tipoCasteado;
-                this.tipoAuxiliar = null;
+                //tipo array
+                this.tipo = Tipos.ARRAY;
+                this.tipoAuxiliar = tipo;
             }
-            else
+            else if (tipoCasteado == Tipos.OBJECT)
             {
                 //tipo object
                 this.tipo = Tipos.OBJECT;
                 this.tipoAuxiliar = tipo;
+            }
+            else
+            {
+                //tipos nativo
+                this.tipo = tipoCasteado;
+                this.tipoAuxiliar = null;
             }
         }
 

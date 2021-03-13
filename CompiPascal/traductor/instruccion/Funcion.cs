@@ -1,17 +1,17 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.expresion;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.expresion;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.instruccion
+namespace CompiPascal.interprete.instruccion
 {
     class Funcion : Instruccion
     {
         private string id_funcion;
-        private Tipo tipo_funcion;
+        private Tipo tipo_funcion; //null podria ser si es proc
 
         private LinkedList<ParametroInst> lista_parametros;
         public LinkedList<Simbolo> valores_parametros_simbolos;
@@ -19,8 +19,9 @@ namespace CompiPascal.traductor.instruccion
         private LinkedList<Instruccion> header_instrucciones;
         private LinkedList<Instruccion> body_instrucciones;
 
+        public bool isFuncion;
 
-        public Funcion(string id_funcion, Tipo tipo_funcion, LinkedList<ParametroInst> lista_parametros, LinkedList<Instruccion> header_instrucciones, LinkedList<Instruccion> body_instrucciones)
+        public Funcion(string id_funcion, Tipo tipo_funcion, LinkedList<ParametroInst> lista_parametros, LinkedList<Instruccion> header_instrucciones, LinkedList<Instruccion> body_instrucciones, bool isFuncion)
         {
             this.id_funcion = id_funcion;
             this.tipo_funcion = tipo_funcion;
@@ -28,21 +29,33 @@ namespace CompiPascal.traductor.instruccion
             this.header_instrucciones = header_instrucciones;
             this.body_instrucciones = body_instrucciones;
             valores_parametros_simbolos = null;
+            this.isFuncion = isFuncion;
         }
 
         public override object ejecutar(Entorno entorno)
         {
-
-            if (lista_parametros.Count == valores_parametros_simbolos.Count)
+            int totalParametros = 0;
+            foreach (ParametroInst parametros in lista_parametros)
             {
-                ParametroInst[] lista_parametroInst = new ParametroInst[lista_parametros.Count];
+                foreach(string id in parametros.lista_ids)
+                {
+                    totalParametros++;
+                }
+            }
+
+            if (totalParametros == valores_parametros_simbolos.Count)
+            {
+                Parametro[] lista_param = new Parametro[totalParametros];
                 Simbolo[] lista_valores = new Simbolo[valores_parametros_simbolos.Count];
 
                 int i = 0;
                 foreach (ParametroInst parametroInsta in lista_parametros)
                 {
-                    lista_parametroInst[i] = parametroInsta;
-                    i++;
+                    foreach (string id in parametroInsta.lista_ids)
+                    {
+                        lista_param[i] = new Parametro(id, parametroInsta.tipo_nativo_id, parametroInsta.isReferencia);
+                        i++;
+                    }
                 }
 
                 i = 0;
@@ -52,31 +65,26 @@ namespace CompiPascal.traductor.instruccion
                     i++;
                 }
 
-                for (int j = 0; j < lista_parametroInst.Length; j++)
+                for (int j = 0; j < lista_param.Length; j++)
                 {
-                    //lista_parametroInst[j]; //LinkedList<string> lista_ids, string tipo_nativo_id, bool isReferencia
-                    foreach (string id in lista_parametroInst[j].lista_ids)
+                    if (entorno.getVariable(lista_param[j].id) == null)
                     {
-                        if (entorno.getVariable(id) == null)
+                        if (lista_param[j].isReferencia)
                         {
-                            if (lista_parametroInst[j].isReferencia)
-                            {
-                                Simbolo nueva_variable = lista_valores[j];
-                                entorno.guardarVariable(id, nueva_variable);
-                                //if (entorno.getGlobal().getVariable(lista_valores[j].id) != null)
-                                //   entorno.guardarVariable(lista_valores[j].id, entorno.getGlobal().getVariable(lista_valores[j].id));
-                            }
-                            else
-                            {
-                                Simbolo nueva_variable = new Simbolo(new Tipo(lista_parametroInst[j].tipo_nativo_id, entorno), id, lista_valores[j].valor);
-                                entorno.guardarVariable(nueva_variable.id, nueva_variable);
-
-                            }
+                            Simbolo nueva_variable = lista_valores[j];
+                            entorno.guardarVariable(lista_param[j].id, nueva_variable);
+                            //if (entorno.getGlobal().getVariable(lista_valores[j].id) != null)
+                            //   entorno.guardarVariable(lista_valores[j].id, entorno.getGlobal().getVariable(lista_valores[j].id));
                         }
                         else
-                            throw new ErrorPascal("[Declaracion-Asignacion] Ya existe la variable " + id, 0, 0, "semantico");
-                    }
+                        {
+                            Simbolo nueva_variable = new Simbolo(new Tipo(lista_param[j].tipo_nativo_id, entorno), lista_param[j].id, lista_valores[j].valor, entorno, 0);
+                            entorno.guardarVariable(nueva_variable.id, nueva_variable);
 
+                        }
+                    }
+                    else
+                        throw new ErrorPascal("[Declaracion-Asignacion] Ya existe la variable " + lista_param[j].id, 0, 0, "semantico");
                 }
 
             }
@@ -99,7 +107,7 @@ namespace CompiPascal.traductor.instruccion
                 if (body != null)
                 {
                     object resultado = body.ejecutar(entorno); 
-                    if (resultado != null)
+                    if (resultado != null && isFuncion)
                     {
                         if (resultado is ExitInstruccion)
                             return resultado;//ya no sigue ejecutando las intrucciones
@@ -109,6 +117,20 @@ namespace CompiPascal.traductor.instruccion
                 } 
             }
             return guardado;
+        }
+    }
+
+    class Parametro
+    {
+        public string id;
+        public string tipo_nativo_id;
+        public bool isReferencia;
+
+        public Parametro(string id, string tipo_nativo_id, bool isReferencia)
+        {
+            this.id = id;
+            this.tipo_nativo_id = tipo_nativo_id;
+            this.isReferencia = isReferencia;
         }
     }
 }

@@ -30,6 +30,8 @@ namespace CompiPascal.interprete.instruccion
             //tipo expresion == tipo de casos
             //cases: numeros enteros, caracteres, booleanos, 
 
+            object guardado = null;
+
             try
             {
                 Simbolo condicion = validaciones(valor_condicional, entorno);
@@ -41,31 +43,47 @@ namespace CompiPascal.interprete.instruccion
                         if (casos != null)
                         {
                             casos.condicion = condicion;//le envio la condicion
-                            casos.ejecutar(entorno);
-                            if (casos.bandera)//verifico si ya entro en un case
-                                return null;
+                            object res = casos.ejecutar(entorno);
+                            if (res != null)
+                            {
+                                if (res is ExitInstruccion)
+                                    return res;//ya no sigue ejecutando las intrucciones
+                                else if (res is ReturnInstruccion)
+                                    guardado = res;//sigue ejecutando, pero guarde el valor del return
+                            }
+
+                            if (casos.bandera)
+                                return guardado;
                         }
                     }
                 }
+
 
                 if (else_or_otherwise_instrucciones != null)
                 {
                     foreach (var instruccion in else_or_otherwise_instrucciones)
                     {
                         if (instruccion != null)
-                            instruccion.ejecutar(entorno);
+                        {
+                            object resultado = instruccion.ejecutar(entorno);
+                            if (resultado != null)
+                            {
+                                if (resultado is ExitInstruccion)
+                                    return resultado;//ya no sigue ejecutando las intrucciones
+                                else if (resultado is ReturnInstruccion)
+                                    guardado = resultado;//sigue ejecutando, pero guarde el valor del return
+                            }
+                        }
+
                     }
-                    return null;
                 }
-
-
             }
             catch (Exception ex)
             {
                 ex.ToString();
             }
 
-            return null;
+            return guardado;
         }
 
         private Simbolo validaciones(Expresion expCondicion, Entorno entorno)

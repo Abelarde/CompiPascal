@@ -26,6 +26,7 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
+            this.bandera = false;
             try
             {
                 Simbolo condicion = validaciones(expCondicion, entorno);
@@ -40,7 +41,10 @@ namespace CompiPascal.interprete.instruccion
                             if (resultado != null)
                             {
                                 if (resultado is ExitInstruccion || resultado is ReturnInstruccion)
+                                {
+                                    this.bandera = true;
                                     return resultado;
+                                }
                             }
                         }
                     }

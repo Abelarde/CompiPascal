@@ -1,12 +1,12 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.expresion;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.expresion;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.instruccion
+namespace CompiPascal.interprete.instruccion
 {
     class ElseIf : Instruccion
     {
@@ -26,6 +26,7 @@ namespace CompiPascal.traductor.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
+            this.bandera = false;
             try
             {
                 Simbolo condicion = validaciones(expCondicion, entorno);
@@ -40,7 +41,10 @@ namespace CompiPascal.traductor.instruccion
                             if (resultado != null)
                             {
                                 if (resultado is ExitInstruccion || resultado is ReturnInstruccion)
+                                {
+                                    this.bandera = true;
                                     return resultado;
+                                }
                             }
                         }
                     }

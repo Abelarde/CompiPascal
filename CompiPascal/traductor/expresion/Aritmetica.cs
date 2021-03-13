@@ -1,11 +1,11 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.expresion
+namespace CompiPascal.interprete.expresion
 {
     class Aritmetica : Expresion
     {
@@ -22,9 +22,6 @@ namespace CompiPascal.traductor.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            //TODO: que pasa si colo un try aqui, si aqui termino el throw entonces en la condicional
-            //que pasaria?
-
             Simbolo derecha = validaciones(expDer, entorno);
 
             Tipos tipoResultante = derecha.tipo.tipo;
@@ -54,20 +51,20 @@ namespace CompiPascal.traductor.expresion
                     if (izquierda != null)
                     {
                         if (tipoResultante == Tipos.INTEGER)
-                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) + Convert.ToInt32(derecha.valor));
+                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) + Convert.ToInt32(derecha.valor), entorno, 0);
                         else if (tipoResultante == Tipos.REAL)
-                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) + Convert.ToDouble(derecha.valor));
+                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) + Convert.ToDouble(derecha.valor), entorno, 0);
                         else if (tipoResultante == Tipos.STRING)
-                            return new Simbolo(new Tipo(Tipos.STRING, null), null, Convert.ToString(izquierda.valor) + Convert.ToString(derecha.valor));
+                            return new Simbolo(new Tipo(Tipos.STRING, null), null, Convert.ToString(izquierda.valor) + Convert.ToString(derecha.valor), entorno, 0);
                         else 
                             throw new ErrorPascal("Operacion + entre Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
                     }
                     else
                     {
                         if (tipoResultante == Tipos.INTEGER)
-                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(derecha.valor) * +1);
+                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(derecha.valor) * +1, entorno, 0);
                         else if (tipoResultante == Tipos.REAL)
-                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(derecha.valor) * +1);
+                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(derecha.valor) * +1, entorno, 0);
                         else
                             throw new ErrorPascal("Operacion + con un Tipo de dato incorrecto [" + derecha.tipo.tipo + "]", 0, 0, "Semantico");
                     }
@@ -77,10 +74,10 @@ namespace CompiPascal.traductor.expresion
                     if(izquierda != null)
                     {
                         if (tipoResultante == Tipos.INTEGER)
-                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) - Convert.ToInt32(derecha.valor));
+                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) - Convert.ToInt32(derecha.valor), entorno, 0);
 
                         else if (tipoResultante == Tipos.REAL)
-                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) - Convert.ToDouble(derecha.valor));
+                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) - Convert.ToDouble(derecha.valor), entorno, 0);
 
                         else
                             throw new ErrorPascal("Operacion - entre Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
@@ -88,10 +85,10 @@ namespace CompiPascal.traductor.expresion
                     else
                     {
                         if (tipoResultante == Tipos.INTEGER)
-                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(derecha.valor) * -1);
+                            return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(derecha.valor) * -1, entorno, 0);
 
                         else if (tipoResultante == Tipos.REAL)
-                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(derecha.valor) * -1);
+                            return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(derecha.valor) * -1, entorno, 0);
 
                         else
                             throw new ErrorPascal("Operacion - con un Tipo de dato incorrecto [" + derecha.tipo.tipo + "]", 0, 0, "Semantico");
@@ -99,25 +96,25 @@ namespace CompiPascal.traductor.expresion
 
                 case "*":
                     if(tipoResultante == Tipos.INTEGER)
-                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) * Convert.ToInt32(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) * Convert.ToInt32(derecha.valor), entorno, 0);
                     else if (tipoResultante == Tipos.REAL)
-                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) * Convert.ToDouble(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) * Convert.ToDouble(derecha.valor), entorno, 0);
                     else
                         throw new ErrorPascal("Operacion * entre Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
 
                 case "/":
                     if (tipoResultante == Tipos.INTEGER)
-                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) / Convert.ToInt32(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) / Convert.ToInt32(derecha.valor), entorno, 0);
                     else if (tipoResultante == Tipos.REAL)
-                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) / Convert.ToDouble(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) / Convert.ToDouble(derecha.valor), entorno, 0);
                     else
                         throw new ErrorPascal("Operacion / entre Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
 
                 case "%":
                     if (tipoResultante == Tipos.INTEGER) 
-                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) % Convert.ToInt32(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(izquierda.valor) % Convert.ToInt32(derecha.valor), entorno, 0);
                     else if (tipoResultante == Tipos.REAL)
-                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) % Convert.ToDouble(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(izquierda.valor) % Convert.ToDouble(derecha.valor), entorno, 0);
                     else
                         throw new ErrorPascal("Operacion % entre Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
 

@@ -1,23 +1,20 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace CompiPascal.traductor.simbolo
+namespace CompiPascal.interprete.simbolo
 {
     class Structs
     {
-        private Dictionary<string, Simbolo> atributos;
+        public Dictionary<string, Simbolo> atributos;
 
         public Structs(Dictionary<string, Simbolo> atributos)
         {
             this.atributos = atributos;
-        }
-
-        public Structs()
-        {
-            this.atributos = new Dictionary<string, Simbolo>();
         }
 
         public Simbolo getAtributo(string idAtributo)
@@ -36,7 +33,9 @@ namespace CompiPascal.traductor.simbolo
                 throw new ErrorPascal("Ya existe un atributo con ese id en el object",0,0,"semantico");
         }
 
-
-
+        public Structs Clone()
+        {
+            return (Structs)this.MemberwiseClone();
+        }
     }
 }

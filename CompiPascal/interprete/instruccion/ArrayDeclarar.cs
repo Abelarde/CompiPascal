@@ -71,7 +71,10 @@ namespace CompiPascal.interprete.instruccion
                         anterior = nuevo;
                     }
 
-                    Rellenar(variable_array, anterior);
+                    if(dimensiones != 1)
+                        Rellenar(variable_array, anterior);
+
+
 
                     return variable_array;
 

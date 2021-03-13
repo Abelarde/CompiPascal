@@ -93,7 +93,7 @@ namespace CompiPascal.interprete.instruccion
                         //private Expresion expresion;
                         foreach(string id_variable in variables.lista_ids)
                         {
-                            Simbolo var = new Simbolo(new Tipo(variables.tipo, entorno), id_variable, null);
+                            Simbolo var = new Simbolo(new Tipo(variables.tipo, entorno), id_variable, null, entorno, 0);
 
                             if (!atributos.ContainsKey(var.id))
                                 atributos.Add(var.id, var);
@@ -105,7 +105,7 @@ namespace CompiPascal.interprete.instruccion
 
                 Structs estructuraInterna = new Structs(atributos);
 
-                Simbolo objecto = new Simbolo(new Tipo(Tipos.OBJECT, id_objeto), id_objeto, estructuraInterna);
+                Simbolo objecto = new Simbolo(new Tipo(Tipos.OBJECT, id_objeto), id_objeto, estructuraInterna, entorno, 0);
                 objecto.isType = true;
                 objecto.isObject = true;
 
@@ -133,7 +133,7 @@ namespace CompiPascal.interprete.instruccion
             {
                 if (entorno.getVariable(id) == null)
                 {
-                    Simbolo variable = new Simbolo(tipoFinal, id, null);//ir a validar a var//si es object ver su auxiliar
+                    Simbolo variable = new Simbolo(tipoFinal, id, null, entorno, 0);//ir a validar a var//si es object ver su auxiliar
                     variable.isType = true;
                     entorno.guardarVariable(id, variable);
                     bandera = true;
@@ -169,6 +169,7 @@ namespace CompiPascal.interprete.instruccion
                 if (entorno.getVariable(id) == null)
                 {
                     Simbolo variable = ArrayDeclarar.declarada(id, array_dimensiones_min_max, tipoArreglo, entorno);
+                    variable.array_dimensiones_min_max = array_dimensiones_min_max;
 
                     if (variable == null)
                         throw new ErrorPascal("error al crear el arreglo", 0, 0, "semantico");
@@ -184,7 +185,6 @@ namespace CompiPascal.interprete.instruccion
                 throw new ErrorPascal("[type] Se declararon algunas variables sin embargo " + Environment.NewLine + msnError, 0, 0, "semantico");
             else if (msnError != "" && !bandera)
                 throw new ErrorPascal(msnError + Environment.NewLine + msnError, 0, 0, "semantico");
-
         }
 
 

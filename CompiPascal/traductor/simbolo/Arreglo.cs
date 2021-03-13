@@ -1,10 +1,10 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.simbolo
+namespace CompiPascal.interprete.simbolo
 {
     class Arreglo
     {
@@ -66,15 +66,18 @@ namespace CompiPascal.traductor.simbolo
             return array;
         }
 
-        public void inicializarIndices(Tipo tipoArreglo)
+        public void inicializarIndices(Tipo tipoArreglo, Entorno entorno)
         {
             for(int i = 0; i < valores.Length; i++)
             {
-                valores[i] = new Simbolo(tipoArreglo, null);
+                valores[i] = new Simbolo(tipoArreglo, null, entorno, null);
             }
         }
 
-
+        public Arreglo Clone()
+        {
+            return (Arreglo)this.MemberwiseClone();
+        }
     }
 }
 

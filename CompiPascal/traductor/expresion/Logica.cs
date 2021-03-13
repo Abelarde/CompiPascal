@@ -1,11 +1,11 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.expresion
+namespace CompiPascal.interprete.expresion
 {
     class Logica : Expresion
     {
@@ -48,13 +48,13 @@ namespace CompiPascal.traductor.expresion
             switch (tipoOperacion)
             {
                 case "AND":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) && Convert.ToBoolean(derecha.valor));        
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) && Convert.ToBoolean(derecha.valor), entorno, 0);        
 
                 case "OR":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) || Convert.ToBoolean(derecha.valor));            
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) || Convert.ToBoolean(derecha.valor), entorno, 0);            
 
                 case "NOT":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, !Convert.ToBoolean(derecha.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, !Convert.ToBoolean(derecha.valor), entorno, 0);
 
                 default:
                     throw new ErrorPascal("Operacion logica desconocida", 0, 0, "Semantico");

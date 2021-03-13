@@ -1,9 +1,9 @@
-﻿using CompiPascal.traductor.simbolo;
+﻿using CompiPascal.interprete.simbolo;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.instruccion
+namespace CompiPascal.interprete.instruccion
 {
     class ListaTypeInstruccion : Instruccion
     {

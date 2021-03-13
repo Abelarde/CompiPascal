@@ -45,9 +45,9 @@ namespace CompiPascal.interprete.analizador
                 {
                     OutputMessage("Analisis exitosamente");
                     FillErrors(arbol);
-                    ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
-                    LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
-                    ejecutar(listaInstrucciones);
+                    //ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
+                    //LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
+                    //ejecutar(listaInstrucciones);
                 }
                 else
                 {
@@ -565,7 +565,7 @@ namespace CompiPascal.interprete.analizador
 
 
                     case "PERIOD":
-                        return new Literal("PERIOD", Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]));
+                        return new Literal("PERIOD", Expresion(expression.ChildNodes[0]), expression.ChildNodes[2].ChildNodes.ElementAt(0).Token.Text);
                     case "PERIOD_PERIOD":
                         return new Literal("PERIOD_PERIOD", Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]));
                     case "expression":

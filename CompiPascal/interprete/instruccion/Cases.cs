@@ -14,6 +14,7 @@ namespace CompiPascal.interprete.instruccion
         private LinkedList<Instruccion> cases_Instrucciones;
 
         public bool bandera;
+
         public Simbolo condicion;
 
         public Cases(Expresion case_condicion, LinkedList<Instruccion> cases_Instrucciones)
@@ -22,16 +23,22 @@ namespace CompiPascal.interprete.instruccion
             this.cases_Instrucciones = cases_Instrucciones;
 
             bandera = false;
+
             condicion = null;
         }
 
 
         public override object ejecutar(Entorno entorno)
         {
+            object guardado = null;
+
             try
             {
+                this.bandera = false;
+
                 if (condicion == null)
                     throw new ErrorPascal("", 0, 0, "semantico");
+
 
                 Simbolo caso_valor = validaciones(case_condicion, entorno);
 
@@ -41,24 +48,33 @@ namespace CompiPascal.interprete.instruccion
                     throw new ErrorPascal("[case] error los tipos de datos no coindicen entre el condicional y el del caso", 0, 0, "semantico");
 
                 bool resultado = false;
+
                 if (condicion.tipo.tipo == Tipos.INTEGER)
                     resultado = Convert.ToInt32(condicion.valor) == Convert.ToInt32(caso_valor.valor);
                 else if(condicion.tipo.tipo == Tipos.STRING)
                     resultado = Convert.ToString(condicion.valor) == Convert.ToString(caso_valor.valor);
                 else if (condicion.tipo.tipo == Tipos.BOOLEAN)
-                    resultado = Convert.ToBoolean(condicion.valor) == Convert.ToBoolean(caso_valor.valor); 
+                    resultado = Convert.ToBoolean(condicion.valor) == Convert.ToBoolean(caso_valor.valor);
+
 
 
                 if (resultado)
                 {
-                    //Entorno aqui iria si tuvieramos que manejar los ambitos en cada instruccion pero pascal funciona diferente
                     foreach (var instruccion in cases_Instrucciones)
                     {
                         if (instruccion != null)
-                            instruccion.ejecutar(entorno);
+                        {
+                            object res = instruccion.ejecutar(entorno);
+                            if (res != null)
+                            {
+                                if (res is ExitInstruccion)
+                                    return res;//ya no sigue ejecutando las intrucciones
+                                else if (res is ReturnInstruccion)
+                                    guardado = res;//sigue ejecutando, pero guarde el valor del return
+                            }
+                        }
                     }
                     this.bandera = true;
-                    return null;
                 }
 
             }
@@ -66,7 +82,7 @@ namespace CompiPascal.interprete.instruccion
             {
                 ex.ToString();
             }
-            return null;
+            return guardado;
         }
 
 

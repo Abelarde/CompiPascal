@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace CompiPascal.traductor.util
+namespace CompiPascal.interprete.util
 {
     /// <summary>
     /// Clase creada para llevar nuestros propios errores en el lenguaje
@@ -10,6 +12,7 @@ namespace CompiPascal.traductor.util
         private int linea, columna;
         private string mensaje;
         private string tipo;
+        public static Queue<string> cola;
 
         /// <summary>
         /// Se crea un nuevo error semantico

@@ -44,11 +44,11 @@ namespace CompiPascal.interprete.instruccion
                 {
                     tipo_funcion = new Tipo(tipo_funcion_nativo_id, entorno);
 
-                    if (tipo_funcion.tipo == Tipos.OBJECT)//object//array//nativo(otra vez)->id //no existe,error
-                    {
-                        if (entorno.getVariable(tipo_funcion.tipoAuxiliar) == null)
-                            throw new ErrorPascal("El tipo de dato no existe",0,0,"semantico");
-                    }
+                    //if (tipo_funcion.tipo == Tipos.OBJECT)//object//array//nativo(otra vez)->id //no existe,error
+                    //{
+                        //if (entorno.getVariable(tipo_funcion.tipoAuxiliar) == null)
+                        //    throw new ErrorPascal("El tipo de dato no existe",0,0,"semantico");
+                    //}
                     //nativo..sigue normal...
                 }
                 else if (isFuncion)//false==sigue normal

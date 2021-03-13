@@ -1,12 +1,12 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.expresion;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.expresion;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.instruccion
+namespace CompiPascal.interprete.instruccion
 {
     class ArrayDeclarar
     {
@@ -42,7 +42,7 @@ namespace CompiPascal.traductor.instruccion
                         throw new ErrorPascal("error al calcular la dimension del arreglo", 0, 0, "semantico");
 
                     arr.tipo_del_array = tipoArreglo;
-                    arr.inicializarIndices(tipoArreglo);
+                    arr.inicializarIndices(tipoArreglo, entorno);
 
                     lista_comodin = new Expresion[array_dimensiones_min_max.Count];
                     int indi = 0;
@@ -71,7 +71,10 @@ namespace CompiPascal.traductor.instruccion
                         anterior = nuevo;
                     }
 
-                    Rellenar(variable_array, anterior);
+                    if(dimensiones != 1)
+                        Rellenar(variable_array, anterior);
+
+
 
                     return variable_array;
 
@@ -124,7 +127,7 @@ namespace CompiPascal.traductor.instruccion
             if (arrDim == null)
                 throw new ErrorPascal("error al calcular la dimension del arreglo", 0, 0, "semantico");
             arrDim.tipo_del_array = tipoArreglo;
-            arrDim.inicializarIndices(tipoArreglo);
+            arrDim.inicializarIndices(tipoArreglo, entorno);
 
             return dimension;
         }

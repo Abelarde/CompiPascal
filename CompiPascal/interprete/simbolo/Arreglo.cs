@@ -70,7 +70,7 @@ namespace CompiPascal.interprete.simbolo
         {
             for(int i = 0; i < valores.Length; i++)
             {
-                valores[i] = new Simbolo(tipoArreglo, null);
+                valores[i] = new Simbolo(tipoArreglo, null, entorno, null);
             }
         }
 

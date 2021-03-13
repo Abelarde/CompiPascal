@@ -1,6 +1,6 @@
-﻿using CompiPascal.traductor.simbolo;
+﻿using CompiPascal.interprete.simbolo;
 
-namespace CompiPascal.traductor.instruccion
+namespace CompiPascal.interprete.instruccion
 {
     /// <summary>
     /// Clase abstracta para implementar las funcionalidades especificas

@@ -1,11 +1,11 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.expresion
+namespace CompiPascal.interprete.expresion
 {
     class Relacional : Expresion
     {
@@ -33,28 +33,28 @@ namespace CompiPascal.traductor.expresion
             {
                 case "=":
                     if (tipoResultante == Tipos.REAL || tipoResultante == Tipos.INTEGER)
-                        return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) == Convert.ToDouble(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) == Convert.ToDouble(derecha.valor), entorno, 0);
                     else if (tipoResultante == Tipos.STRING)
-                        return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToString(izquierda.valor) == Convert.ToString(derecha.valor));
+                        return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToString(izquierda.valor) == Convert.ToString(derecha.valor), entorno, 0);
                     //else if //array
                     //else if //object
                     else
                         throw new ErrorPascal("Operacion relacional no valida", 0, 0, "Semantico");
 
                 case "<>":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) != Convert.ToDouble(derecha.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) != Convert.ToDouble(derecha.valor), entorno, 0);
 
                 case ">":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) > Convert.ToDouble(derecha.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) > Convert.ToDouble(derecha.valor), entorno, 0);
            
                 case "<":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) < Convert.ToDouble(derecha.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) < Convert.ToDouble(derecha.valor), entorno, 0);
                    
                 case ">=":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) >=  Convert.ToDouble(derecha.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) >=  Convert.ToDouble(derecha.valor), entorno, 0);
                     
                 case "<=":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) <= Convert.ToDouble(derecha.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToDouble(izquierda.valor) <= Convert.ToDouble(derecha.valor), entorno, 0);
                   
                 default:
                     throw new ErrorPascal("Operacion relacional desconocida", 0, 0, "Semantico");

@@ -1,7 +1,7 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.simbolo;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.simbolo;
 
-namespace CompiPascal.traductor.expresion
+namespace CompiPascal.interprete.expresion
 {
     /// <summary>
     /// Clase abstracta para evaluar las diferentes expresiones

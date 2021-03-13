@@ -58,7 +58,7 @@ namespace CompiPascal.interprete.instruccion
             {
                 if (entorno.getVariable(id) == null)
                 {
-                    Simbolo variable = new Simbolo(tipoFinal, id, null);
+                    Simbolo variable = new Simbolo(tipoFinal, id, null, entorno, 0);
                     entorno.guardarVariable(id, variable);
                     bandera = true;
                 }

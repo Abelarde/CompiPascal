@@ -1,11 +1,11 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.expresion
+namespace CompiPascal.interprete.expresion
 {
     /// <summary>
     /// clase que represanta una literal de valor, es decir el valor mas minimo de
@@ -14,10 +14,12 @@ namespace CompiPascal.traductor.expresion
     class Literal : Expresion
     {
         private string tipo;
-        private object valor;
+        public object valor;
 
         private Expresion min;
         private Expresion max;
+
+        private string id_atributo;
 
         public Literal(string tipo, object valor)
         {
@@ -30,22 +32,28 @@ namespace CompiPascal.traductor.expresion
             this.min = min;
             this.max = max;
         }
+        public Literal(string tipo, Expresion min, string id_atributo) //".." //"."
+        {
+            this.tipo = tipo;
+            this.min = min;
+            this.id_atributo = id_atributo;
+        }
 
         public override Simbolo evaluar(Entorno entorno)
         {
             switch (tipo)
             {
                 case "CADENA":
-                    return new Simbolo(new Tipo(Tipos.STRING, null), null, Convert.ToString(this.valor).Trim('\''));
+                    return new Simbolo(new Tipo(Tipos.STRING, null), null, Convert.ToString(this.valor).Trim('\''), entorno, 0);
                 case "NUMBER":
                     if (this.valor.ToString().Contains("."))
-                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(this.valor));
+                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDecimal(this.valor), entorno, 0);
                     else
-                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(this.valor));
+                        return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(this.valor), entorno, 0);
                 case "TRUE":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(this.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(this.valor), entorno, 0);
                 case "FALSE":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(this.valor));
+                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(this.valor), entorno, 0);
                 
                 case "ID"://otro id, no! porque igual yo antes en la asignacion ya le extraje su tipo y se lo asigne
                     //por lo tanto no tenga un tipo de otra "variable" sino el valor primitivo, array u object
@@ -60,13 +68,24 @@ namespace CompiPascal.traductor.expresion
                     return retorna_simbolo(this.valor.ToString(), entorno);
 
                 case "PERIOD":
-                    return new Simbolo(null, null, null);
+                    Simbolo simbolo1 = validaciones(min, entorno);
+                    if (simbolo1.tipo.tipo == Tipos.OBJECT)
+                    {
+                        Structs valor_interno = simbolo1.valor as Structs;
+                        if(valor_interno != null)
+                        {
+                            Simbolo atributo = valor_interno.getAtributo(id_atributo);
+                            if (atributo != null)
+                                return atributo;
+                        }
+                    }
+                    throw new ErrorPascal("error al acceder a algun atributo de un objeto", 0, 0, "semantico");
 
                 case "PERIOD_PERIOD"://crea un nuevo arreglo
                     Simbolo minR = validaciones(min, entorno);
                     Simbolo maxR = validaciones(max, entorno);
                     //.tipo, .valor(object)[Arreglo]//.isConst//.isType//.isArray
-                    return new Simbolo(new Tipo(Tipos.ARRAY, null), getIndice(minR), getIndice(maxR));
+                    return new Simbolo(new Tipo(Tipos.ARRAY, null), Convert.ToInt32(getIndice(minR)), Convert.ToInt32(getIndice(maxR)));
                     //id //.valor(object)[Arreglo] -> tipoDatos
 
                 default:

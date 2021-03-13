@@ -1,13 +1,13 @@
-﻿using CompiPascal.traductor.simbolo;
+﻿using CompiPascal.interprete.simbolo;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.instruccion
+namespace CompiPascal.interprete.instruccion
 {
     class ListaVarInstruccion : Instruccion
     {
-        LinkedList<Var> Var_lista;
+        public LinkedList<Var> Var_lista;
 
         public ListaVarInstruccion(LinkedList<Var> Var_lista)
         {

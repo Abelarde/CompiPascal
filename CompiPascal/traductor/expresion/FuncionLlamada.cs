@@ -1,12 +1,14 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.instruccion;
-using CompiPascal.traductor.simbolo;
-using CompiPascal.traductor.util;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.instruccion;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.expresion
+
+//"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.28.29333\bin\Hostx64\x64\EDITBIN.EXE" /stack:4097152 CompiPascal.exe
+namespace CompiPascal.interprete.expresion
 {
     class FuncionLlamada : Expresion
     {
@@ -21,9 +23,9 @@ namespace CompiPascal.traductor.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            Funcion funcion = retorna_funcionValor(id, entorno);
+            Funcion funcion = retorna_funcionValor(id, entorno);            
 
-            if(funcion != null)
+            if (funcion != null)
             {
                 LinkedList<Simbolo> valores = new LinkedList<Simbolo>();
 

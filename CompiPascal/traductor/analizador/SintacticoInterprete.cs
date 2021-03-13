@@ -1,59 +1,79 @@
-﻿using CompiPascal.traductor.expresion;
-using CompiPascal.traductor.instruccion;
-using CompiPascal.traductor.simbolo;
+﻿using CompiPascal.interprete.expresion;
+using CompiPascal.interprete.instruccion;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace CompiPascal.traductor.analizador
+namespace CompiPascal.interprete.analizador
 {
-    class SintacticoTraductor
-    {
 
+    //TODO: strings de tipos para no usar strings
+    //Token.Text o Token.ValueString
+    //arreglar cuando en la gramatica venga ID cambiarlo a expression
+
+    /// <summary>
+    /// Como ya hemos mencionado, Irony no acepta acciones
+    /// entre sus producciones, se limita a devolver el
+    /// AST(Abstract Syntax Tree) que arma luego de ser
+    /// aceptada la cadena de entrada.
+    /// </summary>
+    /// 
+    class SintacticoInterprete
+    {
         private string txtOutput = string.Empty;
         private string[,] errors;
         Form1 form;
 
         public void analizar(String cadena, Form1 formp)
         {
-            form = formp;
+           // try
+           //{
+                form = formp;
 
-            GramaticaTraductor gramatica = new GramaticaTraductor();
-            LanguageData lenguaje = new LanguageData(gramatica);
-            Parser parser = new Parser(lenguaje);
-            ParseTree arbol = parser.Parse(cadena);
-            ParseTreeNode ini = arbol.Root;
-            //aqui podria colocar el analizador de errores de la gramatica
+                GramaticaInterprete gramatica = new GramaticaInterprete();
+                LanguageData lenguaje = new LanguageData(gramatica);
+                Parser parser = new Parser(lenguaje);
+                ParseTree arbol = parser.Parse(cadena);
+                ParseTreeNode ini = arbol.Root;
+                //aqui podria colocar el analizador de errores de la gramatica
 
-            if (ini != null)
-            {
-                OutputMessage("Analisis exitosamente");
-                FillErrors(arbol);
-                ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
-                //LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
-                //ejecutar(listaInstrucciones);
-            }
-            else
-            {
-                WarningMessage("La cadena de entrada no es correcta");
-                FillErrors(arbol);
-            }
+                if (ini != null)
+                {
+                    OutputMessage("Analisis exitosamente");
+                    FillErrors(arbol);
+                    //ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
+                    //LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
+                    //ejecutar(listaInstrucciones);
+                }
+                else
+                {
+                    WarningMessage("La cadena de entrada no es correcta");
+                    FillErrors(arbol);
+                }
+
+                foreach (string mensaje in ErrorPascal.cola)
+                {
+                    form.Write(mensaje + Environment.NewLine);
+                }
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    form.Write(ex.ToString() + Environment.NewLine);
+            //}
         }
-
 
         public void ejecutar(LinkedList<Instruccion> instrucciones)
         {
             Entorno global = new Entorno(null);
 
-            //TODO: hacer una pasada para recoger las funciones o procedimientos o 
-            //las pasadas que me interesen para lo que me interese
-            //types? para cuando diga esta variable es de este type //respuesta: si!
-
             foreach (var instruccion in instrucciones)
             {
-                if (instruccion is FunctionInstruccion)
+                if(instruccion is FunctionInstruccion )
                 {
                     instruccion.ejecutar(global);
                 }
@@ -68,6 +88,11 @@ namespace CompiPascal.traductor.analizador
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="program_structure">nodo program_structure</param>
+        /// <returns>lista de instrucciones de todo el programa, header_statements y body_statements</returns>
         private LinkedList<Instruccion> instrucciones(ParseTreeNode program_structure)
         {
             LinkedList<Instruccion> listaInstrucciones = new LinkedList<Instruccion>();
@@ -77,7 +102,7 @@ namespace CompiPascal.traductor.analizador
             header_statements(listaInstrucciones, program.ChildNodes.ElementAt(0));
 
             body_statements(listaInstrucciones, program.ChildNodes.ElementAt(1));
-
+                  
             return listaInstrucciones;
         }
 
@@ -108,7 +133,6 @@ namespace CompiPascal.traductor.analizador
                 ParseTreeNode constant_declarations = constant_optional.ChildNodes.ElementAt(0);
                 ParseTreeNode constant_variables = constant_declarations.ChildNodes.ElementAt(1);
                 listaInstrucciones.AddLast(header_statements_return(constant_variables)); //constantes
-
             }
 
             ParseTreeNode statements = header_statements.ChildNodes.ElementAt(1);
@@ -118,7 +142,6 @@ namespace CompiPascal.traductor.analizador
                 {
                     listaInstrucciones.AddLast(header_statements_return(statement.ChildNodes.ElementAt(0)));
                 }
-
             }
         }
 
@@ -142,8 +165,8 @@ namespace CompiPascal.traductor.analizador
                     return repeat_statements(opciones_main);
                 case "exit_statements":
                     return new ExitInstruccion(Expresion(opciones_main.ChildNodes.ElementAt(2)));
-                case "return_statements":
-                    return new ReturnInstruccion(opciones_main.ChildNodes.ElementAt(0).Token.Text, Expresion(opciones_main.ChildNodes.ElementAt(4)));
+                //case "return_statements":
+                //    return new ReturnInstruccion(opciones_main.ChildNodes.ElementAt(0).Token.Text, Expresion(opciones_main.ChildNodes.ElementAt(4)));
                 case "write_statements":
                     return write_statements(opciones_main);
                 case "graficar_statements":
@@ -152,10 +175,17 @@ namespace CompiPascal.traductor.analizador
                     return new BreakInstruccion(true);
                 case "CONTINUE":
                     return new ContinueInstruccion(true);
-                // case "function_call":
-                //return function_call(opciones_main);
-                case "procedure_call":
-                    return procedure_call(opciones_main);
+                //case "callFuncProc":
+                //    return callFuncProc(opciones_main);
+                case "union_1":
+                    {
+                        ParseTreeNode union_1_a = opciones_main.ChildNodes.ElementAt(4);
+                        if (union_1_a.ChildNodes.ElementAt(0).Term.Name == "SEMI_COLON")
+                            return callFuncProc(opciones_main);
+                        else
+                            return new ReturnInstruccion(opciones_main.ChildNodes.ElementAt(0).Token.Text, Expresion(union_1_a.ChildNodes.ElementAt(1)));
+                    }
+
                 default:
                     return null;
             }
@@ -199,33 +229,17 @@ namespace CompiPascal.traductor.analizador
                 lista_expresiones,
                 Expresion(array_ini.ChildNodes.ElementAt(5)));
         }
-        /*
-        private Instruccion function_call(ParseTreeNode function_call)
-        {
-            LinkedList<Expresion> function_lista_expresiones = new LinkedList<Expresion>();
-            expression_list(function_lista_expresiones, function_call.ChildNodes.ElementAt(2));
 
-
-            return new FunctionCallInstruccion(Expresion(function_call.ChildNodes.ElementAt(0)),
-                function_lista_expresiones);
-        }
-       */
-        private Instruccion procedure_call(ParseTreeNode procedure_call)
+        private Instruccion callFuncProc(ParseTreeNode callFuncProc)
         {
             LinkedList<Expresion> procedure_lista_expresiones = new LinkedList<Expresion>();
-            expression_list(procedure_lista_expresiones, procedure_call.ChildNodes.ElementAt(2));
+            expression_list(procedure_lista_expresiones, callFuncProc.ChildNodes.ElementAt(2));
 
 
-            return new ProcedureCallinstruccion(Expresion(procedure_call.ChildNodes.ElementAt(0)),
+            return new CallFuncProc(callFuncProc.ChildNodes.ElementAt(0).Token.Text,
                 procedure_lista_expresiones);
         }
-        /*
-        private Instruccion array_call(ParseTreeNode array_call)
-        {
-            return new ArrayCallInstruccion(Expresion(array_call.ChildNodes.ElementAt(0)),
-                Expresion(array_call.ChildNodes.ElementAt(2)));
-        }
-        */
+
         private Instruccion write_statements(ParseTreeNode write_statements)
         {
             LinkedList<Expresion> lista_expresiones = new LinkedList<Expresion>();
@@ -366,7 +380,7 @@ namespace CompiPascal.traductor.analizador
         private Instruccion procedures_declarations(ParseTreeNode procedures_declarations)
         {
             string nombre_procedimiento = procedures_declarations.ChildNodes.ElementAt(1).Token.Text;
-
+            
             LinkedList<ParametroInst> lista_parametros = parameters(procedures_declarations.ChildNodes.ElementAt(3));
 
             LinkedList<Instruccion> procedure_header_instrucciones = new LinkedList<Instruccion>();
@@ -375,8 +389,8 @@ namespace CompiPascal.traductor.analizador
             LinkedList<Instruccion> procedure_body_instrucciones = new LinkedList<Instruccion>();
             body_statements(procedure_body_instrucciones, procedures_declarations.ChildNodes.ElementAt(7));
 
-            return new ProcedureInstruccion(nombre_procedimiento, lista_parametros,
-                procedure_header_instrucciones, procedure_body_instrucciones);
+            return new FunctionInstruccion(nombre_procedimiento, lista_parametros, "",
+                procedure_header_instrucciones, procedure_body_instrucciones, false);
         }
         private Instruccion functions_declarations(ParseTreeNode functions_declarations)
         {
@@ -393,7 +407,7 @@ namespace CompiPascal.traductor.analizador
             body_statements(function_body_instrucciones, functions_declarations.ChildNodes.ElementAt(9));
 
             return new FunctionInstruccion(nombre_funcion, lista_parametros, tipo_funcion,
-                function_header_instrucciones, function_body_instrucciones);
+                function_header_instrucciones, function_body_instrucciones, true);
 
         }
         private Instruccion variables_declarations(ParseTreeNode variables_declarations)
@@ -434,19 +448,19 @@ namespace CompiPascal.traductor.analizador
             {
                 LinkedList<string> lista_ids = list_id(type_variable.ChildNodes.ElementAt(0));
 
-
+               
                 ParseTreeNode type_type = type_variable.ChildNodes.ElementAt(2);
-                if (type_type.ChildNodes.Count == 3)//object
+                if(type_type.ChildNodes.Count == 3)//object
                 {
                     LinkedList<Instruccion> lista_lista_var_ejec = new LinkedList<Instruccion>();
 
                     ParseTreeNode type_declarations_vars = type_type.ChildNodes.ElementAt(1);
-                    foreach (ParseTreeNode variables_declarations_nodo in type_declarations_vars.ChildNodes)
+                    foreach(ParseTreeNode variables_declarations_nodo in type_declarations_vars.ChildNodes)
                     {
-                        lista_lista_var_ejec.AddLast(variables_declarations(variables_declarations_nodo)); //new ListaVarInstruccion
+                       lista_lista_var_ejec.AddLast(variables_declarations(variables_declarations_nodo)); //new ListaVarInstruccion
                     }
 
-                    type_lista.AddLast(new TypeInstruccion(lista_ids, lista_lista_var_ejec));
+                    type_lista.AddLast(new TypeInstruccion(lista_ids.First.Value, lista_lista_var_ejec));
 
                 }
                 else//primitivo,id[array,object], array
@@ -460,9 +474,9 @@ namespace CompiPascal.traductor.analizador
                         case "variables_native"://primitivo
                             ParseTreeNode variables_native = variables_native_array_id.ChildNodes.ElementAt(0);
                             primitivo_id = variables_native.ChildNodes.ElementAt(0).Term.Name;
-
+                            
                             type_lista.AddLast(new TypeInstruccion(lista_ids, primitivo_id));
-
+                            
                             break;
                         case "ID"://id[array,object]
                             primitivo_id = variables_native_array_id.ChildNodes.ElementAt(0).Token.Text;
@@ -472,7 +486,7 @@ namespace CompiPascal.traductor.analizador
                             break;
                         case "variables_array"://array
                             ParseTreeNode variables_array = variables_native_array_id.ChildNodes.ElementAt(0);
-
+                            
                             LinkedList<Expresion> lista_expresiones = new LinkedList<Expresion>();
                             ParseTreeNode expression_list_plus = variables_array.ChildNodes.ElementAt(2);
                             if (expression_list_plus.ChildNodes.Count > 0)
@@ -485,12 +499,12 @@ namespace CompiPascal.traductor.analizador
                             string nativo_id = variables_native_id(variables_array.ChildNodes.ElementAt(5));
 
                             type_lista.AddLast(new TypeInstruccion(lista_ids, lista_expresiones, nativo_id));
-
+                            
                             break;
                         default:
                             return null;
                     }
-
+                    
                 }
             }
             return new ListaTypeInstruccion(type_lista);
@@ -550,8 +564,8 @@ namespace CompiPascal.traductor.analizador
                         return new Logica(Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]), "OR");
 
 
-                    case "PERIOD"://TODO: Expresion(....).....
-                        return new Literal("PERIOD", Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]));
+                    case "PERIOD":
+                        return new Literal("PERIOD", Expresion(expression.ChildNodes[0]), expression.ChildNodes[2].ChildNodes.ElementAt(0).Token.Text);
                     case "PERIOD_PERIOD":
                         return new Literal("PERIOD_PERIOD", Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]));
                     case "expression":
@@ -595,7 +609,7 @@ namespace CompiPascal.traductor.analizador
                         return null;
                 }
             }
-            else if (expression.ChildNodes.Count == 4)
+            else if(expression.ChildNodes.Count == 4)
             {
                 LinkedList<Expresion> lista_expresiones = new LinkedList<Expresion>();
 
@@ -690,7 +704,7 @@ namespace CompiPascal.traductor.analizador
         {
             //txtOutput = string.Empty;
 
-            GramaticaTraductor gramatica = new GramaticaTraductor();
+            GramaticaInterprete gramatica = new GramaticaInterprete();
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(lenguaje);
 
@@ -717,10 +731,6 @@ namespace CompiPascal.traductor.analizador
             }
 
         }
-
-
-
-
         private void graficarAstIrony(ParseTreeNode actual, string nombreGrafica)
         {
             string grafoDOT = AstIronyDOT.getDot(actual);
@@ -787,6 +797,34 @@ namespace CompiPascal.traductor.analizador
         public string[,] Errores() => errors;
         public string ClearMessage() => txtOutput = string.Empty;
         public void ClearErrores() => errors = null;
-  
+
+
     }
 }
+
+/* 1) cuantas producciones tiene
+ * 2) condiciones para saber que produccion esta reconociendo [puede basarse en la cantidad de hijos de la produccion] 
+ * 3) tambien la cantidad de ChildNodes o la posicion del elemento que nos interese puede variar DEPENDIENDO de las
+ * preferencias que le colocamos al AST en nuestra gramatica, por ejemplo el metodo MarkPunctuation() nos elimina nodos
+ * que no nos interesa y por lo tanto nos modifica la cantidad de los ChildNodes de nuestro arbol.
+ */
+
+/*foreach (var item in lenguaje.Errors) //lenguaje.Errors.Count
+{
+    //OutputMessage("gramatica: " + item);
+    errors[fila, 0] = "gramatica";
+    errors[fila, 1] = item.Message;
+    errors[fila, 2] = "-";
+    errors[fila, 3] = "-";
+    errors[fila, 4] = "-";
+    fila++;
+}
+*/
+
+/*
+ChildNodes... tipo Array y contiene todas las cualidades de una lista
+si esta lista = vacia = nodo es una hoja
+ != entonces tiene un subarbol
+se le manda el nodo RAIZ del arbol 
+recorrido al AST ... se le manda el nodo raiz del arbol
+ */

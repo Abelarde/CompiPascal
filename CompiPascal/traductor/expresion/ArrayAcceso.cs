@@ -1,10 +1,11 @@
-﻿using CompiPascal.traductor.analizador.simbolo;
-using CompiPascal.traductor.simbolo;
+﻿using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.traductor.expresion
+namespace CompiPascal.interprete.expresion
 {
     class ArrayAcceso : Expresion
     {
@@ -21,6 +22,8 @@ namespace CompiPascal.traductor.expresion
         {            
             Simbolo variable_array = id_simbolo.evaluar(entorno);
 
+            if (variable_array.tipo.tipo != Tipos.ARRAY)
+                throw new ErrorPascal("la variable no es un arreglo",0,0,"semantico");
 
             Simbolo dimension_valor = variable_array;
             foreach(Expresion indice in lista_expr)

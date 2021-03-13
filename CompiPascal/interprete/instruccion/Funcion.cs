@@ -78,7 +78,7 @@ namespace CompiPascal.interprete.instruccion
                         }
                         else
                         {
-                            Simbolo nueva_variable = new Simbolo(new Tipo(lista_param[j].tipo_nativo_id, entorno), lista_param[j].id, lista_valores[j].valor);
+                            Simbolo nueva_variable = new Simbolo(new Tipo(lista_param[j].tipo_nativo_id, entorno), lista_param[j].id, lista_valores[j].valor, entorno, 0);
                             entorno.guardarVariable(nueva_variable.id, nueva_variable);
 
                         }
