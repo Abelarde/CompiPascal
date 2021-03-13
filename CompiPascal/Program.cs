@@ -1,4 +1,6 @@
+using CompiPascal.interprete.util;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ namespace CompiPascal
         [STAThread]
         static void Main()
         {
+            ErrorPascal.cola = new Queue<string>();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

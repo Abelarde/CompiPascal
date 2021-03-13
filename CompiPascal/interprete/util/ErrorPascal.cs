@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CompiPascal.interprete.util
 {
@@ -10,6 +12,7 @@ namespace CompiPascal.interprete.util
         private int linea, columna;
         private string mensaje;
         private string tipo;
+        public static Queue<string> cola;
 
         /// <summary>
         /// Se crea un nuevo error semantico

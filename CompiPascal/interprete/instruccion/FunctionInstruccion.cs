@@ -13,14 +13,15 @@ namespace CompiPascal.interprete.instruccion
 
         private LinkedList<ParametroInst> lista_parametros;        
 
-        private string tipo_funcion_nativo_id;
+        private string tipo_funcion_nativo_id; //== ""
 
         private LinkedList<Instruccion> header_instrucciones;
         private LinkedList<Instruccion> body_instrucciones;
 
+        public bool isFuncion; //==false
 
         public FunctionInstruccion(string id, LinkedList<ParametroInst> lista_parametros, string tipo_funcion_nativo_id, 
-            LinkedList<Instruccion> header_instrucciones, LinkedList<Instruccion> body_instrucciones)
+            LinkedList<Instruccion> header_instrucciones, LinkedList<Instruccion> body_instrucciones, bool isFuncion)
         {
             this.id = id;
 
@@ -30,14 +31,16 @@ namespace CompiPascal.interprete.instruccion
 
             this.header_instrucciones = header_instrucciones;
             this.body_instrucciones = body_instrucciones;
+
+            this.isFuncion = isFuncion;
         }
 
         public override object ejecutar(Entorno entorno)
         {
             try
             {
-                Tipo tipo_funcion;
-                if (tipo_funcion_nativo_id != string.Empty)
+                Tipo tipo_funcion = null;
+                if (tipo_funcion_nativo_id != string.Empty && isFuncion)
                 {
                     tipo_funcion = new Tipo(tipo_funcion_nativo_id, entorno);
 
@@ -48,8 +51,11 @@ namespace CompiPascal.interprete.instruccion
                     }
                     //nativo..sigue normal...
                 }
-                else
+                else if (isFuncion)//false==sigue normal
+                {
                     throw new ErrorPascal("[Funcion] El tipo de dato para la funcion no viene especificada", 0, 0, "semantico");
+                }
+
 
 
                 if (id != string.Empty)
@@ -57,7 +63,10 @@ namespace CompiPascal.interprete.instruccion
                     //no exista, puede ser directo porque no hay sobrecarga, porque lo que el id, sera el id y no sera compuesto por sus parametros
                     if (entorno.getFuncion(id) == null)
                     {
-                        entorno.guardarFuncion(id, new Funcion(id, tipo_funcion, lista_parametros, header_instrucciones, body_instrucciones));
+                        if(isFuncion)
+                            entorno.guardarFuncion(id, new Funcion(id, tipo_funcion, lista_parametros, header_instrucciones, body_instrucciones, isFuncion));
+                        else
+                            entorno.guardarFuncion(id, new Funcion(id, tipo_funcion, lista_parametros, header_instrucciones, body_instrucciones, isFuncion));
                         //se guardo la funcion correctamente
                     }
                     else

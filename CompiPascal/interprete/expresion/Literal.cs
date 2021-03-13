@@ -39,7 +39,7 @@ namespace CompiPascal.interprete.expresion
                     return new Simbolo(new Tipo(Tipos.STRING, null), null, Convert.ToString(this.valor).Trim('\''));
                 case "NUMBER":
                     if (this.valor.ToString().Contains("."))
-                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDouble(this.valor));
+                        return new Simbolo(new Tipo(Tipos.REAL, null), null, Convert.ToDecimal(this.valor));
                     else
                         return new Simbolo(new Tipo(Tipos.INTEGER, null), null, Convert.ToInt32(this.valor));
                 case "TRUE":
@@ -66,7 +66,7 @@ namespace CompiPascal.interprete.expresion
                     Simbolo minR = validaciones(min, entorno);
                     Simbolo maxR = validaciones(max, entorno);
                     //.tipo, .valor(object)[Arreglo]//.isConst//.isType//.isArray
-                    return new Simbolo(new Tipo(Tipos.ARRAY, null), getIndice(minR), getIndice(maxR));
+                    return new Simbolo(new Tipo(Tipos.ARRAY, null), Convert.ToInt32(getIndice(minR)), Convert.ToInt32(getIndice(maxR)));
                     //id //.valor(object)[Arreglo] -> tipoDatos
 
                 default:

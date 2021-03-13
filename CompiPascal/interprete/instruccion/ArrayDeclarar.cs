@@ -42,7 +42,7 @@ namespace CompiPascal.interprete.instruccion
                         throw new ErrorPascal("error al calcular la dimension del arreglo", 0, 0, "semantico");
 
                     arr.tipo_del_array = tipoArreglo;
-                    arr.inicializarIndices(tipoArreglo);
+                    arr.inicializarIndices(tipoArreglo, entorno);
 
                     lista_comodin = new Expresion[array_dimensiones_min_max.Count];
                     int indi = 0;
@@ -124,7 +124,7 @@ namespace CompiPascal.interprete.instruccion
             if (arrDim == null)
                 throw new ErrorPascal("error al calcular la dimension del arreglo", 0, 0, "semantico");
             arrDim.tipo_del_array = tipoArreglo;
-            arrDim.inicializarIndices(tipoArreglo);
+            arrDim.inicializarIndices(tipoArreglo, entorno);
 
             return dimension;
         }

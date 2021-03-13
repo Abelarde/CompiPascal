@@ -7,7 +7,7 @@ namespace CompiPascal.interprete.instruccion
 {
     class ListaVarInstruccion : Instruccion
     {
-        LinkedList<Var> Var_lista;
+        public LinkedList<Var> Var_lista;
 
         public ListaVarInstruccion(LinkedList<Var> Var_lista)
         {

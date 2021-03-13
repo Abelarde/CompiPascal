@@ -1,35 +1,32 @@
 ﻿using CompiPascal.interprete.simbolo;
+using CompiPascal.interprete.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CompiPascal.interprete.analizador.simbolo
 {
-    /// <summary>
-    /// Simbolo es un objeto que se guardara en la tabla de simbolos
-    /// Representa: una variable, una constante, una funcion, un metodo
-    /// Puede tener: atributos que ayuden al interprete
-    /// </summary>
     class Simbolo
     {
         public Tipo tipo; //tipo de dato del simbolo //primitivo,array,object
         public string id; //identificador asociado al simbolo
-        public object valor; //guarda el valor del simbolo    
+        public object valor; //guarda el valor del simbolo    //Arreglo() || Structs()
         //linea
         //columna 
         public bool isConst;
         public bool isType;
         public bool isArray;
+        public bool isObject;
 
         public Simbolo(Tipo tipo, string id, object valor)
         {
             this.tipo = tipo;
             this.id = id;
-            //this.valor = valor;
             this.valor = castValor(tipo, valor);
             this.isConst = false;
             this.isType = false;
             this.isArray = false;
+            this.isObject = false;
         }
 
         //TODO: que valores me interesan en la inicializacion para los arreglos
@@ -41,25 +38,24 @@ namespace CompiPascal.interprete.analizador.simbolo
         //arreglos
         public Simbolo(Tipo tipo, int min, int max)//Simbolos variables arrays
         {
-            this.valor = new Arreglo(min, max); //[0]
             this.tipo = tipo;//Tipos.ARRAY
+            this.valor = new Arreglo(min, max); //[0]
             this.isConst = false;
             this.isType = true;
             this.isArray = true;
+            this.isObject = false;
         }
         public Simbolo(Tipo tipo, object valor)//Simbolos Indices
         {
+            //Este indice va a tener...
             this.tipo = tipo;
-            //this.valor = valor;
             this.valor = castValor(tipo, valor);
             this.isConst = false;
             this.isType = false;
             this.isArray = false;
+            this.isObject = false;
         }
 
-        //para inicializar con un valor las variables que se declaran
-        //en las operaciones no tengo problemas porque ya iria con un valor convertido aqui
-        //o en ese clase lo convierte ahi, si fuera null.
         public object castValor(Tipo tipo, object valor)
         {
             if (tipo != null)
@@ -75,9 +71,38 @@ namespace CompiPascal.interprete.analizador.simbolo
                     case Tipos.BOOLEAN:
                         return Convert.ToBoolean(valor);
                     case Tipos.OBJECT:
-                        return null;//TODO: quiza un objeto de la clase?
+                        Simbolo variable_objeto = null;// entorno.getVariable(tipo.tipoAuxiliar);
+                        if(variable_objeto != null)
+                        {
+                            Structs copia_interna = variable_objeto.valor as Structs;
+                            if(copia_interna != null)
+                            {
+                                Structs copia = copia_interna.Clone();
+                                return copia;
+                            }
+                            throw new ErrorPascal("error al asignar un tipo objeto a la variable", 0, 0, "semantico");    
+                        }
+                        else
+                        {
+                            throw new ErrorPascal("ese tipo de dato no esta definido",0,0,"semantico");
+                        }
+
                     case Tipos.ARRAY:
-                        return null;//TODO: lo mismo de object
+                        Simbolo variable_array = null;// entorno.getVariable(tipo.tipoAuxiliar);
+                        if (variable_array != null)
+                        {
+                            Arreglo copia_interna = variable_array.valor as Arreglo;
+                            if (copia_interna != null)
+                            {
+                                Arreglo copia = copia_interna.Clone();
+                                return copia;
+                            }
+                            throw new ErrorPascal("error al asignar un tipo arreglo a la variable", 0, 0, "semantico");
+                        }
+                        else
+                        {
+                            throw new ErrorPascal("ese tipo de dato no esta definido", 0, 0, "semantico");
+                        }
                     case Tipos.ERROR:
                         return null;
                     default:
@@ -86,6 +111,5 @@ namespace CompiPascal.interprete.analizador.simbolo
             }
             return null;
         }
-
     }
 }

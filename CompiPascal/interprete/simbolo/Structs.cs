@@ -15,11 +15,6 @@ namespace CompiPascal.interprete.simbolo
             this.atributos = atributos;
         }
 
-        public Structs()
-        {
-            this.atributos = new Dictionary<string, Simbolo>();
-        }
-
         public Simbolo getAtributo(string idAtributo)
         {
             if (atributos.ContainsKey(idAtributo))
@@ -36,7 +31,10 @@ namespace CompiPascal.interprete.simbolo
                 throw new ErrorPascal("Ya existe un atributo con ese id en el object",0,0,"semantico");
         }
 
-
+        public Structs Clone()
+        {
+            return (Structs)this.MemberwiseClone();
+        }
 
     }
 }

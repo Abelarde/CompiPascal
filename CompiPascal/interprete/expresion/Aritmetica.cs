@@ -22,9 +22,6 @@ namespace CompiPascal.interprete.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            //TODO: que pasa si colo un try aqui, si aqui termino el throw entonces en la condicional
-            //que pasaria?
-
             Simbolo derecha = validaciones(expDer, entorno);
 
             Tipos tipoResultante = derecha.tipo.tipo;

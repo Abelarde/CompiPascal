@@ -11,7 +11,7 @@ namespace CompiPascal.interprete.instruccion
     class Funcion : Instruccion
     {
         private string id_funcion;
-        private Tipo tipo_funcion;
+        private Tipo tipo_funcion; //null podria ser si es proc
 
         private LinkedList<ParametroInst> lista_parametros;
         public LinkedList<Simbolo> valores_parametros_simbolos;
@@ -19,8 +19,9 @@ namespace CompiPascal.interprete.instruccion
         private LinkedList<Instruccion> header_instrucciones;
         private LinkedList<Instruccion> body_instrucciones;
 
+        public bool isFuncion;
 
-        public Funcion(string id_funcion, Tipo tipo_funcion, LinkedList<ParametroInst> lista_parametros, LinkedList<Instruccion> header_instrucciones, LinkedList<Instruccion> body_instrucciones)
+        public Funcion(string id_funcion, Tipo tipo_funcion, LinkedList<ParametroInst> lista_parametros, LinkedList<Instruccion> header_instrucciones, LinkedList<Instruccion> body_instrucciones, bool isFuncion)
         {
             this.id_funcion = id_funcion;
             this.tipo_funcion = tipo_funcion;
@@ -28,6 +29,7 @@ namespace CompiPascal.interprete.instruccion
             this.header_instrucciones = header_instrucciones;
             this.body_instrucciones = body_instrucciones;
             valores_parametros_simbolos = null;
+            this.isFuncion = isFuncion;
         }
 
         public override object ejecutar(Entorno entorno)
@@ -105,7 +107,7 @@ namespace CompiPascal.interprete.instruccion
                 if (body != null)
                 {
                     object resultado = body.ejecutar(entorno); 
-                    if (resultado != null)
+                    if (resultado != null && isFuncion)
                     {
                         if (resultado is ExitInstruccion)
                             return resultado;//ya no sigue ejecutando las intrucciones

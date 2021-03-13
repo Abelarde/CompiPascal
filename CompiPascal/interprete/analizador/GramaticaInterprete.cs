@@ -24,7 +24,7 @@ namespace CompiPascal.interprete.analizador
             //var STRING = ToTerm("CHAR");  //array of character
 
             CommentTerminal LINE_COMMENT = new CommentTerminal("LINE_COMMENT", "//", "\n", "\r\n", "\r", "\u2085", "\u2028", "\u2029");
-            CommentTerminal BLOCK_COMMENT_ONE = new CommentTerminal("BLOCK_COMMENT_ONE", "{*", "*}");
+            CommentTerminal BLOCK_COMMENT_ONE = new CommentTerminal("BLOCK_COMMENT_ONE", "(*", "*)");
             CommentTerminal BLOCK_COMMENT_TWO = new CommentTerminal("BLOCK_COMMENT_TWO", "{", "}");
             NonGrammarTerminals.Add(LINE_COMMENT);
             NonGrammarTerminals.Add(BLOCK_COMMENT_ONE);
@@ -151,9 +151,8 @@ namespace CompiPascal.interprete.analizador
             NonTerminal variable_ini = new NonTerminal("variable_ini");
 
             NonTerminal functions_declarations = new NonTerminal("functions_declarations");
-            NonTerminal function_call = new NonTerminal("function_call");
             NonTerminal procedures_declarations = new NonTerminal("procedures_declarations");
-            NonTerminal procedure_call = new NonTerminal("procedure_call");
+            NonTerminal callFuncProc = new NonTerminal("callFuncProc");
             NonTerminal parameters = new NonTerminal("parameters");
             NonTerminal parameter = new NonTerminal("parameter");
 
@@ -184,7 +183,6 @@ namespace CompiPascal.interprete.analizador
             NonTerminal repeat_statements = new NonTerminal("repeat_statements");
 
 
-            NonTerminal array_call = new NonTerminal("array_call");
             NonTerminal array_ini = new NonTerminal("array_ini");
 
 
@@ -203,6 +201,8 @@ namespace CompiPascal.interprete.analizador
             NonTerminal variables_native_id = new NonTerminal("variables_native_id");
 
 
+            NonTerminal union_1 = new NonTerminal("union_1");
+            NonTerminal union_1_a = new NonTerminal("union_1_a");
 
             #endregion
 
@@ -265,12 +265,12 @@ namespace CompiPascal.interprete.analizador
                 | VAR + list_id + COLON + variables_native_id;
 
 
-            main_declarations.Rule = BEGIN + begin_end_statements + END; //aqui inicia la ejecucion del programa
+            main_declarations.Rule = BEGIN + begin_end_statements + END;
             main_declarations.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
 
             begin_end_statements.Rule = MakeStarRule(begin_end_statements, begin_end_statement);
-            begin_end_statement.Rule = variable_ini 
+            begin_end_statement.Rule = variable_ini
                 | array_ini 
                 | if_statements
                 | case_statements
@@ -278,23 +278,32 @@ namespace CompiPascal.interprete.analizador
                 | for_do_statements
                 | repeat_statements
                 | BREAK + SEMI_COLON //validar que este dentro de un bucle o un case
-                | CONTINUE + SEMI_COLON //validar que este dentro de un bucle //Para el ciclo for-do , la instrucción continue hace que se ejecuten las porciones de prueba e incremento condicional del ciclo. Para los bucles while-do y repeat ... until , la instrucción continue hace que el control del programa pase a las pruebas condicionales.
-                //| function_call + SEMI_COLON //default
-                | procedure_call + SEMI_COLON //default               
-                | exit_statements // return //default
-                | return_statements // return //default
+                | CONTINUE + SEMI_COLON //validar que este dentro de un bucle //Para el ciclo for-do , la instrucción continue hace que se ejecuten las porciones de prueba e incremento condicional del ciclo. Para los bucles while-do y repeat ... until , la instrucción continue hace que el control del programa pase a las pruebas condicionales.          
+                | exit_statements
+                //| callFuncProc
+                //| return_statements 
                 | write_statements
                 | graficar_statements
+                | union_1
                 | Empty;
             begin_end_statement.ErrorRule = SyntaxError + SEMI_COLON
                 | SyntaxError + END;
 
-
-            //expression 1 = id;
             variable_ini.Rule = expression + COLON_EQUAL + expression + SEMI_COLON;
-            //| ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON; //TODO: (funciones) ver que me conviene mas si definirlo como una llamada a funcion o dejarlo como un id, como si fuera una asignacion normal, tomando en cuenta que es el return de una funcion [supuestamente ya definido (trabajado) asi que no tendria que hacer mas porque ya lo tendria que tener]
 
             array_ini.Rule = expression + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET + COLON_EQUAL + expression + SEMI_COLON;
+
+            union_1.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS + union_1_a;
+
+            union_1_a.Rule = SEMI_COLON //funcion
+                | COLON_EQUAL + expression + SEMI_COLON;//return
+
+            //callFuncProc.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS + ;
+            expression_list.Rule = MakeStarRule(expression_list, COMMA, expression);
+                        
+            //return_statements.Rule = ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + ;
+
+            exit_statements.Rule = EXIT + LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS + SEMI_COLON;
 
             #region bien
             if_statements.Rule = IF + expression + THEN + main_declarations
@@ -315,21 +324,12 @@ namespace CompiPascal.interprete.analizador
 
             while_statements.Rule = WHILE + expression + DO + main_declarations + SEMI_COLON;
 
-            //expression 1 = id
             for_do_statements.Rule = FOR + expression + COLON_EQUAL + expression + TO + expression + DO + main_declarations + SEMI_COLON;
 
-            //TODO: aqui validar que en lugar de expresion, solo se acepte condicionales
             repeat_statements.Rule = REPEAT + main_declarations + UNTIL + expression + SEMI_COLON;
-            
+
             #endregion finBien
 
-            //function_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
-            procedure_call.Rule = ID + LEFT_PARENTHESIS + expression_list + RIGHT_PARENTHESIS;
-            expression_list.Rule = MakeStarRule(expression_list, COMMA, expression);
-
-            exit_statements.Rule = EXIT + LEFT_PARENTHESIS + expression + RIGHT_PARENTHESIS + SEMI_COLON;
-            return_statements.Rule = ID + LEFT_PARENTHESIS + RIGHT_PARENTHESIS + COLON_EQUAL + expression + SEMI_COLON;
-            
             #region 2bien
             write_statements.Rule = WRITE + LEFT_PARENTHESIS + expression_list_plus + RIGHT_PARENTHESIS + SEMI_COLON
                 | WRITELN + LEFT_PARENTHESIS + expression_list_plus + RIGHT_PARENTHESIS + SEMI_COLON;
@@ -366,7 +366,8 @@ namespace CompiPascal.interprete.analizador
 
                 | expression + LEFT_BRACKET + expression_list_plus + RIGHT_BRACKET 
 
-                | expression + PERIOD + expression //|types-objects 
+                | expression + PERIOD + expression 
+
                 | expression + PERIOD_PERIOD + expression; 
 
             

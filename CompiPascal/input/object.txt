@@ -1,0 +1,26 @@
+program Funciones;
+
+type
+    soyType = integer;
+
+type
+   Rectangle = object
+   var 
+        length, width: integer;
+        area, volumen: real;
+        otro: soyType;
+end;
+
+var
+    r1: Rectangle;
+
+begin
+//    r1.length := 10;
+//    r1.volumen := 50.5;
+//    r1.temp[10] := 9.99;
+
+//    writeln(r1.length);
+//    writeln(r1.volumen);
+//    writeln(r1.temp[10]);
+//    writeln(r1.temp[22]);
+end.

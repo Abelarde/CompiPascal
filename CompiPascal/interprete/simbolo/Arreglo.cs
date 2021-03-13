@@ -66,7 +66,7 @@ namespace CompiPascal.interprete.simbolo
             return array;
         }
 
-        public void inicializarIndices(Tipo tipoArreglo)
+        public void inicializarIndices(Tipo tipoArreglo, Entorno entorno)
         {
             for(int i = 0; i < valores.Length; i++)
             {
@@ -74,7 +74,10 @@ namespace CompiPascal.interprete.simbolo
             }
         }
 
-
+        public Arreglo Clone()
+        {
+            return (Arreglo)this.MemberwiseClone();
+        }
     }
 }
 

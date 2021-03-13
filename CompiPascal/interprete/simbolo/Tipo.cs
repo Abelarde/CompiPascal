@@ -5,9 +5,6 @@ using System.Text;
 
 namespace CompiPascal.interprete.analizador.simbolo
 {
-    /// <summary>
-    /// Diferentes tipos de datos permitidos en el lenguaje
-    /// </summary>
     public enum Tipos
     {
         REAL = 0, 
@@ -22,15 +19,15 @@ namespace CompiPascal.interprete.analizador.simbolo
     class Tipo
     {
         public Tipos tipo;
-        public string tipoAuxiliar; //OBJECT, STRUCT, CLASES
+        public string tipoAuxiliar; //OBJECT, ARRAYS
        
-        public Tipo(Tipos tipo, string tipoAuxiliar)
+        public Tipo(Tipos tipo, string tipoAuxiliar)//yo se el tipo y lo completo 
         {
             this.tipo = tipo;
             this.tipoAuxiliar = tipoAuxiliar;
         }
 
-        public Tipo(string tipo, Entorno entorno)
+        public Tipo(string tipo, Entorno entorno)//no se el tipo
         {
             Tipos tipoCasteado = Tipo.castearTipo(tipo, entorno);
             if (tipoCasteado != Tipos.OBJECT)
@@ -47,11 +44,6 @@ namespace CompiPascal.interprete.analizador.simbolo
             }
         }
 
-        /// <summary>
-        /// Obtiene el tipo de dato desde un string
-        /// </summary>
-        /// <param name="tipo">tipo de dato</param>
-        /// <returns></returns>
         public static Tipos castearTipo(string tipo, Entorno entorno)
         {
             switch (tipo)
@@ -68,24 +60,18 @@ namespace CompiPascal.interprete.analizador.simbolo
                     return Tipos.ARRAY;
                 case "ERROR":
                     return Tipos.ERROR;
-                default://type, days=integer; Rectangle=object;
-                    {
-                        Simbolo type_id = entorno.getVariable(tipo);
-                        if(type_id != null)
+                default:
+                    {   //viene un ID, obtengo el tipo
+                        Simbolo variable = entorno.getVariable(tipo);
+                        if(variable != null)
                         {
-                            if (type_id.tipo.tipo != Tipos.OBJECT)
-                            {
-                                return type_id.tipo.tipo;
-                            }
+                            if (variable.tipo.tipo != Tipos.OBJECT)
+                                return variable.tipo.tipo;
                             else
-                            {
                                 return Tipos.OBJECT;
-                            }
                         }
-                        return Tipos.OBJECT; //TODO: arreglar esto porque aqui deberia de ir null pero tendria que ir a arreglar las 
-                        //validaciones donde lo utilizo
+                        return Tipos.OBJECT; 
                     }
-
             }
         }
     }

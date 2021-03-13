@@ -17,6 +17,7 @@ namespace CompiPascal.interprete.instruccion
         private LinkedList<Expresion> array_dimensiones_min_max;//array
         private string array_primitivo_id;
 
+        string object_id;
         private LinkedList<Instruccion> object_lista_listaVars;//object
 
         //0 = primitivo, id
@@ -42,16 +43,16 @@ namespace CompiPascal.interprete.instruccion
         }
 
         //object
-        public TypeInstruccion(LinkedList<string> lista_ids, LinkedList<Instruccion> object_lista_listaVars)
+        public TypeInstruccion(string object_id, LinkedList<Instruccion> object_lista_listaVars)
         {
-            this.lista_ids = lista_ids;
+            this.object_id = object_id;
             this.object_lista_listaVars = object_lista_listaVars;
             this.tipo = 2;
         }
 
         public override object ejecutar(Entorno entorno)
         {
-            if (lista_ids.Count <= 0)
+            if (lista_ids != null && lista_ids.Count <= 0)
                 throw new ErrorPascal("[type] La lista de id's en la declaracion esta vacia.", 0, 0, "semantico");
 
             try
@@ -61,7 +62,7 @@ namespace CompiPascal.interprete.instruccion
                 else if (tipo == 1)
                     typeArray(lista_ids, array_dimensiones_min_max, array_primitivo_id, entorno);
                 else if (tipo == 2)
-                    typeObject();
+                    typeObject(object_id, object_lista_listaVars, entorno);
                 else
                     return null;
             }
@@ -71,6 +72,51 @@ namespace CompiPascal.interprete.instruccion
             }
             return null;
         }
+
+        private void typeObject(string id_objeto, LinkedList<Instruccion> object_lista_listaVars, Entorno entorno)
+        {
+            if (id_objeto == null)
+                throw new ErrorPascal("error con la definicion del id del object", 0, 0, "semantico");
+            if(object_lista_listaVars == null)
+                throw new ErrorPascal("error con la definicion de los parametros del object", 0, 0, "semantico");
+
+            if(entorno.getVariable(id_objeto) == null)
+            {
+                Dictionary<string, Simbolo> atributos = new Dictionary<string, Simbolo>();
+
+                foreach(ListaVarInstruccion listaVar in object_lista_listaVars)
+                {
+                    foreach (Var variables in listaVar.Var_lista)
+                    {
+                        //private LinkedList<string> lista_ids;
+                        //private string tipo;//primitivo, array, object [id]
+                        //private Expresion expresion;
+                        foreach(string id_variable in variables.lista_ids)
+                        {
+                            Simbolo var = new Simbolo(new Tipo(variables.tipo, entorno), id_variable, null);
+
+                            if (!atributos.ContainsKey(var.id))
+                                atributos.Add(var.id, var);
+                            else
+                                throw new ErrorPascal("ya existe un atributo con ese id", 0, 0, "semantico");
+                        }
+                    }
+                }
+
+                Structs estructuraInterna = new Structs(atributos);
+
+                Simbolo objecto = new Simbolo(new Tipo(Tipos.OBJECT, id_objeto), id_objeto, estructuraInterna);
+                objecto.isType = true;
+                objecto.isObject = true;
+
+                entorno.guardarVariable(objecto.id, objecto);
+            }
+            else
+            {
+                throw new ErrorPascal("ya existe una variable con ese id", 0, 0, "semantico");
+            }
+        }
+
 
         private void typePrimitivoId (string tipo, Entorno entorno, LinkedList<string> lista_ids)
         {
@@ -141,10 +187,6 @@ namespace CompiPascal.interprete.instruccion
 
         }
 
-        private void typeObject()
-        {
-
-        }
 
 
 

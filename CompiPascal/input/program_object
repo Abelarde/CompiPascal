@@ -10,7 +10,7 @@ type
    var 
         taxrate, net_income: real;
         choice, isready: boolean;
-        fees : array[1..1] of intege; //esto?
+        //fees : array[1..1] of intege; //esto?
 end;
 
 type

@@ -10,9 +10,9 @@ namespace CompiPascal.interprete.instruccion
 {
     class Var : Instruccion
     {
-        private LinkedList<string> lista_ids;
-        private string tipo;//primitivo, array, object [id]
-        private Expresion expresion;
+        public LinkedList<string> lista_ids;
+        public string tipo;//primitivo, array, object [id]
+        public Expresion expresion;
 
         public Var(LinkedList<string> lista_ids, string tipo, Expresion expresion)
         {
@@ -20,8 +20,6 @@ namespace CompiPascal.interprete.instruccion
             this.tipo = tipo;
             this.expresion = expresion;
         }
-
-
 
         //TODO: variables del mismo ambito no mismo id. [si: locales-globales] [no: locales-locales]
         public override object ejecutar(Entorno entorno)
