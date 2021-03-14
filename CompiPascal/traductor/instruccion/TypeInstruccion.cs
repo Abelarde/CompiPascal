@@ -1,12 +1,12 @@
-﻿using CompiPascal.interprete.analizador.simbolo;
-using CompiPascal.interprete.expresion;
-using CompiPascal.interprete.simbolo;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.analizador.simbolo;
+using CompiPascal.traductor.expresion;
+using CompiPascal.traductor.simbolo;
+using CompiPascal.traductor.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.instruccion
+namespace CompiPascal.traductor.instruccion
 {
     class TypeInstruccion : Instruccion
     {
@@ -25,12 +25,16 @@ namespace CompiPascal.interprete.instruccion
         //2 = object
         private int tipo;
 
+        private string tra_cadena;
+
+
         //primitivo, id
         public TypeInstruccion(LinkedList<string> lista_ids, string primitivo_id)
         {
             this.lista_ids = lista_ids;
             this.primitivo_id = primitivo_id;
             this.tipo = 0;
+            this.tra_cadena = string.Empty;
         }
 
         //array
@@ -40,6 +44,7 @@ namespace CompiPascal.interprete.instruccion
             this.array_dimensiones_min_max = array_dimensiones_min_max;
             this.array_primitivo_id = array_primitivo_id;
             this.tipo = 1;
+            this.tra_cadena = string.Empty;
         }
 
         //object
@@ -48,6 +53,7 @@ namespace CompiPascal.interprete.instruccion
             this.object_id = object_id;
             this.object_lista_listaVars = object_lista_listaVars;
             this.tipo = 2;
+            this.tra_cadena = string.Empty;
         }
 
         public override object ejecutar(Entorno entorno)
@@ -55,22 +61,51 @@ namespace CompiPascal.interprete.instruccion
             if (lista_ids != null && lista_ids.Count <= 0)
                 throw new ErrorPascal("[type] La lista de id's en la declaracion esta vacia.", 0, 0, "semantico");
 
+            string cadena_ids = string.Empty;
+            int contador = 0;
+            foreach (string id in lista_ids)
+            {
+                contador++;
+
+                if (contador == lista_ids.Count)
+                    cadena_ids += id;
+                else
+                    cadena_ids += id + ", ";
+            }
+
+            tra_cadena += cadena_ids + " = ";
+
             try
             {
+
+
                 if (tipo == 0)
+                {
                     typePrimitivoId(primitivo_id, entorno, lista_ids);
+                }
                 else if (tipo == 1)
+                {
                     typeArray(lista_ids, array_dimensiones_min_max, array_primitivo_id, entorno);
+                }
                 else if (tipo == 2)
+                {
+                    tra_cadena += "OBJECT";
                     typeObject(object_id, object_lista_listaVars, entorno);
+                    tra_cadena += "END";
+                }
                 else
-                    return null;
+                    return "";
             }
             catch (Exception ex)
             {
                 ex.ToString();
             }
-            return null;
+
+            
+
+
+
+            return tra_cadena;
         }
 
         private void typeObject(string id_objeto, LinkedList<Instruccion> object_lista_listaVars, Entorno entorno)

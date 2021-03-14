@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CompiPascal.interprete.util
+namespace CompiPascal.traductor.util
 {
     /// <summary>
     /// Clase creada para llevar nuestros propios errores en el lenguaje

@@ -1,12 +1,12 @@
-﻿using CompiPascal.interprete.expresion;
-using CompiPascal.interprete.instruccion;
-using CompiPascal.interprete.simbolo;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.expresion;
+using CompiPascal.traductor.instruccion;
+using CompiPascal.traductor.simbolo;
+using CompiPascal.traductor.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.analizador.simbolo
+namespace CompiPascal.traductor.analizador.simbolo
 {
     class Simbolo
     {

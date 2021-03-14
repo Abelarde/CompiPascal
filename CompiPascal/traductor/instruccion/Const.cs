@@ -1,17 +1,19 @@
-﻿using CompiPascal.interprete.analizador.simbolo;
-using CompiPascal.interprete.expresion;
-using CompiPascal.interprete.simbolo;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.analizador.simbolo;
+using CompiPascal.traductor.expresion;
+using CompiPascal.traductor.simbolo;
+using CompiPascal.traductor.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.instruccion
+namespace CompiPascal.traductor.instruccion
 {
     class Const : Instruccion
     {
         private string id;
         private Expresion valor;
+
+        private string tra_expr;
 
         public Const(string id, Expresion valor)
         {
@@ -42,7 +44,7 @@ namespace CompiPascal.interprete.instruccion
             {
                 ex.ToString();
             }
-            return null;
+            return "\t" + id + " := " + tra_expr + ";" + Environment.NewLine;
         }
 
         //integer, real, logical, string
@@ -62,6 +64,11 @@ namespace CompiPascal.interprete.instruccion
                 constante.tipo.tipo != Tipos.STRING &&
                 constante.tipo.tipo != Tipos.BOOLEAN)
                 throw new ErrorPascal("[const] El tipo de la constante no es ni entero, ni real, ni string, ni boolean. Por lo tanto no es valida", 0, 0, "semantico");
+
+            if (constante.tipo.tipo == Tipos.STRING)
+                tra_expr = "'" + Convert.ToString(constante.valor) + "'";
+            else
+                tra_expr = Convert.ToString(constante.valor);
 
             return constante;
         }

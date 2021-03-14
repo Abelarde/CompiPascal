@@ -1,11 +1,11 @@
-﻿using CompiPascal.interprete.analizador.simbolo;
-using CompiPascal.interprete.instruccion;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.analizador.simbolo;
+using CompiPascal.traductor.instruccion;
+using CompiPascal.traductor.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.simbolo
+namespace CompiPascal.traductor.simbolo
 {
     class Entorno
     {
@@ -67,7 +67,19 @@ namespace CompiPascal.interprete.simbolo
             if (getGlobal().funciones.ContainsKey(id))
                 return getGlobal().funciones[id];
             else
-                return null;              
+                return null;
+        }//getFuncionIDFaltante
+
+        public string getFuncionIDFaltante(string idAntiguo)//retorno el id completo
+        {
+            foreach (KeyValuePair<string, Funcion> kvp in getGlobal().funciones)
+            {
+                //Console.WriteLine("Key = {0}, Value = {1}",kvp.Key, kvp.Value);
+                bool x = kvp.Value.id_funcion.EndsWith(idAntiguo);
+                if (x)
+                    return kvp.Value.id_funcion;
+            }
+            return "";
         }
         /*
         public void guardarProcedure(string id, ProcedureInstruccion procedimiento)

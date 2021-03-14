@@ -1,64 +1,64 @@
-﻿using CompiPascal.interprete.expresion;
-using CompiPascal.interprete.instruccion;
-using CompiPascal.interprete.simbolo;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.expresion;
+using CompiPascal.traductor.instruccion;
+using CompiPascal.traductor.simbolo;
+using CompiPascal.traductor.util;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 
-namespace CompiPascal.interprete.analizador
+namespace CompiPascal.traductor.analizador
 {
-
-    //TODO: strings de tipos para no usar strings
-    //Token.Text o Token.ValueString
-    //arreglar cuando en la gramatica venga ID cambiarlo a expression
-
-    /// <summary>
-    /// Como ya hemos mencionado, Irony no acepta acciones
-    /// entre sus producciones, se limita a devolver el
-    /// AST(Abstract Syntax Tree) que arma luego de ser
-    /// aceptada la cadena de entrada.
-    /// </summary>
-    /// 
-    class SintacticoInterprete
+    class SintacticoTraductor
     {
         private string txtOutput = string.Empty;
         private string[,] errors;
         Form1 form;
-
-        public void analizar(String cadena, Form1 formp)
+        string cadena;
+        public void analizar(String entrada, Form1 formp)
         {
-           // try
-           //{
-                form = formp;
+            // try
+            //{
+            form = formp;
+            this.cadena = string.Empty;
 
-                GramaticaInterprete gramatica = new GramaticaInterprete();
-                LanguageData lenguaje = new LanguageData(gramatica);
-                Parser parser = new Parser(lenguaje);
-                ParseTree arbol = parser.Parse(cadena);
-                ParseTreeNode ini = arbol.Root;
-                //aqui podria colocar el analizador de errores de la gramatica
+            GramaticaTraductor gramatica = new GramaticaTraductor();
+            LanguageData lenguaje = new LanguageData(gramatica);
+            Parser parser = new Parser(lenguaje);
+            ParseTree arbol = parser.Parse(entrada);
+            ParseTreeNode ini = arbol.Root;
+            //aqui podria colocar el analizador de errores de la gramatica
 
-                if (ini != null)
-                {
-                    OutputMessage("Analisis exitosamente");
-                    FillErrors(arbol);
-                    //ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
-                    //LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
-                    //ejecutar(listaInstrucciones);
-                }
-                else
-                {
-                    WarningMessage("La cadena de entrada no es correcta");
-                    FillErrors(arbol);
-                }
+            if (ini != null)
+            {
 
-                foreach (string mensaje in ErrorPascal.cola)
-                {
-                    form.Write(mensaje + Environment.NewLine);
-                }
+
+                OutputMessage("Analisis exitosamente");
+                FillErrors(arbol);
+                ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
+
+
+                cadena += "program ";
+                cadena += program_structure.ChildNodes.ElementAt(1).Token.Text;
+                cadena += ";";
+                cadena += Environment.NewLine;
+
+                LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
+                ejecutar(listaInstrucciones);
+
+            }
+            else
+            {
+                WarningMessage("La cadena de entrada no es correcta");
+                FillErrors(arbol);
+            }
+
+            //foreach (string mensaje in ErrorPascal.cola)
+            //{
+            //    form.Write(mensaje + Environment.NewLine);
+            //}
 
             //}
             //catch (Exception ex)
@@ -73,9 +73,11 @@ namespace CompiPascal.interprete.analizador
 
             foreach (var instruccion in instrucciones)
             {
-                if(instruccion is FunctionInstruccion )
+                if (instruccion is FunctionInstruccion)
                 {
-                    instruccion.ejecutar(global);
+                    object resultado = instruccion.ejecutar(global);
+                    if (resultado != null)
+                        cadena += Convert.ToString(resultado);
                 }
             }
 
@@ -83,9 +85,16 @@ namespace CompiPascal.interprete.analizador
             {
                 if (instruccion != null && !(instruccion is FunctionInstruccion))
                 {
-                    instruccion.ejecutar(global);
+                    object resultado = instruccion.ejecutar(global);
+                    if (resultado != null)
+                        cadena += Convert.ToString(resultado);
                 }
             }
+
+
+            cadena += "end.";
+            string output = @"..\..\..\output\" + "traduccion.pas";
+            File.WriteAllText(output, cadena);
         }
 
         /// <summary>
@@ -101,8 +110,9 @@ namespace CompiPascal.interprete.analizador
 
             header_statements(listaInstrucciones, program.ChildNodes.ElementAt(0));
 
+            cadena += "begin" + Environment.NewLine;
             body_statements(listaInstrucciones, program.ChildNodes.ElementAt(1));
-                  
+
             return listaInstrucciones;
         }
 
@@ -123,6 +133,7 @@ namespace CompiPascal.interprete.analizador
                 default:
                     return null;
             }
+
         }
 
         private void header_statements(LinkedList<Instruccion> listaInstrucciones, ParseTreeNode header_statements)
@@ -208,6 +219,7 @@ namespace CompiPascal.interprete.analizador
 
         private void body_statements(LinkedList<Instruccion> listaInstrucciones, ParseTreeNode body_statements)
         {
+
             main_declarations(listaInstrucciones, body_statements.ChildNodes.ElementAt(0));
         }
 
@@ -380,7 +392,7 @@ namespace CompiPascal.interprete.analizador
         private Instruccion procedures_declarations(ParseTreeNode procedures_declarations)
         {
             string nombre_procedimiento = procedures_declarations.ChildNodes.ElementAt(1).Token.Text;
-            
+
             LinkedList<ParametroInst> lista_parametros = parameters(procedures_declarations.ChildNodes.ElementAt(3));
 
             LinkedList<Instruccion> procedure_header_instrucciones = new LinkedList<Instruccion>();
@@ -448,16 +460,16 @@ namespace CompiPascal.interprete.analizador
             {
                 LinkedList<string> lista_ids = list_id(type_variable.ChildNodes.ElementAt(0));
 
-               
+
                 ParseTreeNode type_type = type_variable.ChildNodes.ElementAt(2);
-                if(type_type.ChildNodes.Count == 3)//object
+                if (type_type.ChildNodes.Count == 3)//object
                 {
                     LinkedList<Instruccion> lista_lista_var_ejec = new LinkedList<Instruccion>();
 
                     ParseTreeNode type_declarations_vars = type_type.ChildNodes.ElementAt(1);
-                    foreach(ParseTreeNode variables_declarations_nodo in type_declarations_vars.ChildNodes)
+                    foreach (ParseTreeNode variables_declarations_nodo in type_declarations_vars.ChildNodes)
                     {
-                       lista_lista_var_ejec.AddLast(variables_declarations(variables_declarations_nodo)); //new ListaVarInstruccion
+                        lista_lista_var_ejec.AddLast(variables_declarations(variables_declarations_nodo)); //new ListaVarInstruccion
                     }
 
                     type_lista.AddLast(new TypeInstruccion(lista_ids.First.Value, lista_lista_var_ejec));
@@ -474,9 +486,9 @@ namespace CompiPascal.interprete.analizador
                         case "variables_native"://primitivo
                             ParseTreeNode variables_native = variables_native_array_id.ChildNodes.ElementAt(0);
                             primitivo_id = variables_native.ChildNodes.ElementAt(0).Term.Name;
-                            
+
                             type_lista.AddLast(new TypeInstruccion(lista_ids, primitivo_id));
-                            
+
                             break;
                         case "ID"://id[array,object]
                             primitivo_id = variables_native_array_id.ChildNodes.ElementAt(0).Token.Text;
@@ -486,7 +498,7 @@ namespace CompiPascal.interprete.analizador
                             break;
                         case "variables_array"://array
                             ParseTreeNode variables_array = variables_native_array_id.ChildNodes.ElementAt(0);
-                            
+
                             LinkedList<Expresion> lista_expresiones = new LinkedList<Expresion>();
                             ParseTreeNode expression_list_plus = variables_array.ChildNodes.ElementAt(2);
                             if (expression_list_plus.ChildNodes.Count > 0)
@@ -499,12 +511,12 @@ namespace CompiPascal.interprete.analizador
                             string nativo_id = variables_native_id(variables_array.ChildNodes.ElementAt(5));
 
                             type_lista.AddLast(new TypeInstruccion(lista_ids, lista_expresiones, nativo_id));
-                            
+
                             break;
                         default:
                             return null;
                     }
-                    
+
                 }
             }
             return new ListaTypeInstruccion(type_lista);
@@ -609,7 +621,7 @@ namespace CompiPascal.interprete.analizador
                         return null;
                 }
             }
-            else if(expression.ChildNodes.Count == 4)
+            else if (expression.ChildNodes.Count == 4)
             {
                 LinkedList<Expresion> lista_expresiones = new LinkedList<Expresion>();
 
@@ -704,7 +716,7 @@ namespace CompiPascal.interprete.analizador
         {
             //txtOutput = string.Empty;
 
-            GramaticaInterprete gramatica = new GramaticaInterprete();
+            GramaticaTraductor gramatica = new GramaticaTraductor();
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(lenguaje);
 
@@ -738,11 +750,11 @@ namespace CompiPascal.interprete.analizador
 
             if (bm != null)
             {
-                OutputMessage("Imagen generada exitosamente: " + "ast");
+                OutputMessage("Imagen generada exitosamente: " + "ast Traductor");
             }
             else
             {
-                WarningMessage("Error al generar la grafica para: " + "ast");
+                WarningMessage("Error al generar la grafica para: " + "ast Traductor");
             }
 
             /*

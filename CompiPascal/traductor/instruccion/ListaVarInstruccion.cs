@@ -1,13 +1,14 @@
-﻿using CompiPascal.interprete.simbolo;
+﻿using CompiPascal.traductor.simbolo;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.instruccion
+namespace CompiPascal.traductor.instruccion
 {
     class ListaVarInstruccion : Instruccion
     {
         public LinkedList<Var> Var_lista;
+
 
         public ListaVarInstruccion(LinkedList<Var> Var_lista)
         {
@@ -16,12 +17,19 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
+            string cadena = string.Empty;
+            cadena += "Var" + Environment.NewLine;
+
             foreach (Var vars in Var_lista)
             {
                 if (vars != null)
-                    vars.ejecutar(entorno);
+                {
+                    object resultado = vars.ejecutar(entorno);
+                    if (resultado != null)
+                        cadena += Convert.ToString(resultado);
+                }
             }
-            return null;
+            return cadena;
         }
     }
 }

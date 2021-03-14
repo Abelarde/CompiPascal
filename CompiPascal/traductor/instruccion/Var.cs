@@ -1,18 +1,20 @@
-﻿using CompiPascal.interprete.analizador.simbolo;
-using CompiPascal.interprete.expresion;
-using CompiPascal.interprete.simbolo;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.analizador.simbolo;
+using CompiPascal.traductor.expresion;
+using CompiPascal.traductor.simbolo;
+using CompiPascal.traductor.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.instruccion
+namespace CompiPascal.traductor.instruccion
 {
     class Var : Instruccion
     {
         public LinkedList<string> lista_ids;
         public string tipo;//primitivo, array, object [id]
         public Expresion expresion;
+
+        string tra_expre;
 
         public Var(LinkedList<string> lista_ids, string tipo, Expresion expresion)
         {
@@ -46,7 +48,28 @@ namespace CompiPascal.interprete.instruccion
                 e.ToString();
             }
 
-            return null;
+            string cadena_ids = string.Empty;
+            int contador = 0;
+            foreach(string id in lista_ids)
+            {
+                contador++;
+
+                if (contador == lista_ids.Count)
+                    cadena_ids += id;
+                else
+                    cadena_ids += id + ", ";
+            }
+
+            string total = string.Empty;
+            if (tra_expre != "")
+                total = "\t"+ cadena_ids + " : " + tipo +  ":="+ tra_expre + ";";
+            else
+                total = "\t" + cadena_ids + " : " + tipo +  ";";
+
+
+
+
+            return total + Environment.NewLine;
         }
 
         private void declarar(Tipo tipoFinal, Entorno entorno, LinkedList<string> p_lista_ids)
@@ -74,6 +97,8 @@ namespace CompiPascal.interprete.instruccion
 
         private void declarar_inicializar(Tipo tipoFinal, Entorno entorno, LinkedList<string> p_lista_ids)
         {
+            tra_expre = string.Empty;
+
             Simbolo valor = this.expresion.evaluar(entorno);
             if (valor == null)
                 throw new ErrorPascal("[Declaracion-Asignacion] Variable no ha sido declarada, Error al calcular u obtener el valor para la variable a declarar y asignar.", 0, 0, "semantico");
@@ -83,6 +108,11 @@ namespace CompiPascal.interprete.instruccion
 
             if (valor.tipo.tipo != tipoFinal.tipo)
                 throw new ErrorPascal("[Declaracion-Asignacion] El valor para la variable " + lista_ids.First.Value + " no coincide con el tipo declarado.", 0, 0, "semantico");
+
+            if(valor.tipo.tipo == Tipos.STRING)
+                tra_expre = "'"+Convert.ToString(valor.valor)+ "'";
+            else
+                tra_expre = Convert.ToString(valor.valor);
 
 
             if (entorno.getVariable(lista_ids.First.Value) == null)

@@ -1,19 +1,19 @@
-﻿using CompiPascal.interprete.analizador.simbolo;
-using CompiPascal.interprete.expresion;
-using CompiPascal.interprete.simbolo;
-using CompiPascal.interprete.util;
+﻿using CompiPascal.traductor.analizador.simbolo;
+using CompiPascal.traductor.expresion;
+using CompiPascal.traductor.simbolo;
+using CompiPascal.traductor.util;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.instruccion
+namespace CompiPascal.traductor.instruccion
 {
     class Funcion : Instruccion
     {
-        private string id_funcion;
+        public string id_funcion;
         private Tipo tipo_funcion; //null podria ser si es proc
 
-        private LinkedList<ParametroInst> lista_parametros;
+        public LinkedList<ParametroInst> lista_parametros;
         public LinkedList<Simbolo> valores_parametros_simbolos;
 
         private LinkedList<Instruccion> header_instrucciones;

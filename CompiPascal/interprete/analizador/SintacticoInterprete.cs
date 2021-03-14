@@ -45,9 +45,9 @@ namespace CompiPascal.interprete.analizador
                 {
                     OutputMessage("Analisis exitosamente");
                     FillErrors(arbol);
-                    //ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
-                    //LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
-                    //ejecutar(listaInstrucciones);
+                    ParseTreeNode program_structure = ini.ChildNodes.ElementAt(0);
+                    LinkedList<Instruccion> listaInstrucciones = instrucciones(program_structure);
+                    ejecutar(listaInstrucciones);
                 }
                 else
                 {

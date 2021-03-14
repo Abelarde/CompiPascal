@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CompiPascal.interprete.analizador.simbolo;
+using CompiPascal.traductor.analizador.simbolo;
 
-namespace CompiPascal.interprete.util
+namespace CompiPascal.traductor.util
 {
     /// <summary>
     /// Definicion de combinaciones permitidas para los diferentes tipos

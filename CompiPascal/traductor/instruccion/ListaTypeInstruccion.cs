@@ -1,9 +1,9 @@
-﻿using CompiPascal.interprete.simbolo;
+﻿using CompiPascal.traductor.simbolo;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.instruccion
+namespace CompiPascal.traductor.instruccion
 {
     class ListaTypeInstruccion : Instruccion
     {
@@ -16,12 +16,20 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
+
+            string cadena = string.Empty;
+            cadena += "Type" + Environment.NewLine;
+
             foreach (TypeInstruccion type in type_lista)
             {
                 if (type != null)
-                    type.ejecutar(entorno);
+                {
+                    object resultado = type.ejecutar(entorno);
+                    if (resultado != null)
+                        cadena += Convert.ToString(resultado);
+                }
             }
-            return null;
+            return cadena;
         }
     }
 }

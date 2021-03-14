@@ -1,10 +1,10 @@
 ﻿using Irony.Parsing;
 
-namespace CompiPascal.interprete.analizador
+namespace CompiPascal.traductor.analizador
 {
-    class GramaticaInterprete : Grammar
+    class GramaticaTraductor : Grammar
     {
-        public GramaticaInterprete() : base(caseSensitive: false)
+        public GramaticaTraductor() : base(caseSensitive: false)
         {
 
             #region EXPRESIONES_REGULARES Y LITERALES

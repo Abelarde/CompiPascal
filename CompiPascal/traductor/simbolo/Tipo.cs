@@ -1,9 +1,9 @@
-﻿using CompiPascal.interprete.simbolo;
+﻿using CompiPascal.traductor.simbolo;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CompiPascal.interprete.analizador.simbolo
+namespace CompiPascal.traductor.analizador.simbolo
 {
     public enum Tipos
     {
