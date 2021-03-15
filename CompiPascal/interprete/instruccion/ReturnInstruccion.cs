@@ -24,12 +24,21 @@ namespace CompiPascal.interprete.instruccion
         
         public override object ejecutar(Entorno entorno)
         {
-            if (entorno.getFuncion(id) == null)
-                throw new ErrorPascal("el id de la funcion no es correcto",0,0,"semantico");
+            try
+            {
+                if (entorno.getFuncion(id) == null)
+                    throw new ErrorPascal("el id de la funcion no es correcto", 0, 0, "semantico");
 
-            Simbolo resultado = expreValor.evaluar(entorno);
-            this.simbolResultado = resultado;
-            return this;
+                Simbolo resultado = expreValor.evaluar(entorno);
+                this.simbolResultado = resultado;
+                return this;
+            }
+            catch (ErrorPascal ex)
+            {
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en el return", 0, 0, "semantico");
+
+            }
         }
     }
 }

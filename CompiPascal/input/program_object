@@ -46,13 +46,24 @@ var nota:integer;
 var creditos:integer;
 end;
 
+type
+curso2 = object
+var codigo:integer;
+var nombre:string;
+var nota:integer;
+var var_curso:curso;
+end;
+
 var variableObjecto : curso;
-var otra:curso;
+var var_curso2:curso2;
+var aaa:curso;
 
 begin
 variableObjecto.codigo := 10;
 writeln(variableObjecto.codigo);
-writeln(otra.codigo);
+writeln(aaa.codigo);
+//var_curso2.var_curso.nota := 7777;
+//writeln(var_curso2.var_curso.nota);
 end.
 
 

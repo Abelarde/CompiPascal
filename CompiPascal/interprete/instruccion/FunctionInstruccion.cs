@@ -77,7 +77,8 @@ namespace CompiPascal.interprete.instruccion
             }
             catch (Exception ex)
             {
-                ex.ToString();
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en la declaracion de funcion", 0, 0, "semantico");
             }
             return null;
         }

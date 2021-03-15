@@ -45,14 +45,15 @@ namespace CompiPascal.interprete.instruccion
                 else
                     form.Write(acumulado);
             }
-            catch (ErrorPascal e)
+            catch (ErrorPascal ex)
             {
                 //te imprimo todo o hasta donde encontro el error.
                 if (newLine)
                     form.Write(acumulado + Environment.NewLine);
                 else
                     form.Write(acumulado);
-                e.ToString();
+
+                ErrorPascal.cola.Enqueue(ex.ToString());
             }
             return null;
         }

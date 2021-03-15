@@ -19,20 +19,29 @@ namespace CompiPascal.interprete.expresion
         }
 
         public override Simbolo evaluar(Entorno entorno)
-        {            
-            Simbolo variable_array = id_simbolo.evaluar(entorno);
-
-            if (variable_array.tipo.tipo != Tipos.ARRAY)
-                throw new ErrorPascal("la variable no es un arreglo",0,0,"semantico");
-
-            Simbolo dimension_valor = variable_array;
-            foreach(Expresion indice in lista_expr)
+        {
+            try
             {
-                Simbolo indi = indice.evaluar(entorno);
-                dimension_valor = obtenerIndiceByDimension(Convert.ToInt32(indi.valor), dimension_valor);
-            }
+                Simbolo variable_array = id_simbolo.evaluar(entorno);
 
-            return dimension_valor;
+                if (variable_array.tipo.tipo != Tipos.ARRAY)
+                    throw new ErrorPascal("la variable no es un arreglo", 0, 0, "semantico");
+
+                Simbolo dimension_valor = variable_array;
+                foreach (Expresion indice in lista_expr)
+                {
+                    Simbolo indi = indice.evaluar(entorno);
+                    dimension_valor = obtenerIndiceByDimension(Convert.ToInt32(indi.valor), dimension_valor);
+                }
+
+                return dimension_valor;
+            }
+            catch (ErrorPascal ex)
+            {
+
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en el acceso al array", 0, 0, "semantico");
+            }
         }
 
         private Simbolo obtenerIndiceByDimension(int indice, Simbolo dimension)//indice

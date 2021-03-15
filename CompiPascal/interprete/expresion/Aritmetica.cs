@@ -22,6 +22,9 @@ namespace CompiPascal.interprete.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
+            try
+            {
+
             Simbolo derecha = validaciones(expDer, entorno);
 
             Tipos tipoResultante = derecha.tipo.tipo;
@@ -120,6 +123,13 @@ namespace CompiPascal.interprete.expresion
 
                 default:
                     throw new ErrorPascal("Operacion aritmetica desconocida", 0, 0, "Semantico");
+            }
+
+            }
+            catch (ErrorPascal ex)
+            {
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en las aritmeticas",0,0,"semantico");
             }
         }
 

@@ -23,41 +23,51 @@ namespace CompiPascal.interprete.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            Simbolo derecha = validaciones(expDer, entorno);
-
-            Tipos tipoResultante = derecha.tipo.tipo;
-
-            Simbolo izquierda = null;
-
-            if (expIzq != null)
+            try
             {
-                izquierda = validaciones(expIzq, entorno);              
 
-                tipoResultante = TablaTipos.GetTipo(izquierda.tipo, derecha.tipo);
+                Simbolo derecha = validaciones(expDer, entorno);
+
+                Tipos tipoResultante = derecha.tipo.tipo;
+
+                Simbolo izquierda = null;
+
+                if (expIzq != null)
+                {
+                    izquierda = validaciones(expIzq, entorno);
+
+                    tipoResultante = TablaTipos.GetTipo(izquierda.tipo, derecha.tipo);
+                }
+
+                if (tipoResultante == Tipos.ERROR)
+                {
+                    if (izquierda != null)
+                        throw new ErrorPascal("Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + tipoOperacion + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
+                    else
+                        throw new ErrorPascal("Tipo de dato incorrecto [" + tipoOperacion + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
+                }
+
+
+                switch (tipoOperacion)
+                {
+                    case "AND":
+                        return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) && Convert.ToBoolean(derecha.valor), entorno, 0);
+
+                    case "OR":
+                        return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) || Convert.ToBoolean(derecha.valor), entorno, 0);
+
+                    case "NOT":
+                        return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, !Convert.ToBoolean(derecha.valor), entorno, 0);
+
+                    default:
+                        throw new ErrorPascal("Operacion logica desconocida", 0, 0, "Semantico");
+                }
             }
-
-            if (tipoResultante == Tipos.ERROR)
+            catch (ErrorPascal ex)
             {
-                if (izquierda != null)
-                    throw new ErrorPascal("Tipos de datos incorrectos [" + izquierda.tipo.tipo + ", " + tipoOperacion + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
-                else
-                    throw new ErrorPascal("Tipo de dato incorrecto [" + tipoOperacion + ", " + derecha.tipo.tipo + "]", 0, 0, "Semantico");
-            }
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en las logicas", 0, 0, "Semantico");
 
-
-            switch (tipoOperacion)
-            {
-                case "AND":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) && Convert.ToBoolean(derecha.valor), entorno, 0);        
-
-                case "OR":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, Convert.ToBoolean(izquierda.valor) || Convert.ToBoolean(derecha.valor), entorno, 0);            
-
-                case "NOT":
-                    return new Simbolo(new Tipo(Tipos.BOOLEAN, null), null, !Convert.ToBoolean(derecha.valor), entorno, 0);
-
-                default:
-                    throw new ErrorPascal("Operacion logica desconocida", 0, 0, "Semantico");
             }
         }
 

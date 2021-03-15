@@ -54,7 +54,8 @@ namespace CompiPascal.interprete.instruccion
             }
             catch (Exception ex)
             {
-                throw new ErrorPascal("",0,0,"");
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en la sentencia else if",0,0,"semantico");
             }                        
         }
 

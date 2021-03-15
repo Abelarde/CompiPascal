@@ -52,25 +52,34 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            if (lista_ids != null && lista_ids.Count <= 0)
-                throw new ErrorPascal("[type] La lista de id's en la declaracion esta vacia.", 0, 0, "semantico");
-
             try
             {
-                if (tipo == 0)
-                    typePrimitivoId(primitivo_id, entorno, lista_ids);
-                else if (tipo == 1)
-                    typeArray(lista_ids, array_dimensiones_min_max, array_primitivo_id, entorno);
-                else if (tipo == 2)
-                    typeObject(object_id, object_lista_listaVars, entorno);
-                else
-                    return null;
+                if (lista_ids != null && lista_ids.Count <= 0)
+                    throw new ErrorPascal("[type] La lista de id's en la declaracion esta vacia.", 0, 0, "semantico");
+
+                try
+                {
+                    if (tipo == 0)
+                        typePrimitivoId(primitivo_id, entorno, lista_ids);
+                    else if (tipo == 1)
+                        typeArray(lista_ids, array_dimensiones_min_max, array_primitivo_id, entorno);
+                    else if (tipo == 2)
+                        typeObject(object_id, object_lista_listaVars, entorno);
+                    else
+                        return null;
+                }
+                catch (Exception ex)
+                {
+                    ex.ToString();
+                }
+                return null;
             }
-            catch (Exception ex)
+            catch (ErrorPascal ex)
             {
-                ex.ToString();
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en el area de type", 0, 0, "semantico");
+
             }
-            return null;
         }
 
         private void typeObject(string id_objeto, LinkedList<Instruccion> object_lista_listaVars, Entorno entorno)

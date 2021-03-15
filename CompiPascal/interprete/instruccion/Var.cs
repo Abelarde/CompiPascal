@@ -24,29 +24,39 @@ namespace CompiPascal.interprete.instruccion
         //TODO: variables del mismo ambito no mismo id. [si: locales-globales] [no: locales-locales]
         public override object ejecutar(Entorno entorno)
         {
-            Tipo tipoFinal;
-
-            if (tipo != string.Empty)
-                tipoFinal = new Tipo(this.tipo, entorno);
-            else
-                throw new ErrorPascal("[Declaracion] El tipo de dato para la variable no viene especificada", 0, 0, "semantico");
-
-            if (lista_ids.Count <= 0)
-                throw new ErrorPascal("[Declaracion] La lista de id's en la declaracion esta vacia.", 0, 0, "semantico");
-
             try
             {
-                if (expresion != null)
-                    declarar_inicializar(tipoFinal, entorno, lista_ids);
-                else
-                    declarar(tipoFinal, entorno, lista_ids);
-            }
-            catch (ErrorPascal e)
-            {
-                e.ToString();
-            }
 
-            return null;
+                Tipo tipoFinal;
+
+                if (tipo != string.Empty)
+                    tipoFinal = new Tipo(this.tipo, entorno);
+                else
+                    throw new ErrorPascal("[Declaracion] El tipo de dato para la variable no viene especificada", 0, 0, "semantico");
+
+                if (lista_ids.Count <= 0)
+                    throw new ErrorPascal("[Declaracion] La lista de id's en la declaracion esta vacia.", 0, 0, "semantico");
+
+                try
+                {
+                    if (expresion != null)
+                        declarar_inicializar(tipoFinal, entorno, lista_ids);
+                    else
+                        declarar(tipoFinal, entorno, lista_ids);
+                }
+                catch (ErrorPascal e)
+                {
+                    e.ToString();
+                }
+
+                return null;
+            }
+            catch(ErrorPascal ex)
+            {
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en la declaracion de variables", 0, 0, "semantico");
+
+            }
         }
 
         private void declarar(Tipo tipoFinal, Entorno entorno, LinkedList<string> p_lista_ids)

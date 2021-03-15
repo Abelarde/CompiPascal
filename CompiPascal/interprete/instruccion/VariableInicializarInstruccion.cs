@@ -18,26 +18,37 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            if (id != null && valor != null)
+            try
             {
-                Simbolo variable = this.id.evaluar(entorno); //id, tipo de la variable
-                Simbolo valor = this.valor.evaluar(entorno); //valor, tipo de valor
 
-                try
+                if (id != null && valor != null)
                 {
-                    if (validaciones(variable, valor))
+                    Simbolo variable = this.id.evaluar(entorno); //id, tipo de la variable
+                    Simbolo valor = this.valor.evaluar(entorno); //valor, tipo de valor
+
+                    try
                     {
-                        variable.valor = valor.valor;
+                        if (validaciones(variable, valor))
+                        {
+                            variable.valor = valor.valor;
+                        }
+                    }
+                    catch (ErrorPascal e)
+                    {
+                        e.ToString();
                     }
                 }
-                catch (ErrorPascal e)
-                {
-                    e.ToString();
-                }
+                else
+                    throw new ErrorPascal("[Inicializacion] Error al obtener la expresion a ser asignada y/o la expresion asignatoria", 0, 0, "semantico");
+                return null;
+
             }
-            else
-                throw new ErrorPascal("[Inicializacion] Error al obtener la expresion a ser asignada y/o la expresion asignatoria",0,0,"semantico");
-            return null;
+            catch(ErrorPascal ex)
+            {
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en la asignacion", 0, 0, "semantico");
+
+            }
         }
 
 

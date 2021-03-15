@@ -1,5 +1,6 @@
 ﻿
 using CompiPascal.interprete.analizador;
+using CompiPascal.interprete.util;
 using CompiPascal.traductor.analizador;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,11 @@ namespace CompiPascal
             sintacticoTraductor.analizar(EditorOutput(), this);
             ConsoleInput(sintacticoTraductor.Message());
             ErrorTableTraductor();
+            foreach (string number in ErrorPascal.cola)
+            {
+                ConsoleInput(number+ Environment.NewLine);
+            }
+            ErrorPascal.cola.Clear();
         }
 
         private void Run_Click(object sender, EventArgs e)
@@ -39,6 +45,11 @@ namespace CompiPascal
             sintacticoInter.analizar(EditorOutput(), this);
             ConsoleInput(sintacticoInter.Message());
             ErrorTable();
+            foreach (string number in ErrorPascal.cola)
+            {
+                ConsoleInput(number + Environment.NewLine);
+            }
+            ErrorPascal.cola.Clear();
         }
 
         private void Load_Click(object sender, EventArgs e)

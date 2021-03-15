@@ -565,7 +565,8 @@ namespace CompiPascal.interprete.analizador
 
 
                     case "PERIOD":
-                        return new Literal("PERIOD", Expresion(expression.ChildNodes[0]), expression.ChildNodes[2].ChildNodes.ElementAt(0).Token.Text);
+                        //return new Literal("PERIOD", Expresion(expression.ChildNodes[0]), expression.ChildNodes[2].ChildNodes.ElementAt(0).Token.Text);
+                        return new Literal("PERIOD", Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]));
                     case "PERIOD_PERIOD":
                         return new Literal("PERIOD_PERIOD", Expresion(expression.ChildNodes[0]), Expresion(expression.ChildNodes[2]));
                     case "expression":

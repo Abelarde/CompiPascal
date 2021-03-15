@@ -23,42 +23,52 @@ namespace CompiPascal.interprete.expresion
 
         public override Simbolo evaluar(Entorno entorno)
         {
-            Funcion funcion = retorna_funcionValor(id, entorno);            
-
-            if (funcion != null)
+            try
             {
-                LinkedList<Simbolo> valores = new LinkedList<Simbolo>();
 
-                foreach(Expresion valor in lista_expresiones)
+                Funcion funcion = retorna_funcionValor(id, entorno);
+
+                if (funcion != null)
                 {
-                    Simbolo val = valor.evaluar(entorno);
-                    valores.AddLast(val);
-                }
+                    LinkedList<Simbolo> valores = new LinkedList<Simbolo>();
 
-                funcion.valores_parametros_simbolos = valores;
-
-                Entorno nuevo = new Entorno(entorno.getGlobal());
-
-                object resultado = funcion.ejecutar(nuevo);
-                if(resultado != null)
-                {
-                    if (resultado is ExitInstruccion)
+                    foreach (Expresion valor in lista_expresiones)
                     {
-                        ExitInstruccion a = resultado as ExitInstruccion;
-                        if (a != null)
-                            return a.simbolResultado;
+                        Simbolo val = valor.evaluar(entorno);
+                        valores.AddLast(val);
                     }
-                    else if (resultado is ReturnInstruccion)
+
+                    funcion.valores_parametros_simbolos = valores;
+
+                    Entorno nuevo = new Entorno(entorno.getGlobal());
+
+                    object resultado = funcion.ejecutar(nuevo);
+                    if (resultado != null)
                     {
-                        ReturnInstruccion a = resultado as ReturnInstruccion;
-                        if (a != null)
-                            return a.simbolResultado;
+                        if (resultado is ExitInstruccion)
+                        {
+                            ExitInstruccion a = resultado as ExitInstruccion;
+                            if (a != null)
+                                return a.simbolResultado;
+                        }
+                        else if (resultado is ReturnInstruccion)
+                        {
+                            ReturnInstruccion a = resultado as ReturnInstruccion;
+                            if (a != null)
+                                return a.simbolResultado;
+                        }
                     }
+                    return null;
                 }
-                return null;
+                else
+                    throw new ErrorPascal("no existe una funcion con ese id", 0, 0, "semantico");
             }
-            else
-                throw new ErrorPascal("no existe una funcion con ese id", 0, 0, "semantico");
+            catch (ErrorPascal ex)
+            {
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en la funcion llamada", 0, 0, "semantico");
+
+            }
 
         }
 

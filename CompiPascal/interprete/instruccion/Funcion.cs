@@ -34,89 +34,100 @@ namespace CompiPascal.interprete.instruccion
 
         public override object ejecutar(Entorno entorno)
         {
-            int totalParametros = 0;
-            foreach (ParametroInst parametros in lista_parametros)
-            {
-                foreach(string id in parametros.lista_ids)
-                {
-                    totalParametros++;
-                }
-            }
+            try{
 
-            if (totalParametros == valores_parametros_simbolos.Count)
-            {
-                Parametro[] lista_param = new Parametro[totalParametros];
-                Simbolo[] lista_valores = new Simbolo[valores_parametros_simbolos.Count];
 
-                int i = 0;
-                foreach (ParametroInst parametroInsta in lista_parametros)
+                int totalParametros = 0;
+                foreach (ParametroInst parametros in lista_parametros)
                 {
-                    foreach (string id in parametroInsta.lista_ids)
+                    foreach (string id in parametros.lista_ids)
                     {
-                        lista_param[i] = new Parametro(id, parametroInsta.tipo_nativo_id, parametroInsta.isReferencia);
+                        totalParametros++;
+                    }
+                }
+
+                if (totalParametros == valores_parametros_simbolos.Count)
+                {
+                    Parametro[] lista_param = new Parametro[totalParametros];
+                    Simbolo[] lista_valores = new Simbolo[valores_parametros_simbolos.Count];
+
+                    int i = 0;
+                    foreach (ParametroInst parametroInsta in lista_parametros)
+                    {
+                        foreach (string id in parametroInsta.lista_ids)
+                        {
+                            lista_param[i] = new Parametro(id, parametroInsta.tipo_nativo_id, parametroInsta.isReferencia);
+                            i++;
+                        }
+                    }
+
+                    i = 0;
+                    foreach (Simbolo sim in valores_parametros_simbolos)
+                    {
+                        lista_valores[i] = sim;
                         i++;
                     }
-                }
 
-                i = 0;
-                foreach (Simbolo sim in valores_parametros_simbolos)
-                {
-                    lista_valores[i] = sim;
-                    i++;
-                }
-
-                for (int j = 0; j < lista_param.Length; j++)
-                {
-                    if (entorno.getVariable(lista_param[j].id) == null)
+                    for (int j = 0; j < lista_param.Length; j++)
                     {
-                        if (lista_param[j].isReferencia)
+                        if (entorno.getVariable(lista_param[j].id) == null)
                         {
-                            Simbolo nueva_variable = lista_valores[j];
-                            entorno.guardarVariable(lista_param[j].id, nueva_variable);
-                            //if (entorno.getGlobal().getVariable(lista_valores[j].id) != null)
-                            //   entorno.guardarVariable(lista_valores[j].id, entorno.getGlobal().getVariable(lista_valores[j].id));
+                            if (lista_param[j].isReferencia)
+                            {
+                                Simbolo nueva_variable = lista_valores[j];
+                                entorno.guardarVariable(lista_param[j].id, nueva_variable);
+                                //if (entorno.getGlobal().getVariable(lista_valores[j].id) != null)
+                                //   entorno.guardarVariable(lista_valores[j].id, entorno.getGlobal().getVariable(lista_valores[j].id));
+                            }
+                            else
+                            {
+                                Simbolo nueva_variable = new Simbolo(new Tipo(lista_param[j].tipo_nativo_id, entorno), lista_param[j].id, lista_valores[j].valor, entorno, 0);
+                                entorno.guardarVariable(nueva_variable.id, nueva_variable);
+
+                            }
                         }
                         else
-                        {
-                            Simbolo nueva_variable = new Simbolo(new Tipo(lista_param[j].tipo_nativo_id, entorno), lista_param[j].id, lista_valores[j].valor, entorno, 0);
-                            entorno.guardarVariable(nueva_variable.id, nueva_variable);
-
-                        }
+                            throw new ErrorPascal("[Declaracion-Asignacion] Ya existe la variable " + lista_param[j].id, 0, 0, "semantico");
                     }
-                    else
-                        throw new ErrorPascal("[Declaracion-Asignacion] Ya existe la variable " + lista_param[j].id, 0, 0, "semantico");
+
+                }
+                else
+                {
+                    throw new ErrorPascal("la cantidad de valores no coincide con la cantidad de parametros para la funcion", 0, 0, "semantico");
                 }
 
-            }
-            else
-            {
-                throw new ErrorPascal("la cantidad de valores no coincide con la cantidad de parametros para la funcion", 0, 0, "semantico");
-            }
-
-            //ejecuto el header
-            foreach (Instruccion header in header_instrucciones)
-            {
-                if (header != null)
-                    header.ejecutar(entorno);
-            }
-
-            //ejecuto el body
-            object guardado = null;
-            foreach (Instruccion body in body_instrucciones)
-            {
-                if (body != null)
+                //ejecuto el header
+                foreach (Instruccion header in header_instrucciones)
                 {
-                    object resultado = body.ejecutar(entorno); 
-                    if (resultado != null && isFuncion)
+                    if (header != null)
+                        header.ejecutar(entorno);
+                }
+
+                //ejecuto el body
+                object guardado = null;
+                foreach (Instruccion body in body_instrucciones)
+                {
+                    if (body != null)
                     {
-                        if (resultado is ExitInstruccion)
-                            return resultado;//ya no sigue ejecutando las intrucciones
-                        else if (resultado is ReturnInstruccion)
-                            guardado = resultado;//sigue ejecutando, pero guarde el valor del return
+                        object resultado = body.ejecutar(entorno);
+                        if (resultado != null && isFuncion)
+                        {
+                            if (resultado is ExitInstruccion)
+                                return resultado;//ya no sigue ejecutando las intrucciones
+                            else if (resultado is ReturnInstruccion)
+                                guardado = resultado;//sigue ejecutando, pero guarde el valor del return
+                        }
                     }
-                } 
+                }
+                return guardado;
+
             }
-            return guardado;
+            catch(ErrorPascal ex)
+            {
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en la funcion", 0, 0, "semantico");
+
+            }
         }
     }
 

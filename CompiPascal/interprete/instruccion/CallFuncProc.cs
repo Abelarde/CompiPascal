@@ -66,7 +66,7 @@ namespace CompiPascal.interprete.instruccion
             catch (ErrorPascal ex)
             {
                 ErrorPascal.cola.Enqueue(ex.ToString());
-                return null;
+                throw new ErrorPascal("error en la llamada de funcion", 0, 0, "semantico");
             }
         }
 

@@ -80,7 +80,8 @@ namespace CompiPascal.interprete.instruccion
             }
             catch (Exception ex)
             {
-                ex.ToString();
+                ErrorPascal.cola.Enqueue(ex.ToString());
+                throw new ErrorPascal("error en los cases ", 0, 0, "semantico");
             }
 
             return guardado;
