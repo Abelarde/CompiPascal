@@ -16,13 +16,14 @@ namespace CompiPascal.interprete.instruccion
         private Expresion condicional;
         private LinkedList<Instruccion> lista_instrucciones;
 
-
-        public ForInstruccion(Expresion id, Expresion valor, Expresion condicional, LinkedList<Instruccion> lista_instrucciones)
+        private bool isTo;
+        public ForInstruccion(Expresion id, Expresion valor, Expresion condicional, LinkedList<Instruccion> lista_instrucciones, bool isTo)
         {
             this.id = id;
             this.valor = valor;
             this.condicional = condicional;
             this.lista_instrucciones = lista_instrucciones;
+            this.isTo = isTo;
         }
 
         public override object ejecutar(Entorno entorno)
@@ -46,40 +47,78 @@ namespace CompiPascal.interprete.instruccion
 
                 bool banderaRestadora = false;
 
-                //siempre para arribar [SUMANDO]
-                for (variable.valor = Convert.ToInt32(val.valor); Convert.ToInt32(variable.valor) <= Convert.ToInt32(limite.valor); variable.valor = Convert.ToInt32(variable.valor) + 1)
+                if (isTo)
                 {
-                    foreach (Instruccion instruccion in lista_instrucciones)
+                    //siempre para arribar [SUMANDO]
+                    for (variable.valor = Convert.ToInt32(val.valor); Convert.ToInt32(variable.valor) <= Convert.ToInt32(limite.valor); variable.valor = Convert.ToInt32(variable.valor) + 1)
                     {
-                        if (instruccion != null)
+                        foreach (Instruccion instruccion in lista_instrucciones)
                         {
-                            object resultado = instruccion.ejecutar(entorno);
-
-                            if (resultado != null)//null
+                            if (instruccion != null)
                             {
-                                if (resultado is BreakInstruccion)//break
-                                    break;
-                                else if (resultado is ContinueInstruccion)//continue
+                                object resultado = instruccion.ejecutar(entorno);
+
+                                if (resultado != null)//null
                                 {
-                                    variable = validaciones(id, entorno); //actualizo el valor del condicional
-                                    continue;
+                                    if (resultado is BreakInstruccion)//break
+                                        break;
+                                    else if (resultado is ContinueInstruccion)//continue
+                                    {
+                                        variable = validaciones(id, entorno); //actualizo el valor del condicional
+                                        continue;
+                                    }
+                                    else if (resultado is ExitInstruccion)//exit
+                                        return resultado;
+                                    else if (resultado is ReturnInstruccion)//return
+                                        return resultado;
                                 }
-                                else if (resultado is ExitInstruccion)//exit
-                                    return resultado;
-                                else if (resultado is ReturnInstruccion)//return
-                                    return resultado;
                             }
                         }
+
+                        banderaRestadora = true;
+                        //TODO: revisar esto, pareciera innecesario.
+                        variable = validaciones(id, entorno);//actualizo el valor del condicional y lo evaluo 
+                                                             //si hubiera error me salgo gracias al throw y voy al catch...desde aqui
                     }
 
-                    banderaRestadora = true;
-                    //TODO: revisar esto, pareciera innecesario.
-                    variable = validaciones(id, entorno);//actualizo el valor del condicional y lo evaluo 
-                                                                //si hubiera error me salgo gracias al throw y voy al catch...desde aqui
+                    if (banderaRestadora)
+                        variable.valor = Convert.ToInt32(variable.valor) - 1;
                 }
+                else
+                {
+                    //siempre para arribar [SUMANDO]
+                    for (variable.valor = Convert.ToInt32(limite.valor); Convert.ToInt32(variable.valor) >= Convert.ToInt32(val.valor); variable.valor = Convert.ToInt32(variable.valor) - 1)
+                    {
+                        foreach (Instruccion instruccion in lista_instrucciones)
+                        {
+                            if (instruccion != null)
+                            {
+                                object resultado = instruccion.ejecutar(entorno);
 
-                if (banderaRestadora)
-                    variable.valor = Convert.ToInt32(variable.valor) - 1;
+                                if (resultado != null)//null
+                                {
+                                    if (resultado is BreakInstruccion)//break
+                                        break;
+                                    else if (resultado is ContinueInstruccion)//continue
+                                    {
+                                        variable = validaciones(id, entorno); //actualizo el valor del condicional
+                                        continue;
+                                    }
+                                    else if (resultado is ExitInstruccion)//exit
+                                        return resultado;
+                                    else if (resultado is ReturnInstruccion)//return
+                                        return resultado;
+                                }
+                            }
+                        }
+
+                        banderaRestadora = true;
+                        //TODO: revisar esto, pareciera innecesario.
+                        variable = validaciones(id, entorno);//actualizo el valor del condicional y lo evaluo 
+                                                             //si hubiera error me salgo gracias al throw y voy al catch...desde aqui
+                    }
+
+                }
 
             }
             catch (Exception ex)

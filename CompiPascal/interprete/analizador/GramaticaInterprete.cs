@@ -205,6 +205,9 @@ namespace CompiPascal.interprete.analizador
             NonTerminal union_1_a = new NonTerminal("union_1_a");
 
 
+            NonTerminal for_opciones = new NonTerminal("for_opciones");
+
+
             #endregion
 
             #region GRAMATICA /* Región donde se define la gramática. */
@@ -325,7 +328,10 @@ namespace CompiPascal.interprete.analizador
 
             while_statements.Rule = WHILE + expression + DO + main_declarations + SEMI_COLON;
 
-            for_do_statements.Rule = FOR + expression + COLON_EQUAL + expression + TO + expression + DO + main_declarations + SEMI_COLON;
+            for_do_statements.Rule = FOR + expression + COLON_EQUAL + expression + for_opciones + expression + DO + main_declarations + SEMI_COLON;
+
+            for_opciones.Rule = TO
+                | DOWNTO;
 
             repeat_statements.Rule = REPEAT + main_declarations + UNTIL + expression + SEMI_COLON;
 

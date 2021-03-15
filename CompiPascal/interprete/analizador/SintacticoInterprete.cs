@@ -275,10 +275,18 @@ namespace CompiPascal.interprete.analizador
             LinkedList<Instruccion> for_lista_instrucciones = new LinkedList<Instruccion>();
             main_declarations(for_lista_instrucciones, for_do_statements.ChildNodes.ElementAt(7));
 
+            ParseTreeNode for_opciones = for_do_statements.ChildNodes.ElementAt(4);
+            bool isTo = false;
+
+            if (for_opciones.ChildNodes.ElementAt(0).Term.Name == "TO")
+                isTo = true;
+            else
+                isTo = false;
+
             return new ForInstruccion(Expresion(for_do_statements.ChildNodes.ElementAt(1)),
                 Expresion(for_do_statements.ChildNodes.ElementAt(3)),
                 Expresion(for_do_statements.ChildNodes.ElementAt(5)),
-                for_lista_instrucciones);
+                for_lista_instrucciones, isTo);
 
         }
         private Instruccion while_statements(ParseTreeNode while_statements)
