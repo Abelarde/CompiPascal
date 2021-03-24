@@ -6,18 +6,28 @@ Var
 	x : INTEGER:=12;
 	y : INTEGER:=13;
 begin
+p1_p11(a, b);
 end;
 PROCEDURE p1_p11( a : INTEGER;  var b : INTEGER);
 Var
 	w : INTEGER:=21;
 	x : INTEGER:=22;
+Var
+	w : INTEGER:=11;
+	x : INTEGER:=12;
 	y : INTEGER:=13;
 begin
+p1_p11_p111(a, b);
 end;
 PROCEDURE p1_p11_p111( a : INTEGER;  var b : INTEGER);
 Var
 	w : INTEGER:=31;
+Var
+	w : INTEGER:=21;
 	x : INTEGER:=22;
+Var
+	w : INTEGER:=11;
+	x : INTEGER:=12;
 	y : INTEGER:=13;
 begin
 writeln('Local 31 = ',w);

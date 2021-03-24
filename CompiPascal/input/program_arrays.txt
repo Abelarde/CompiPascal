@@ -27,3 +27,49 @@ begin
       //writeln('Element[', j, '] = ', n[j] );
    end;
 end.
+
+//===============================================
+program Hola;
+
+type
+   vector = array [ 1..25] of real;
+   temperature = array [-10 .. 50] of real;
+
+var
+   velocity: vector;
+   day_temp, night_temp: temperature;
+   i, j: integer;
+
+begin
+
+   for i := 1 to 10 do
+   begin
+       velocity[ i ] := i + 100;   {* set element at location i to i + 100 *}
+   end;
+   for j:= 1 to 10 do
+   begin
+      writeln('velocity[', j, '] = ', velocity[j] );
+   end;
+end.
+
+//======================
+
+program Hello;
+
+type
+arreglo2 = array [1..10, 1..3, 1..8] of integer;
+begin
+arreglo2[1,2,1]:= 7777;
+writeln(arreglo2[1,2,1]);
+end.
+
+//==================
+
+program Hello;
+
+type
+arreglo2 = array [1..10] of integer;
+begin
+arreglo2[5]:= 999;
+writeln(arreglo2[6]);
+end.
